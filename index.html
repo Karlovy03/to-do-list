@@ -1,0 +1,2553 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Чек-лист мобільної групи ДГІДПЛ</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. ДИЗАЙН-ТОКЕНИ
+   Єдине джерело правди для кольорів, відступів, розмірів, тіней, тривалостей.
+   У правилах нижче не має бути жодного захардкодженого значення.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Палітра — службова, стримана */
+  --c-primary:          #1B2A4A;
+  --c-primary-hover:    #24375E;
+  --c-primary-ink:      #FFFFFF;
+  --c-accent:           #2E4A7D;
+
+  --c-bg:               #F4F5F7;
+  --c-surface:          #FFFFFF;
+  --c-surface-2:        #EDEFF3;
+  --c-surface-3:        #E2E6EC;
+  --c-border:           #C9CFD9;
+  --c-border-strong:    #9AA3B2;
+
+  --c-text:             #14181F;
+  --c-text-muted:       #5A6473;
+  --c-text-faint:       #838D9C;
+
+  /* Статуси */
+  --c-ok:               #17683A;
+  --c-ok-bg:            #E4F3E9;
+  --c-ok-border:        #7CBB95;
+
+  --c-violation:        #A81F26;
+  --c-violation-bg:     #FBE6E7;
+  --c-violation-border: #DE8A8E;
+
+  --c-remark:           #8A5A00;
+  --c-remark-bg:        #FDF1DC;
+  --c-remark-border:    #D6AC5C;
+
+  --c-na:               #5A6473;
+  --c-na-bg:            #E8EAEE;
+  --c-na-border:        #A9B1BD;
+
+  --c-unchecked:        #838D9C;
+
+  /* Відступи */
+  --sp-0:   0;
+  --sp-1:   4px;
+  --sp-2:   8px;
+  --sp-3:   12px;
+  --sp-4:   16px;
+  --sp-5:   24px;
+  --sp-6:   32px;
+  --sp-7:   48px;
+
+  /* Радіуси */
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-pill: 999px;
+
+  /* Тіні */
+  --sh-1:   0 1px 2px rgba(20, 24, 31, .08);
+  --sh-2:   0 2px 8px rgba(20, 24, 31, .12);
+  --sh-up:  0 -2px 10px rgba(20, 24, 31, .10);
+
+  /* Типографіка */
+  --ff-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ff-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fs-xs:  12px;
+  --fs-sm:  13px;
+  --fs-md:  15px;
+  --fs-lg:  17px;
+  --fs-xl:  20px;
+  --lh-tight: 1.25;
+  --lh-base:  1.45;
+  --fw-normal: 400;
+  --fw-medium: 600;
+  --fw-bold:   700;
+
+  /* Розміри */
+  --tap:        44px;   /* мінімальна площа дотику */
+  --bar-h:      64px;   /* липка нижня панель */
+  --maxw:       720px;
+  --border-w:   1px;
+  --border-w-2: 2px;
+  --focus-w:    3px;
+
+  /* Анімація */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --ease:     cubic-bezier(.2, 0, .2, 1);
+
+  /* Шари */
+  --z-bar:    50;
+  --z-toast:  70;
+  --z-modal:  100;
+}
+
+/* Темна тема — перевірки часто нічні */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-primary:          #22355C;
+    --c-primary-hover:    #2D4573;
+    --c-primary-ink:      #EEF1F6;
+    --c-accent:           #7FA3DC;
+
+    --c-bg:               #0E1219;
+    --c-surface:          #161C26;
+    --c-surface-2:        #1E2632;
+    --c-surface-3:        #27313F;
+    --c-border:           #333E4E;
+    --c-border-strong:    #4A5769;
+
+    --c-text:             #E6EAF0;
+    --c-text-muted:       #9AA4B4;
+    --c-text-faint:       #78838F;
+
+    --c-ok:               #6ED097;
+    --c-ok-bg:            #15301F;
+    --c-ok-border:        #2F6B45;
+
+    --c-violation:        #FF8A8F;
+    --c-violation-bg:     #3A171A;
+    --c-violation-border: #7E3339;
+
+    --c-remark:           #F0BE63;
+    --c-remark-bg:        #35270D;
+    --c-remark-border:    #7A5A1D;
+
+    --c-na:               #9AA4B4;
+    --c-na-bg:            #232B37;
+    --c-na-border:        #48546A;
+
+    --c-unchecked:        #78838F;
+
+    --sh-1:  0 1px 2px rgba(0, 0, 0, .5);
+    --sh-2:  0 2px 8px rgba(0, 0, 0, .55);
+    --sh-up: 0 -2px 10px rgba(0, 0, 0, .55);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. RESET / BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: var(--sp-0);
+  font-family: var(--ff-base);
+  font-size: var(--fs-md);
+  line-height: var(--lh-base);
+  color: var(--c-text);
+  background: var(--c-bg);
+  overflow-x: hidden;              /* жодного горизонтального скролу */
+  overscroll-behavior-y: contain;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, p, ul, ol, figure { margin: var(--sp-0); }
+ul, ol { padding-left: var(--sp-5); }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; }
+
+:focus-visible {
+  outline: var(--focus-w) solid var(--c-accent);
+  outline-offset: var(--border-w-2);
+}
+
+[hidden] { display: none !important; }
+
+.u-visually-hidden {
+  position: absolute;
+  width: var(--border-w);
+  height: var(--border-w);
+  margin: calc(-1 * var(--border-w));
+  padding: var(--sp-0);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.u-muted  { color: var(--c-text-muted); }
+.u-faint  { color: var(--c-text-faint); }
+.u-nowrap { white-space: nowrap; }
+
+.app {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px) + var(--sp-5));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. АТОМИ — кнопки, бейджі, поля
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- Кнопка --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  text-align: center;
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.btn:active { background: var(--c-surface-2); }
+.btn:disabled { opacity: .5; cursor: default; }
+
+.btn--primary {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: var(--c-primary-ink);
+}
+.btn--primary:active { background: var(--c-primary-hover); }
+
+.btn--danger { color: var(--c-violation); border-color: var(--c-violation-border); }
+
+.btn--ghost { background: transparent; border-color: transparent; }
+.btn--ghost:active { background: var(--c-surface-2); }
+
+.btn--block { display: flex; width: 100%; }
+.btn--sm { min-height: var(--tap); padding-inline: var(--sp-3); font-size: var(--fs-sm); }
+
+/* --- Бейдж статусу --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-2);
+  border: var(--border-w) solid transparent;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+}
+.badge--ok        { color: var(--c-ok);        background: var(--c-ok-bg);        border-color: var(--c-ok-border); }
+.badge--violation { color: var(--c-violation); background: var(--c-violation-bg); border-color: var(--c-violation-border); }
+.badge--remark    { color: var(--c-remark);    background: var(--c-remark-bg);    border-color: var(--c-remark-border); }
+.badge--na        { color: var(--c-na);        background: var(--c-na-bg);        border-color: var(--c-na-border); }
+.badge--unchecked { color: var(--c-unchecked); background: var(--c-surface-2);    border-color: var(--c-border); }
+.badge--neutral   { color: var(--c-text-muted);background: var(--c-surface-2);    border-color: var(--c-border); }
+
+/* --- Поля --- */
+.field { display: block; margin-bottom: var(--sp-3); }
+.field__label {
+  display: block;
+  margin-bottom: var(--sp-1);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--c-text-muted);
+}
+.field__hint {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--c-text-faint);
+}
+.input, .textarea {
+  display: block;
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  font-size: var(--fs-md);
+}
+.textarea { min-height: calc(var(--tap) * 2); resize: vertical; }
+.input:focus, .textarea:focus { border-color: var(--c-accent); }
+
+/* --- Чіп-перемикач фільтра --- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: var(--tap);
+  padding: var(--sp-1) var(--sp-3);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}
+.chip[aria-pressed="true"] {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: var(--c-primary-ink);
+}
+
+/* --- Смуга прогресу --- */
+.progress {
+  height: var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  overflow: hidden;
+}
+.progress__fill {
+  height: 100%;
+  background: var(--c-accent);
+  transition: width var(--dur-base) var(--ease);
+}
+
+/* --- Індикатор збереження --- */
+.save-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--c-text-faint);
+}
+.save-state::before {
+  content: "";
+  width: var(--sp-2);
+  height: var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--c-text-faint);
+}
+.save-state--saved::before  { background: var(--c-ok); }
+.save-state--saving::before { background: var(--c-remark); }
+.save-state--error          { color: var(--c-violation); }
+.save-state--error::before  { background: var(--c-violation); }
+
+/* --- Банер --- */
+.banner {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-3);
+  border: var(--border-w) solid var(--c-border);
+  border-left-width: var(--sp-1);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  font-size: var(--fs-sm);
+}
+.banner--info    { border-left-color: var(--c-accent); }
+.banner--warning { border-left-color: var(--c-remark);    background: var(--c-remark-bg);    color: var(--c-remark); }
+.banner--danger  { border-left-color: var(--c-violation); background: var(--c-violation-bg); color: var(--c-violation); }
+.banner__body { flex: 1; min-width: 0; }
+.banner__title { font-weight: var(--fw-bold); margin-bottom: var(--sp-1); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. МОЛЕКУЛИ — пункт чек-листа, шапка секції, картка перевірки
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- Пункт чек-листа --- */
+.checklist-item {
+  padding: var(--sp-3);
+  border-top: var(--border-w) solid var(--c-border);
+  background: var(--c-surface);
+}
+.checklist-item--ok        { background: var(--c-ok-bg); }
+.checklist-item--violation { background: var(--c-violation-bg); }
+.checklist-item--remark    { background: var(--c-remark-bg); }
+.checklist-item--na        { background: var(--c-na-bg); }
+
+.checklist-item__text {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-md);
+  line-height: var(--lh-base);
+}
+.checklist-item__index {
+  margin-right: var(--sp-2);
+  color: var(--c-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Згорнуте посилання на норму */
+.checklist-item__norm { margin-bottom: var(--sp-2); }
+.checklist-item__norm-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: var(--tap);
+  padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-0);
+  border: none;
+  background: none;
+  color: var(--c-accent);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+.checklist-item__norm-toggle::after {
+  content: "▾";
+  transition: transform var(--dur-fast) var(--ease);
+}
+.checklist-item__norm-toggle[aria-expanded="true"]::after { transform: rotate(180deg); }
+.checklist-item__norm-body {
+  padding: var(--sp-2) var(--sp-3);
+  border-left: var(--border-w-2) solid var(--c-border-strong);
+  background: var(--c-surface-2);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+.checklist-item__norm-body ul { margin: var(--sp-0); padding-left: var(--sp-4); }
+
+/* Кнопки статусу: 2×2 на вузькому екрані, 4 в ряд — на ширшому */
+.checklist-item__status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+@media (min-width: 420px) {
+  .checklist-item__status { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.checklist-item__status-btn {
+  min-height: var(--tap);
+  padding: var(--sp-1) var(--sp-2);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.checklist-item__status-btn--ok[aria-pressed="true"] {
+  background: var(--c-ok); border-color: var(--c-ok); color: var(--c-primary-ink);
+}
+.checklist-item__status-btn--violation[aria-pressed="true"] {
+  background: var(--c-violation); border-color: var(--c-violation); color: var(--c-primary-ink);
+}
+.checklist-item__status-btn--remark[aria-pressed="true"] {
+  background: var(--c-remark); border-color: var(--c-remark); color: var(--c-primary-ink);
+}
+.checklist-item__status-btn--na[aria-pressed="true"] {
+  background: var(--c-na); border-color: var(--c-na); color: var(--c-primary-ink);
+}
+
+/* Нотатка — за замовчуванням згорнута */
+.checklist-item__note-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-0);
+  border: none;
+  background: none;
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+.checklist-item__note-dot {
+  width: var(--sp-2);
+  height: var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+}
+.checklist-item__note-body { padding-top: var(--sp-1); }
+
+/* --- Шапка секції (accordion summary) --- */
+.section__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3);
+  background: var(--c-surface-2);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.section__head::-webkit-details-marker { display: none; }
+.section__head::after {
+  content: "▾";
+  color: var(--c-text-muted);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.section[open] > .section__head::after { transform: rotate(180deg); }
+
+.section__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--sp-6);
+  height: var(--sp-6);
+  border-radius: var(--r-md);
+  background: var(--c-primary);
+  color: var(--c-primary-ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+.section__title-wrap { flex: 1; min-width: 0; }
+.section__title {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+}
+.section__counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-top: var(--sp-1);
+}
+
+/* --- Картка перевірки на головному екрані --- */
+.card {
+  display: block;
+  width: 100%;
+  padding: var(--sp-4);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--sh-1);
+  text-align: left;
+}
+.card + .card { margin-top: var(--sp-3); }
+.card__head {
+  display: block;
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--sp-0);
+  border: none;
+  background: none;
+  text-align: left;
+}
+.card__title {
+  display: block;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+.card__meta {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+.card__badges { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3); }
+.card__progress { margin-top: var(--sp-3); }
+.card__actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: var(--border-w) solid var(--c-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. ОРГАНІЗМИ — шапка, секція, панель об'єкта, липка панель, модалка
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- Шапка застосунку --- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-bar);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
+  padding-top: calc(var(--sp-2) + env(safe-area-inset-top, 0px));
+  background: var(--c-primary);
+  color: var(--c-primary-ink);
+  box-shadow: var(--sh-2);
+}
+.topbar__back {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: none;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: inherit;
+  font-size: var(--fs-xl);
+}
+.topbar__title-wrap { flex: 1; min-width: 0; }
+.topbar__title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar__subtitle {
+  font-size: var(--fs-xs);
+  opacity: .8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen { padding: var(--sp-3); }
+.screen__section + .screen__section { margin-top: var(--sp-4); }
+.screen__heading {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--c-text-muted);
+}
+
+/* --- Панель об'єкта перевірки --- */
+.meta-panel {
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+.meta-panel__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: var(--sp-3);
+  cursor: pointer;
+  list-style: none;
+  font-weight: var(--fw-medium);
+}
+.meta-panel__head::-webkit-details-marker { display: none; }
+.meta-panel__head::after { content: "▾"; margin-left: auto; color: var(--c-text-muted); }
+.meta-panel[open] > .meta-panel__head::after { transform: rotate(180deg); }
+.meta-panel__body { padding: var(--sp-0) var(--sp-3) var(--sp-3); }
+@media (min-width: 520px) {
+  .meta-panel__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-0) var(--sp-3); }
+  .meta-panel__grid > .field--wide { grid-column: 1 / -1; }
+}
+
+/* --- Панель інструментів --- */
+.toolbar { margin: var(--sp-3) var(--sp-0); }
+.toolbar__filters {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: var(--sp-1);
+}
+.toolbar__filters::-webkit-scrollbar { display: none; }
+
+/* --- Секція чек-листа --- */
+.section {
+  margin-bottom: var(--sp-3);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+.section__warning {
+  padding: var(--sp-3);
+  border-top: var(--border-w) solid var(--c-border);
+  background: var(--c-remark-bg);
+  color: var(--c-remark);
+  font-size: var(--fs-sm);
+}
+.section__base-norm {
+  padding: var(--sp-2) var(--sp-3);
+  border-top: var(--border-w) solid var(--c-border);
+  background: var(--c-surface-2);
+  color: var(--c-text-muted);
+  font-size: var(--fs-xs);
+}
+.section__empty {
+  padding: var(--sp-4) var(--sp-3);
+  border-top: var(--border-w) solid var(--c-border);
+  color: var(--c-text-faint);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+/* --- Липка нижня панель --- */
+.bottombar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-bar);
+  padding: var(--sp-2) var(--sp-3);
+  padding-bottom: calc(var(--sp-2) + env(safe-area-inset-bottom, 0px));
+  background: var(--c-surface);
+  border-top: var(--border-w) solid var(--c-border);
+  box-shadow: var(--sh-up);
+}
+.bottombar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  max-width: var(--maxw);
+  margin-inline: auto;
+}
+.bottombar__stats { flex: 1; min-width: 0; }
+.bottombar__line {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+.bottombar__progress { margin-top: var(--sp-1); }
+
+/* --- Модалка --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 14, 20, .55);
+}
+.modal__panel {
+  width: 100%;
+  max-width: var(--maxw);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--sp-4);
+  padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  border-radius: var(--r-lg) var(--r-lg) var(--sp-0) var(--sp-0);
+  background: var(--c-surface);
+  box-shadow: var(--sh-2);
+}
+.modal__title {
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+.modal__row + .modal__row { margin-top: var(--sp-2); }
+.modal__desc { margin-bottom: var(--sp-3); font-size: var(--fs-sm); color: var(--c-text-muted); }
+.modal__preview {
+  max-height: 40vh;
+  overflow: auto;
+  margin-bottom: var(--sp-3);
+  padding: var(--sp-3);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- Тост --- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bar-h) + var(--sp-5) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-toast);
+  transform: translateX(-50%);
+  max-width: calc(100% - var(--sp-6));
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--c-primary);
+  color: var(--c-primary-ink);
+  font-size: var(--fs-sm);
+  box-shadow: var(--sh-2);
+  text-align: center;
+}
+.toast--error { background: var(--c-violation); }
+
+/* --- Порожній стан --- */
+.empty {
+  padding: var(--sp-7) var(--sp-4);
+  text-align: center;
+  color: var(--c-text-muted);
+}
+.empty__title {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+
+<script>
+"use strict";
+(function () {
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. КОНСТАНТИ ТА КОНФІГ
+   Жодних магічних чисел у логіці — усе тут.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+var CONFIG = {
+  SCHEMA_VERSION: 1,
+  STORAGE_PREFIX: 'dgidpl:inspection:',
+  STORAGE_INDEX: 'dgidpl:index',
+  STORAGE_HINT: 'dgidpl:hint-seen',
+  SAVE_DEBOUNCE_MS: 300,
+  TOAST_MS: 2600,
+  CONFIRM_RESET_MS: 4000,      // скільки триває перший крок підтвердження видалення
+  DOWNLOAD_CLEANUP_MS: 4000,   // затримка перед прибиранням тимчасового <a download>
+  CSV_DELIMITER: ';',          // ; — бо Excel з українською локаллю саме так ділить стовпці
+  CSV_BOM: '﻿',
+  EXPORT_DATE_SEP: '.',
+  FILENAME_MAXLEN: 60
+};
+
+var STATUS = {
+  UNCHECKED: 'unchecked',
+  OK: 'ok',
+  VIOLATION: 'violation',
+  REMARK: 'remark',
+  NA: 'na'
+};
+
+/* Порядок кнопок статусу в інтерфейсі. `unchecked` кнопки не має —
+   це стан «жодна не натиснута», повторний тап по активній повертає до нього. */
+var STATUS_BUTTONS = [
+  { value: STATUS.OK,        label: 'Відповідає' },
+  { value: STATUS.VIOLATION, label: 'Порушення' },
+  { value: STATUS.REMARK,    label: 'Зауваження' },
+  { value: STATUS.NA,        label: 'Не застос.' }
+];
+
+var STATUS_LABEL = {};
+STATUS_LABEL[STATUS.UNCHECKED] = 'Не перевірялось';
+STATUS_LABEL[STATUS.OK]        = 'Відповідає';
+STATUS_LABEL[STATUS.VIOLATION] = 'Порушення';
+STATUS_LABEL[STATUS.REMARK]    = 'Зауваження';
+STATUS_LABEL[STATUS.NA]        = 'Не застосовується';
+
+/* Статуси, за яких поле нотатки розгортається автоматично. */
+var STATUS_AUTO_NOTE = [STATUS.VIOLATION, STATUS.REMARK];
+
+/* Статуси, що потрапляють у чернетку довідки. */
+var STATUS_IN_REPORT = [STATUS.VIOLATION, STATUS.REMARK];
+
+var FILTERS = [
+  { id: 'violation', label: 'Порушення',   statuses: [STATUS.VIOLATION] },
+  { id: 'remark',    label: 'Зауваження',  statuses: [STATUS.REMARK] },
+  { id: 'empty',     label: 'Не заповнені',statuses: [STATUS.UNCHECKED] }
+];
+
+var REGIONS = [
+  'Вінницька', 'Волинська', 'Дніпропетровська', 'Донецька', 'Житомирська',
+  'Закарпатська', 'Запорізька', 'Івано-Франківська', 'Київська', 'м. Київ',
+  'Кіровоградська', 'Луганська', 'Львівська', 'Миколаївська', 'Одеська',
+  'Полтавська', 'Рівненська', 'Сумська', 'Тернопільська', 'Харківська',
+  'Херсонська', 'Хмельницька', 'Черкаська', 'Чернівецька', 'Чернігівська',
+  'Автономна Республіка Крим', 'м. Севастополь'
+];
+
+var META_FIELDS = [
+  { key: 'region',        label: 'Область',                     type: 'text', list: 'regions-list', wide: false },
+  { key: 'unit',          label: 'Підрозділ',                   type: 'text', wide: false },
+  { key: 'dateFrom',      label: 'Перевірка з',                 type: 'date', wide: false },
+  { key: 'dateTo',        label: 'Перевірка до',                type: 'date', wide: false },
+  { key: 'inspectorRole', label: 'Посада перевіряючого',        type: 'text', wide: true,
+    hint: 'Без ПІБ — лише посада' },
+  { key: 'groupHead',     label: 'Посада голови мобільної групи',type: 'text', wide: true,
+    hint: 'Без ПІБ — лише посада' }
+];
+
+var PERSONAL_DATA_HINT =
+  'У чек-листі навмисно немає полів для ПІБ поліцейських. Якщо потрібно ідентифікувати ' +
+  'особу — вказуйте в нотатці посаду й номер жетона. Персональні дані не зберігаються ' +
+  'у сховищі телефона.';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. УТИЛІТИ — чисті функції та тонкі обгортки над платформою
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- dom --- */
+var dom = {
+  qs: function (sel, root) { return (root || document).querySelector(sel); },
+  qsa: function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); },
+
+  el: function (tag, className, html) {
+    var node = document.createElement(tag);
+    if (className) { node.className = className; }
+    if (html != null) { node.innerHTML = html; }
+    return node;
+  },
+
+  /* Делегування: один слухач на контейнер замість слухача на кожен елемент. */
+  delegate: function (root, type, selector, handler) {
+    root.addEventListener(type, function (event) {
+      var target = event.target.closest(selector);
+      if (target && root.contains(target)) { handler(event, target); }
+    });
+  },
+
+  clear: function (node) { while (node.firstChild) { node.removeChild(node.firstChild); } }
+};
+
+/* --- format: чисті функції форматування --- */
+
+/* Символи, неприпустимі в іменах файлів на Windows/Android. */
+var BAD_FILENAME_CHARS = /[\\/:*?"<>|\u0000-\u001f]/g;
+
+var format = {
+  escapeHtml: function (value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  },
+
+  /* '2026-08-06' → '06.08.2026'; порожнє → '' */
+  dateHuman: function (isoDate) {
+    if (!isoDate) { return ''; }
+    var parts = String(isoDate).slice(0, 10).split('-');
+    if (parts.length !== 3) { return String(isoDate); }
+    return parts[2] + CONFIG.EXPORT_DATE_SEP + parts[1] + CONFIG.EXPORT_DATE_SEP + parts[0];
+  },
+
+  dateRange: function (from, to) {
+    var a = format.dateHuman(from);
+    var b = format.dateHuman(to);
+    if (a && b) { return a === b ? a : a + ' – ' + b; }
+    return a || b || 'дати не вказані';
+  },
+
+  /* ISO → '06.08.2026 14:03' у локальному часі */
+  dateTimeHuman: function (iso) {
+    if (!iso) { return ''; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return ''; }
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    return pad(d.getDate()) + CONFIG.EXPORT_DATE_SEP + pad(d.getMonth() + 1) +
+           CONFIG.EXPORT_DATE_SEP + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  },
+
+  timeHuman: function (iso) {
+    var full = format.dateTimeHuman(iso);
+    return full ? full.split(' ')[1] : '';
+  },
+
+  /* Ім'я файлу без символів, небезпечних для файлової системи. */
+  fileSafe: function (value, fallback) {
+    var safe = String(value || '').replace(BAD_FILENAME_CHARS, ' ')
+      .trim()
+      .replace(/\s+/g, '_')
+      .slice(0, CONFIG.FILENAME_MAXLEN);
+    return safe || fallback;
+  },
+
+  /* Нормалізація для пошуку: регістронезалежно, апостроф в одному вигляді. */
+  searchKey: function (value) {
+    return String(value || '').toLowerCase().replace(/[’ʼ`']/g, "'");
+  }
+};
+
+/* --- id --- */
+var id = {
+  uuid: function () {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      try { return crypto.randomUUID(); } catch (e) { /* нижче — запасний шлях */ }
+    }
+    var bytes = new Uint8Array(16);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (var i = 0; i < bytes.length; i++) { bytes[i] = Math.floor(Math.random() * 256); }
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    var hex = Array.prototype.map.call(bytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' +
+           hex.slice(16, 20) + '-' + hex.slice(20);
+  }
+};
+
+/* --- fn --- */
+var fn = {
+  debounce: function (callback, waitMs) {
+    var timer = null;
+    var wrapped = function () {
+      var args = arguments;
+      if (timer) { clearTimeout(timer); }
+      timer = setTimeout(function () { timer = null; callback.apply(null, args); }, waitMs);
+    };
+    wrapped.flush = function () {
+      if (timer) { clearTimeout(timer); timer = null; callback(); }
+    };
+    wrapped.pending = function () { return timer !== null; };
+    return wrapped;
+  }
+};
+
+/* --- storage: єдина точка доступу до localStorage --- */
+var StorageError = function (kind, message) { this.kind = kind; this.message = message; };
+
+var storage = {
+  QUOTA: 'quota',
+  UNAVAILABLE: 'unavailable',
+
+  available: function () {
+    try {
+      var probe = CONFIG.STORAGE_PREFIX + '__probe__';
+      window.localStorage.setItem(probe, '1');
+      window.localStorage.removeItem(probe);
+      return true;
+    } catch (e) { return false; }
+  },
+
+  isQuotaError: function (error) {
+    return !!error && (
+      error.name === 'QuotaExceededError' ||
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      error.code === 22 || error.code === 1014
+    );
+  },
+
+  readJson: function (key, fallback) {
+    try {
+      var raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  },
+
+  writeJson: function (key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      if (storage.isQuotaError(error)) {
+        throw new StorageError(storage.QUOTA,
+          'Сховище телефона переповнене. Збереження не відбулося. ' +
+          'Експортуйте перевірки у JSON, потім видаліть завершені.');
+      }
+      throw new StorageError(storage.UNAVAILABLE,
+        'Сховище браузера недоступне. Можливо, увімкнено приватний режим. ' +
+        'Дані не зберігаються — експортуйте JSON, перш ніж закривати сторінку.');
+    }
+  },
+
+  remove: function (key) {
+    try { window.localStorage.removeItem(key); } catch (e) { /* нічого страшного */ }
+  }
+};
+
+/* --- download: Blob + createObjectURL + програмний клік --- */
+var download = {
+  file: function (filename, mimeType, content) {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.rel = 'noopener';
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    /* Завантаження стартує асинхронно. Якщо прибрати якір і відкликати URL
+       того ж такту, браузер втрачає атрибут download — файл лягає як «download»
+       замість осмисленого імені. Тому прибираємо із затримкою. */
+    setTimeout(function () {
+      if (link.parentNode) { link.parentNode.removeChild(link); }
+      URL.revokeObjectURL(url);
+    }, CONFIG.DOWNLOAD_CLEANUP_MS);
+  },
+
+  /* Буфер обміну: сучасний API, із запасним шляхом для file:// у старих браузерах. */
+  copy: function (text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).catch(function () { return download._copyLegacy(text); });
+    }
+    return Promise.resolve(download._copyLegacy(text));
+  },
+
+  _copyLegacy: function (text) {
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', 'readonly');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    area.setSelectionRange(0, area.value.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    if (!ok) { return Promise.reject(new Error('copy failed')); }
+    return Promise.resolve();
+  }
+};
+
+/* --- csv --- */
+var csv = {
+  /* Екранування + захист від інтерпретації тексту як формули Excel. */
+  cell: function (value) {
+    var text = String(value == null ? '' : value).replace(/\r\n/g, '\n');
+    if (/^[=+\-@]/.test(text)) { text = "'" + text; }
+    return '"' + text.replace(/"/g, '""') + '"';
+  },
+
+  build: function (rows) {
+    return CONFIG.CSV_BOM + rows.map(function (row) {
+      return row.map(csv.cell).join(CONFIG.CSV_DELIMITER);
+    }).join('\r\n');
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. МОДЕЛЬ ДАНИХ
+
+   NORMS  — довідник нормативних актів. Реквізити акта живуть рівно в одному
+            місці; щоб виправити дату чи номер, правиться один рядок тут.
+   Посилання в пункті: 'mvs-440' або 'mvs-440#п. 7' — частина після «#»
+   дописується до реквізитів акта. Якщо частина починається з дужки —
+   приєднується через пробіл, інакше через кому.
+
+   ДАТИ, ЯКІ ЩЕ ТРЕБА ПІДСТАВИТИ: mvs-718, mvs-622, mvs-570, mvs-575,
+   mvs-930, mvs-50, mvs-1179, mvs-893.
+
+   CHECKLIST_TEMPLATE — дані чек-листа, повністю відокремлені від рендерингу.
+   Замінивши цей об'єкт, можна отримати інший чек-лист без правок коду.
+   УВАГА: `id` секцій і пунктів — ключі збережених даних. Перейменування
+   `id` знеціннює вже заповнені перевірки; текст пункту міняти безпечно.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+var NORMS = {
+  'konst':      'Конституція України',
+  'kpk':        'КПК України',
+  'kupap':      'КУпАП',
+  'zu-police':  'ЗУ «Про Національну поліцію»',
+  'zu-zvern':   'ЗУ «Про звернення громадян»',
+  'kmu-1104':   'Постанова КМУ від 19.11.2012 № 1104',
+  'mvs-440':    'Наказ МВС від 23.05.2017 № 440',
+  'mvs-100':    'Наказ МВС від 08.02.2019 № 100',
+  'mvs-1026':   'Наказ МВС від 18.12.2018 № 1026',
+  'mvs-718':    'Наказ МВС № 718 (Правила носіння однострою поліцейських)',
+  'mvs-622':    'Наказ МВС № 622',
+  'mvs-570':    'Наказ МВС № 570',
+  'mvs-575':    'Наказ МВС № 575',
+  'mvs-930':    'Наказ МВС № 930 (розгляд звернень громадян)',
+  'mvs-50':     'Наказ МВС № 50 (Положення про організацію службової підготовки працівників Національної поліції України)',
+  'mvs-1179':   'Наказ МВС № 1179 (Правила етичної поведінки поліцейських)',
+  'mvs-893':    'Наказ МВС № 893 (Порядок проведення службових розслідувань)',
+  'npu-local':  'Внутрішні накази НПУ про розстановку сил і засобів'
+};
+
+var CHECKLIST_TEMPLATE = {
+  version: 1,
+  sections: [
+    {
+      id: 's1',
+      title: 'Організація служби та розстановка нарядів',
+      items: [
+        { id: 's1-01', text: 'Наявність і актуальність плану єдиної дислокації',
+          norms: ['mvs-440'] },
+        { id: 's1-02', text: 'Відповідність фактичної кількості нарядів розрахунковій',
+          norms: ['mvs-440', 'npu-local'] },
+        { id: 's1-03', text: 'Ведення книги служби, карток маршрутів, постових відомостей',
+          norms: ['mvs-440'] },
+        { id: 's1-04', text: 'Дотримання режиму праці та відпочинку, наявність переробітків',
+          norms: ['mvs-440', 'zu-police#ст. 91'] },
+        { id: 's1-05', text: 'Відповідність табелів фактичній присутності на маршруті',
+          norms: ['mvs-440'] }
+      ]
+    },
+    {
+      id: 's2',
+      title: 'Інструктаж нарядів (ІПП)',
+      items: [
+        { id: 's2-01', text: 'Рівень посадової особи, яка проводила інструктаж',
+          norms: ['mvs-440'] },
+        { id: 's2-02', text: 'Доведення оперативної обстановки та орієнтувань',
+          norms: ['mvs-440'] },
+        { id: 's2-03', text: 'Перевірка екіпірування, стану здоровʼя, зовнішнього вигляду',
+          norms: ['mvs-440', 'mvs-718'] },
+        { id: 's2-04', text: 'Технічна фіксація інструктажу',
+          norms: ['mvs-440'] }
+      ]
+    },
+    {
+      id: 's3',
+      title: 'Чергова частина та облік заяв',
+      items: [
+        { id: 's3-01', text: 'Повнота реєстрації заяв і повідомлень в ЄО',
+          norms: ['mvs-100'] },
+        { id: 's3-02', text: 'Строки внесення відомостей до ЄРДР',
+          norms: ['kpk#ст. 214', 'mvs-100'] },
+        { id: 's3-03', text: 'Ознаки укриття заяв від обліку',
+          norms: ['kpk#ст. 214', 'mvs-100'] },
+        { id: 's3-04', text: 'Час реагування за даними інформаційних систем проти журналів',
+          norms: ['mvs-100', 'mvs-440'] },
+        { id: 's3-05', text: 'Стан документації чергової частини',
+          norms: ['mvs-440'] }
+      ]
+    },
+    {
+      id: 's4',
+      title: 'Затримані особи та дотримання прав людини',
+      items: [
+        { id: 's4-01', text: 'Стан кімнати для затриманих, умови тримання',
+          norms: ['mvs-440', 'kupap#ст. 263'] },
+        { id: 's4-02', text: 'Ведення журналу доставлених осіб',
+          norms: ['mvs-440'] },
+        { id: 's4-03', text: 'Розрив між фактичним часом затримання і часом у протоколі',
+          norms: ['konst#ст. 29', 'kpk#ст. 209, 211, 213'] },
+        { id: 's4-04', text: 'Розʼяснення прав, доступ до захисника, повідомлення родичів',
+          norms: ['konst#ст. 29', 'kpk#ст. 42, 208, 213'] },
+        { id: 's4-05', text: 'Фіксація тілесних ушкоджень і реагування на них',
+          norms: ['kpk#ст. 212', 'mvs-440'] },
+        { id: 's4-06', text: 'Забезпечення медичною допомогою',
+          norms: ['kpk#ст. 212', 'mvs-440'] }
+      ]
+    },
+    {
+      id: 's5',
+      title: 'Відеофіксація та бодікамери',
+      /* Базова норма секції: саме на підставі ст. 40 закону виданий наказ № 1026. */
+      baseNorms: ['zu-police#ст. 40'],
+      items: [
+        { id: 's5-01', text: 'Кількість виданих відеореєстраторів проти кількості поліцейських, що заступили',
+          norms: ['mvs-1026'] },
+        { id: 's5-02', text: 'Ведення журналу видачі та приймання',
+          norms: ['mvs-1026'] },
+        { id: 's5-03', text: 'Вибіркова перевірка записів: увімкнення під час затримання, застосування сили, складання протоколу',
+          norms: ['mvs-1026'] },
+        { id: 's5-04', text: 'Безперервність запису',
+          norms: ['mvs-1026'] },
+        { id: 's5-05', text: 'Дотримання строків зберігання, порядок доступу до відеофайлів',
+          norms: ['mvs-1026'] },
+        { id: 's5-06', text: 'Працездатність стаціонарних систем у службових приміщеннях і збереженість архіву',
+          norms: ['mvs-1026#розділ V'] }
+      ]
+    },
+    {
+      id: 's6',
+      title: 'Речові докази та кімната зберігання',
+      items: [
+        { id: 's6-01', text: 'Наявність наказу керівника про призначення відповідальної особи',
+          norms: ['kmu-1104#(пункт звірити за чинною редакцією)'] },
+        { id: 's6-02', text: 'Обладнання приміщення: сейфи, металеві шафи, стелажі, оббиті металом',
+          norms: ['kmu-1104#п. 7'] },
+        { id: 's6-03', text: 'Ведення книги обліку, відсутність підчисток, суцільна нумерація',
+          norms: ['kmu-1104#п. 11–21'] },
+        { id: 's6-04', text: 'Вибіркова звірка «книга → фактична наявність» і у зворотному напрямку',
+          norms: ['kmu-1104#п. 11–21'] },
+        { id: 's6-05', text: 'Цілісність упаковки, унеможливлення підміни вмісту',
+          norms: ['kpk#ст. 100, 168', 'kmu-1104'] },
+        { id: 's6-06', text: 'Окремий режим для зброї, боєприпасів, наркотичних засобів, грошей і цінностей',
+          norms: ['kmu-1104#п. 11–21', 'mvs-622'] },
+        { id: 's6-07', text: 'Доля речових доказів у закритих провадженнях',
+          norms: ['kpk#ст. 98–100, 167–169'] },
+        { id: 's6-08', text: 'Ключі, журнал доступу, сигналізація, відеоспостереження',
+          norms: ['kmu-1104#п. 7'] }
+      ]
+    },
+    {
+      id: 's7',
+      title: 'Слідчі підрозділи та підрозділи дізнання',
+      warning: 'Процесуальні рішення слідчого й дізнавача перевірці мобільною групою не підлягають — ' +
+               'це компетенція процесуального керівника і слідчого судді (ст. 40, 40¹, 222 КПК України). ' +
+               'Перевіряються лише організаційні питання.',
+      items: [
+        { id: 's7-01', text: 'Навантаження: кількість проваджень на одного слідчого й дізнавача',
+          norms: ['mvs-570', 'mvs-575'] },
+        { id: 's7-02', text: 'Наявність індивідуальних сейфів',
+          norms: ['mvs-570'] },
+        { id: 's7-03', text: 'Режим зберігання матеріалів, доступ сторонніх осіб до кабінетів',
+          norms: ['mvs-570', 'mvs-575'] },
+        { id: 's7-04', text: 'Розгляд звернень громадян і реагування на них',
+          norms: ['zu-zvern', 'mvs-930'] },
+        { id: 's7-05', text: 'Стан службової підготовки',
+          norms: ['mvs-50'] }
+      ]
+    },
+    {
+      id: 's8',
+      title: 'Заходи підтримки та опитування особового складу',
+      warning: 'Інформаційний блок. Збір даних для заходів підтримки, не є контролем дотримання норм.',
+      items: [
+        { id: 's8-01', text: 'Некомплект і фактичне навантаження', norms: [] },
+        { id: 's8-02', text: 'Забезпечення технічними засобами, пальним, доступом до баз даних', norms: [] },
+        { id: 's8-03', text: 'Наявність тиску щодо показників або відмов у реєстрації заяв',
+          norms: ['mvs-1179'] },
+        { id: 's8-04', text: 'Організація взаємодії між службами', norms: [] },
+        { id: 's8-05', text: 'Психологічний стан, ознаки вигоряння', norms: [] },
+        { id: 's8-06', text: 'Реагування керівництва на попередні надзвичайні події та скарги',
+          norms: ['mvs-1179', 'mvs-893'] }
+      ]
+    }
+  ]
+};
+
+/* --- Чисті функції над шаблоном і перевіркою --- */
+
+var template = {
+  /* 'kmu-1104#п. 7' → 'Постанова КМУ від 19.11.2012 № 1104, п. 7' */
+  resolveRef: function (ref) {
+    var hashAt = ref.indexOf('#');
+    var key = hashAt === -1 ? ref : ref.slice(0, hashAt);
+    var part = hashAt === -1 ? '' : ref.slice(hashAt + 1);
+    var act = NORMS[key] || key;
+    if (!part) { return act; }
+    return part.charAt(0) === '(' ? act + ' ' + part : act + ', ' + part;
+  },
+
+  resolveRefs: function (refs) {
+    return (refs || []).map(template.resolveRef);
+  },
+
+  /* Норми пункту одним рядком — для CSV і довідки. */
+  normLine: function (item) {
+    var list = template.resolveRefs(item.norms);
+    return list.length ? list.join('; ') : '—';
+  },
+
+  allItems: function () {
+    return CHECKLIST_TEMPLATE.sections.reduce(function (acc, section) {
+      return acc.concat(section.items.map(function (item) {
+        return { section: section, item: item };
+      }));
+    }, []);
+  },
+
+  totalItems: function () {
+    return CHECKLIST_TEMPLATE.sections.reduce(function (sum, s) { return sum + s.items.length; }, 0);
+  }
+};
+
+var model = {
+  emptyEntry: function () {
+    return { status: STATUS.UNCHECKED, note: '', checkedAt: null };
+  },
+
+  create: function () {
+    var now = new Date().toISOString();
+    return {
+      id: id.uuid(),
+      schemaVersion: CONFIG.SCHEMA_VERSION,
+      templateVersion: CHECKLIST_TEMPLATE.version,
+      createdAt: now,
+      updatedAt: now,
+      meta: { region: '', unit: '', dateFrom: '', dateTo: '', inspectorRole: '', groupHead: '' },
+      items: {}
+    };
+  },
+
+  entry: function (inspection, itemId) {
+    return inspection.items[itemId] || model.emptyEntry();
+  },
+
+  /* Зведення по перевірці: заповнено / порушення / зауваження окремо. */
+  stats: function (inspection) {
+    var total = template.totalItems();
+    var counts = { filled: 0, total: total, ok: 0, violation: 0, remark: 0, na: 0, unchecked: 0 };
+    template.allItems().forEach(function (pair) {
+      var status = model.entry(inspection, pair.item.id).status;
+      counts[status] = (counts[status] || 0) + 1;
+      if (status !== STATUS.UNCHECKED) { counts.filled += 1; }
+    });
+    return counts;
+  },
+
+  sectionStats: function (inspection, section) {
+    var counts = { filled: 0, total: section.items.length, violation: 0, remark: 0 };
+    section.items.forEach(function (item) {
+      var status = model.entry(inspection, item.id).status;
+      if (status !== STATUS.UNCHECKED) { counts.filled += 1; }
+      if (status === STATUS.VIOLATION) { counts.violation += 1; }
+      if (status === STATUS.REMARK) { counts.remark += 1; }
+    });
+    return counts;
+  },
+
+  title: function (inspection) {
+    var meta = inspection.meta || {};
+    return meta.unit || meta.region || 'Перевірка без назви';
+  },
+
+  subtitle: function (inspection) {
+    var meta = inspection.meta || {};
+    var parts = [];
+    if (meta.unit && meta.region) { parts.push(meta.region + ' обл.'); }
+    parts.push(format.dateRange(meta.dateFrom, meta.dateTo));
+    return parts.join(' · ');
+  },
+
+  /* Валідація імпортованого JSON: приймаємо лише те, що впізнаємо. */
+  sanitize: function (raw) {
+    if (!raw || typeof raw !== 'object') { throw new Error('Файл не містить перевірки'); }
+    var known = {};
+    template.allItems().forEach(function (pair) { known[pair.item.id] = true; });
+
+    var clean = model.create();
+    clean.id = typeof raw.id === 'string' && raw.id ? raw.id : clean.id;
+    clean.createdAt = typeof raw.createdAt === 'string' ? raw.createdAt : clean.createdAt;
+    clean.updatedAt = typeof raw.updatedAt === 'string' ? raw.updatedAt : clean.updatedAt;
+    clean.templateVersion = typeof raw.templateVersion === 'number' ? raw.templateVersion : null;
+
+    Object.keys(clean.meta).forEach(function (key) {
+      var value = raw.meta && raw.meta[key];
+      clean.meta[key] = typeof value === 'string' ? value : '';
+    });
+
+    var items = raw.items && typeof raw.items === 'object' ? raw.items : {};
+    Object.keys(items).forEach(function (itemId) {
+      if (!known[itemId]) { return; }                       /* пункт із чужого шаблону — пропускаємо */
+      var entry = items[itemId] || {};
+      var status = STATUS_LABEL[entry.status] ? entry.status : STATUS.UNCHECKED;
+      clean.items[itemId] = {
+        status: status,
+        note: typeof entry.note === 'string' ? entry.note : '',
+        checkedAt: typeof entry.checkedAt === 'string' ? entry.checkedAt : null
+      };
+    });
+    return clean;
+  }
+};
+
+/* --- repository: перевірки + індекс у localStorage --- */
+var repository = {
+  key: function (inspectionId) { return CONFIG.STORAGE_PREFIX + inspectionId; },
+
+  readIndex: function () {
+    var list = storage.readJson(CONFIG.STORAGE_INDEX, []);
+    return Array.isArray(list) ? list : [];
+  },
+
+  indexEntry: function (inspection) {
+    var counts = model.stats(inspection);
+    return {
+      id: inspection.id,
+      region: inspection.meta.region,
+      unit: inspection.meta.unit,
+      dateFrom: inspection.meta.dateFrom,
+      dateTo: inspection.meta.dateTo,
+      updatedAt: inspection.updatedAt,
+      filled: counts.filled,
+      total: counts.total,
+      violations: counts.violation,
+      remarks: counts.remark
+    };
+  },
+
+  save: function (inspection) {
+    inspection.updatedAt = new Date().toISOString();
+    storage.writeJson(repository.key(inspection.id), inspection);
+
+    var index = repository.readIndex().filter(function (row) { return row.id !== inspection.id; });
+    index.unshift(repository.indexEntry(inspection));
+    index.sort(function (a, b) { return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
+    storage.writeJson(CONFIG.STORAGE_INDEX, index);
+  },
+
+  load: function (inspectionId) {
+    return storage.readJson(repository.key(inspectionId), null);
+  },
+
+  remove: function (inspectionId) {
+    storage.remove(repository.key(inspectionId));
+    var index = repository.readIndex().filter(function (row) { return row.id !== inspectionId; });
+    storage.writeJson(CONFIG.STORAGE_INDEX, index);
+  }
+};
+
+/* --- exporters: чисті функції «перевірка → текст» --- */
+var exporters = {
+  baseName: function (inspection) {
+    var unit = format.fileSafe(inspection.meta.unit || inspection.meta.region, 'перевірка');
+    var date = (inspection.meta.dateFrom || inspection.createdAt || '').slice(0, 10);
+    return 'ДГІДПЛ_' + unit + (date ? '_' + date : '');
+  },
+
+  json: function (inspection) {
+    return JSON.stringify(inspection, null, 2);
+  },
+
+  csv: function (inspection) {
+    var rows = [['Секція', 'Пункт', 'Норма', 'Статус', 'Нотатка']];
+    CHECKLIST_TEMPLATE.sections.forEach(function (section, sectionIndex) {
+      section.items.forEach(function (item, itemIndex) {
+        var entry = model.entry(inspection, item.id);
+        rows.push([
+          (sectionIndex + 1) + '. ' + section.title,
+          (sectionIndex + 1) + '.' + (itemIndex + 1) + '. ' + item.text,
+          template.normLine(item),
+          STATUS_LABEL[entry.status],
+          entry.note
+        ]);
+      });
+    });
+    return csv.build(rows);
+  },
+
+  /* Чернетка довідки: тільки порушення й зауваження, згруповані за секціями. */
+  report: function (inspection) {
+    var meta = inspection.meta;
+    var counts = model.stats(inspection);
+    var lines = [];
+
+    lines.push('ДОВІДКА ЗА РЕЗУЛЬТАТАМИ ПЕРЕВІРКИ (ЧЕРНЕТКА)');
+    lines.push('');
+    lines.push('Область: ' + (meta.region || '—'));
+    lines.push('Підрозділ: ' + (meta.unit || '—'));
+    lines.push('Період перевірки: ' + format.dateRange(meta.dateFrom, meta.dateTo));
+    lines.push('Посада перевіряючого: ' + (meta.inspectorRole || '—'));
+    lines.push('Посада голови мобільної групи: ' + (meta.groupHead || '—'));
+    lines.push('Сформовано: ' + format.dateTimeHuman(new Date().toISOString()));
+    lines.push('');
+    lines.push('Опрацьовано пунктів: ' + counts.filled + ' з ' + counts.total +
+               ' (не перевірялось: ' + counts.unchecked + ')');
+    lines.push('Виявлено порушень: ' + counts.violation + '; зауважень: ' + counts.remark);
+    lines.push('');
+    lines.push('──────────────────────────────────────────');
+    lines.push('');
+
+    var found = 0;
+    CHECKLIST_TEMPLATE.sections.forEach(function (section, sectionIndex) {
+      var flagged = section.items.filter(function (item) {
+        return STATUS_IN_REPORT.indexOf(model.entry(inspection, item.id).status) !== -1;
+      });
+      if (!flagged.length) { return; }
+      found += flagged.length;
+
+      lines.push((sectionIndex + 1) + '. ' + section.title.toUpperCase());
+      if (section.baseNorms && section.baseNorms.length) {
+        lines.push('   Базова норма секції: ' + template.resolveRefs(section.baseNorms).join('; '));
+      }
+      if (section.warning) { lines.push('   [!] ' + section.warning); }
+      lines.push('');
+
+      flagged.forEach(function (item) {
+        var entry = model.entry(inspection, item.id);
+        var itemIndex = section.items.indexOf(item) + 1;
+        lines.push('   ' + (sectionIndex + 1) + '.' + itemIndex + '. [' +
+                   STATUS_LABEL[entry.status].toUpperCase() + '] ' + item.text);
+        lines.push('   Норма: ' + template.normLine(item));
+        lines.push('   Виявлено: ' + (entry.note ? entry.note : '(нотатку не заповнено)'));
+        lines.push('');
+      });
+    });
+
+    if (!found) {
+      lines.push('Порушень і зауважень не зафіксовано.');
+      lines.push('');
+    }
+
+    lines.push('──────────────────────────────────────────');
+    lines.push('Чернетка сформована в чек-листі мобільної групи ДГІДПЛ.');
+    lines.push('Персональні дані поліцейських у документі не фіксуються.');
+    return lines.join('\n');
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. КОМПОНЕНТИ
+
+   Базовий контракт: state / setState / render / bindEvents.
+   Події — делегуванням на кореневий вузол компонента, а не слухач на елемент.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function Component(props) {
+  this.props = props || {};
+  this.state = {};
+  this.el = null;
+}
+
+Component.prototype.rootTag = 'div';
+Component.prototype.rootClass = '';
+
+Component.prototype.mount = function (parent) {
+  this.el = dom.el(this.rootTag, this.rootClass);
+  parent.appendChild(this.el);
+  this.render();
+  this.bindEvents();
+  return this;
+};
+
+Component.prototype.unmount = function () {
+  if (this.el && this.el.parentNode) { this.el.parentNode.removeChild(this.el); }
+};
+
+/* setState → update(). За замовчуванням update() = повний render().
+   Компоненти з полями вводу перекривають update() точковим патчем DOM,
+   щоб не втратити введений текст і позицію курсора. */
+Component.prototype.setState = function (patch) {
+  Object.assign(this.state, patch);
+  this.update();
+};
+
+Component.prototype.update = function () { this.render(); };
+Component.prototype.render = function () {};
+Component.prototype.bindEvents = function () {};
+
+/* ───────────────────────── Toast — короткі повідомлення ──────────────────── */
+
+function Toast() {
+  this.node = null;
+  this.timer = null;
+}
+
+Toast.prototype.show = function (message, isError) {
+  this.hide();
+  this.node = dom.el('div', 'toast' + (isError ? ' toast--error' : ''));
+  this.node.setAttribute('role', 'status');
+  this.node.textContent = message;
+  document.body.appendChild(this.node);
+  var self = this;
+  this.timer = setTimeout(function () { self.hide(); }, CONFIG.TOAST_MS);
+};
+
+Toast.prototype.hide = function () {
+  if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+  if (this.node && this.node.parentNode) { this.node.parentNode.removeChild(this.node); }
+  this.node = null;
+};
+
+var toast = new Toast();
+
+/* ───────────────────────── Modal — базовий діалог ────────────────────────── */
+
+function Modal(props) {
+  Component.call(this, props);
+}
+Modal.prototype = Object.create(Component.prototype);
+Modal.prototype.constructor = Modal;
+Modal.prototype.rootClass = 'modal';
+
+Modal.prototype.open = function () {
+  this.mount(document.body);
+  this.el.setAttribute('role', 'dialog');
+  this.el.setAttribute('aria-modal', 'true');
+  return this;
+};
+
+Modal.prototype.close = function () { this.unmount(); };
+
+Modal.prototype.render = function () {
+  this.el.innerHTML =
+    '<div class="modal__panel">' +
+      '<h2 class="modal__title">' + format.escapeHtml(this.props.title) + '</h2>' +
+      this.body() +
+    '</div>';
+};
+
+Modal.prototype.body = function () { return ''; };
+
+Modal.prototype.bindEvents = function () {
+  var self = this;
+  this.el.addEventListener('click', function (event) {
+    if (event.target === self.el) { self.close(); }         /* тап по підкладці закриває */
+  });
+  dom.delegate(this.el, 'click', '[data-close]', function () { self.close(); });
+};
+
+/* ───────────────────────── ExportModal ───────────────────────────────────── */
+
+function ExportModal(props) {
+  Modal.call(this, props);
+  this.state = { preview: null };
+}
+ExportModal.prototype = Object.create(Modal.prototype);
+ExportModal.prototype.constructor = ExportModal;
+
+ExportModal.prototype.body = function () {
+  var counts = model.stats(this.props.inspection);
+  return (
+    '<p class="modal__desc">Опрацьовано ' + counts.filled + ' з ' + counts.total +
+      ' пунктів · порушень: ' + counts.violation + ' · зауважень: ' + counts.remark + '</p>' +
+    '<div class="modal__row"><button class="btn btn--block btn--primary" data-export="report">' +
+      'Чернетка довідки — у буфер обміну</button></div>' +
+    '<div class="modal__row"><button class="btn btn--block" data-export="report-file">' +
+      'Чернетка довідки — файл .txt</button></div>' +
+    '<div class="modal__row"><button class="btn btn--block" data-export="csv">' +
+      'CSV для Excel</button></div>' +
+    '<div class="modal__row"><button class="btn btn--block" data-export="json">' +
+      'JSON — повна резервна копія</button></div>' +
+    '<div class="modal__row"><button class="btn btn--block" data-close>Закрити</button></div>' +
+    '<p class="field__hint">Експортовані файли — службова інформація. Зберігайте їх ' +
+      'відповідно до вимог щодо поводження зі службовою інформацією.</p>'
+  );
+};
+
+ExportModal.prototype.bindEvents = function () {
+  Modal.prototype.bindEvents.call(this);
+  var self = this;
+  dom.delegate(this.el, 'click', '[data-export]', function (event, target) {
+    self.handleExport(target.getAttribute('data-export'));
+  });
+};
+
+ExportModal.prototype.handleExport = function (kind) {
+  var inspection = this.props.inspection;
+  var base = exporters.baseName(inspection);
+  var self = this;
+
+  if (kind === 'json') {
+    download.file(base + '.json', 'application/json;charset=utf-8', exporters.json(inspection));
+    toast.show('JSON збережено');
+  } else if (kind === 'csv') {
+    download.file(base + '.csv', 'text/csv;charset=utf-8', exporters.csv(inspection));
+    toast.show('CSV збережено');
+  } else if (kind === 'report-file') {
+    download.file(base + '_довідка.txt', 'text/plain;charset=utf-8', exporters.report(inspection));
+    toast.show('Чернетку довідки збережено');
+  } else if (kind === 'report') {
+    download.copy(exporters.report(inspection)).then(function () {
+      toast.show('Чернетку довідки скопійовано');
+      self.close();
+    }).catch(function () {
+      /* Буфер обміну недоступний — віддаємо файлом, щоб текст не пропав. */
+      download.file(base + '_довідка.txt', 'text/plain;charset=utf-8', exporters.report(inspection));
+      toast.show('Буфер обміну недоступний — збережено файлом', true);
+    });
+  }
+};
+
+/* ───────────────────────── ConfirmModal — видалення у два кроки ──────────── */
+
+function ConfirmModal(props) {
+  Modal.call(this, props);
+  this.state = { armed: false };
+  this.timer = null;
+}
+ConfirmModal.prototype = Object.create(Modal.prototype);
+ConfirmModal.prototype.constructor = ConfirmModal;
+
+ConfirmModal.prototype.body = function () {
+  return (
+    '<p class="modal__desc">' + format.escapeHtml(this.props.description) + '</p>' +
+    '<div class="modal__row"><button class="btn btn--block btn--danger" data-step>' +
+      (this.state.armed ? 'Крок 2 з 2: видалити остаточно' : 'Крок 1 з 2: підтвердити видалення') +
+    '</button></div>' +
+    (this.state.armed
+      ? '<p class="field__hint">Дію не можна скасувати. Якщо передумали — закрийте вікно.</p>'
+      : '') +
+    '<div class="modal__row"><button class="btn btn--block" data-close>Скасувати</button></div>'
+  );
+};
+
+ConfirmModal.prototype.close = function () {
+  if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+  Modal.prototype.close.call(this);
+};
+
+ConfirmModal.prototype.bindEvents = function () {
+  Modal.prototype.bindEvents.call(this);
+  var self = this;
+  dom.delegate(this.el, 'click', '[data-step]', function () {
+    if (!self.state.armed) {
+      self.setState({ armed: true });
+      /* Друга кнопка «остигає» — випадковий подвійний тап нічого не видалить. */
+      self.timer = setTimeout(function () {
+        if (self.el && self.el.parentNode) { self.setState({ armed: false }); }
+      }, CONFIG.CONFIRM_RESET_MS);
+      return;
+    }
+    self.close();
+    self.props.onConfirm();
+  });
+};
+
+/* ───────────────────────── ListView — головний екран ─────────────────────── */
+
+function ListView(props) {
+  Component.call(this, props);
+  this.state = { index: repository.readIndex() };
+}
+ListView.prototype = Object.create(Component.prototype);
+ListView.prototype.constructor = ListView;
+
+ListView.prototype.render = function () {
+  var rows = this.state.index;
+  var hintSeen = window.localStorage.getItem(CONFIG.STORAGE_HINT) === '1';
+
+  this.el.innerHTML =
+    '<header class="topbar">' +
+      '<div class="topbar__title-wrap">' +
+        '<div class="topbar__title">Чек-лист мобільної групи</div>' +
+        '<div class="topbar__subtitle">ДГІДПЛ · офлайн, дані лишаються на пристрої</div>' +
+      '</div>' +
+    '</header>' +
+    '<div class="screen">' +
+      (hintSeen ? '' :
+        '<div class="banner banner--info screen__section" data-hint>' +
+          '<div class="banner__body">' +
+            '<div class="banner__title">Без ПІБ</div>' +
+            '<p>' + format.escapeHtml(PERSONAL_DATA_HINT) + '</p>' +
+            '<p style="margin-top:var(--sp-2)">' +
+              '<button class="btn btn--sm" data-hint-dismiss>Зрозуміло</button>' +
+            '</p>' +
+          '</div>' +
+        '</div>') +
+      '<div class="screen__section">' +
+        '<button class="btn btn--primary btn--block" data-new>+ Нова перевірка</button>' +
+      '</div>' +
+      '<div class="screen__section">' +
+        '<h2 class="screen__heading">Перевірки (' + rows.length + ')</h2>' +
+        (rows.length ? rows.map(this.renderCard, this).join('') : this.renderEmpty()) +
+      '</div>' +
+      '<div class="screen__section">' +
+        '<button class="btn btn--block" data-import>Імпортувати JSON</button>' +
+        '<input type="file" accept="application/json,.json" hidden data-import-input>' +
+        '<p class="field__hint">Імпорт створює нову перевірку й не змінює наявні.</p>' +
+      '</div>' +
+    '</div>';
+};
+
+ListView.prototype.renderEmpty = function () {
+  return (
+    '<div class="empty">' +
+      '<div class="empty__title">Перевірок ще немає</div>' +
+      '<p>Створіть першу — вона збережеться в памʼяті цього браузера й буде доступна без мережі.</p>' +
+    '</div>'
+  );
+};
+
+ListView.prototype.renderCard = function (row) {
+  var percent = row.total ? Math.round((row.filled / row.total) * 100) : 0;
+  var badges = [];
+  badges.push('<span class="badge badge--neutral">' + row.filled + ' / ' + row.total + '</span>');
+  if (row.violations) {
+    badges.push('<span class="badge badge--violation">Порушень: ' + row.violations + '</span>');
+  }
+  if (row.remarks) {
+    badges.push('<span class="badge badge--remark">Зауважень: ' + row.remarks + '</span>');
+  }
+
+  return (
+    '<article class="card">' +
+      '<button type="button" class="card__head" data-open="' + format.escapeHtml(row.id) + '">' +
+        '<span class="card__title">' + format.escapeHtml(row.unit || row.region || 'Без назви') + '</span>' +
+        '<span class="card__meta">' +
+          format.escapeHtml([row.region, format.dateRange(row.dateFrom, row.dateTo)]
+            .filter(Boolean).join(' · ')) +
+        '</span>' +
+      '</button>' +
+      '<div class="card__badges">' + badges.join('') + '</div>' +
+      '<div class="card__progress">' +
+        '<div class="progress"><div class="progress__fill" style="width:' + percent + '%"></div></div>' +
+      '</div>' +
+      '<div class="card__meta">Змінено: ' + format.escapeHtml(format.dateTimeHuman(row.updatedAt)) + '</div>' +
+      '<div class="card__actions">' +
+        '<button class="btn btn--sm" data-open="' + format.escapeHtml(row.id) + '">Відкрити</button>' +
+        '<button class="btn btn--sm btn--danger" data-delete="' + format.escapeHtml(row.id) + '">Видалити</button>' +
+      '</div>' +
+    '</article>'
+  );
+};
+
+ListView.prototype.bindEvents = function () {
+  var self = this;
+
+  dom.delegate(this.el, 'click', '[data-new]', function () {
+    self.props.onCreate();
+  });
+
+  dom.delegate(this.el, 'click', '[data-open]', function (event, target) {
+    self.props.onOpen(target.getAttribute('data-open'));
+  });
+
+  dom.delegate(this.el, 'click', '[data-delete]', function (event, target) {
+    var inspectionId = target.getAttribute('data-delete');
+    var row = self.state.index.filter(function (r) { return r.id === inspectionId; })[0];
+    new ConfirmModal({
+      title: 'Видалити перевірку?',
+      description: 'Буде безповоротно видалено «' +
+        ((row && (row.unit || row.region)) || 'Без назви') + '» разом з усіма нотатками. ' +
+        'Якщо потрібна копія — спершу експортуйте JSON.',
+      onConfirm: function () {
+        repository.remove(inspectionId);
+        toast.show('Перевірку видалено');
+        self.setState({ index: repository.readIndex() });
+      }
+    }).open();
+  });
+
+  dom.delegate(this.el, 'click', '[data-hint-dismiss]', function () {
+    try { window.localStorage.setItem(CONFIG.STORAGE_HINT, '1'); } catch (e) { /* не критично */ }
+    var banner = dom.qs('[data-hint]', self.el);
+    if (banner) { banner.remove(); }
+  });
+
+  dom.delegate(this.el, 'click', '[data-import]', function () {
+    dom.qs('[data-import-input]', self.el).click();
+  });
+
+  dom.delegate(this.el, 'change', '[data-import-input]', function (event, target) {
+    var file = target.files && target.files[0];
+    if (!file) { return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var imported = model.sanitize(JSON.parse(String(reader.result)));
+        imported.id = id.uuid();                 /* новий id — імпорт не перетирає наявну перевірку */
+        imported.templateVersion = CHECKLIST_TEMPLATE.version;
+        repository.save(imported);
+        toast.show('Перевірку імпортовано');
+        self.setState({ index: repository.readIndex() });
+      } catch (error) {
+        toast.show(error.message || 'Не вдалося прочитати файл', true);
+      }
+      target.value = '';
+    };
+    reader.onerror = function () { toast.show('Не вдалося прочитати файл', true); target.value = ''; };
+    reader.readAsText(file, 'utf-8');
+  });
+};
+
+/* ───────────────────────── MetaPanel — реквізити об'єкта ─────────────────── */
+
+function MetaPanel(props) {
+  Component.call(this, props);
+}
+MetaPanel.prototype = Object.create(Component.prototype);
+MetaPanel.prototype.constructor = MetaPanel;
+
+MetaPanel.prototype.render = function () {
+  var meta = this.props.inspection.meta;
+  var isEmpty = !meta.unit && !meta.region;
+
+  var fields = META_FIELDS.map(function (field) {
+    return (
+      '<label class="field' + (field.wide ? ' field--wide' : '') + '">' +
+        '<span class="field__label">' + format.escapeHtml(field.label) + '</span>' +
+        '<input class="input" type="' + field.type + '" data-meta="' + field.key + '" ' +
+          (field.list ? 'list="' + field.list + '" ' : '') +
+          'value="' + format.escapeHtml(meta[field.key]) + '">' +
+        (field.hint ? '<span class="field__hint">' + format.escapeHtml(field.hint) + '</span>' : '') +
+      '</label>'
+    );
+  }).join('');
+
+  this.el.innerHTML =
+    '<details class="meta-panel"' + (isEmpty ? ' open' : '') + '>' +
+      '<summary class="meta-panel__head">Обʼєкт перевірки</summary>' +
+      '<div class="meta-panel__body">' +
+        '<div class="meta-panel__grid">' + fields + '</div>' +
+        '<p class="field__hint">' + format.escapeHtml(PERSONAL_DATA_HINT) + '</p>' +
+      '</div>' +
+    '</details>' +
+    '<datalist id="regions-list">' +
+      REGIONS.map(function (region) {
+        return '<option value="' + format.escapeHtml(region) + '"></option>';
+      }).join('') +
+    '</datalist>';
+};
+
+MetaPanel.prototype.bindEvents = function () {
+  var self = this;
+  dom.delegate(this.el, 'input', '[data-meta]', function (event, target) {
+    self.props.onChange(target.getAttribute('data-meta'), target.value);
+  });
+};
+
+/* ───────────────────────── Toolbar — пошук і фільтри ─────────────────────── */
+
+function Toolbar(props) {
+  Component.call(this, props);
+}
+Toolbar.prototype = Object.create(Component.prototype);
+Toolbar.prototype.constructor = Toolbar;
+Toolbar.prototype.rootClass = 'toolbar';
+
+Toolbar.prototype.render = function () {
+  this.el.innerHTML =
+    '<input class="input" type="search" data-search inputmode="search" ' +
+      'placeholder="Пошук за текстом пункту" aria-label="Пошук за текстом пункту">' +
+    '<div class="toolbar__filters">' +
+      FILTERS.map(function (filter) {
+        return '<button class="chip" type="button" data-filter="' + filter.id + '" ' +
+               'aria-pressed="false">' + format.escapeHtml(filter.label) + '</button>';
+      }).join('') +
+      '<button class="chip" type="button" data-expand-all>Розгорнути все</button>' +
+    '</div>';
+};
+
+Toolbar.prototype.bindEvents = function () {
+  var self = this;
+
+  dom.delegate(this.el, 'input', '[data-search]', function (event, target) {
+    self.props.onSearch(target.value);
+  });
+
+  dom.delegate(this.el, 'click', '[data-filter]', function (event, target) {
+    var pressed = target.getAttribute('aria-pressed') === 'true';
+    target.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+    self.props.onFilter(self.activeFilters());
+  });
+
+  dom.delegate(this.el, 'click', '[data-expand-all]', function (event, target) {
+    var expanded = target.getAttribute('aria-pressed') === 'true';
+    target.setAttribute('aria-pressed', expanded ? 'false' : 'true');
+    target.textContent = expanded ? 'Розгорнути все' : 'Згорнути все';
+    self.props.onToggleAll(!expanded);
+  });
+};
+
+Toolbar.prototype.activeFilters = function () {
+  return dom.qsa('[data-filter][aria-pressed="true"]', this.el).map(function (node) {
+    return node.getAttribute('data-filter');
+  });
+};
+
+/* ───────────────────────── ChecklistView — секції й пункти ───────────────────
+   Рендериться один раз. Далі — тільки точкові патчі DOM: статуси, лічильники,
+   видимість за фільтром. Повний re-render заборонений, бо він знищив би текст
+   у полі нотатки, який інспектор набирає просто зараз.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function ChecklistView(props) {
+  Component.call(this, props);
+  this.state = { query: '', filters: [] };
+}
+ChecklistView.prototype = Object.create(Component.prototype);
+ChecklistView.prototype.constructor = ChecklistView;
+
+ChecklistView.prototype.render = function () {
+  var self = this;
+  this.el.innerHTML = CHECKLIST_TEMPLATE.sections.map(function (section, index) {
+    return self.renderSection(section, index);
+  }).join('');
+};
+
+/* Оновлення після setState — не перемальовуємо, а патчимо. */
+ChecklistView.prototype.update = function () { this.applyFilters(); };
+
+ChecklistView.prototype.renderSection = function (section, sectionIndex) {
+  var self = this;
+  return (
+    '<details class="section" data-section="' + section.id + '">' +
+      '<summary class="section__head">' +
+        '<span class="section__num">' + (sectionIndex + 1) + '</span>' +
+        '<span class="section__title-wrap">' +
+          '<span class="section__title">' + format.escapeHtml(section.title) + '</span>' +
+          '<span class="section__counters" data-section-counters="' + section.id + '"></span>' +
+        '</span>' +
+      '</summary>' +
+      (section.warning
+        ? '<p class="section__warning">' + format.escapeHtml(section.warning) + '</p>'
+        : '') +
+      (section.baseNorms && section.baseNorms.length
+        ? '<p class="section__base-norm">Базова норма секції: ' +
+            format.escapeHtml(template.resolveRefs(section.baseNorms).join('; ')) + '</p>'
+        : '') +
+      section.items.map(function (item, itemIndex) {
+        return self.renderItem(section, sectionIndex, item, itemIndex);
+      }).join('') +
+      '<p class="section__empty" data-section-empty="' + section.id + '" hidden>' +
+        'У цій секції немає пунктів, що відповідають фільтру</p>' +
+    '</details>'
+  );
+};
+
+ChecklistView.prototype.renderItem = function (section, sectionIndex, item, itemIndex) {
+  var entry = model.entry(this.props.inspection, item.id);
+  var normList = template.resolveRefs(item.norms);
+  var number = (sectionIndex + 1) + '.' + (itemIndex + 1);
+  var noteOpen = STATUS_AUTO_NOTE.indexOf(entry.status) !== -1 || !!entry.note;
+
+  var statusButtons = STATUS_BUTTONS.map(function (button) {
+    return '<button type="button" ' +
+      'class="checklist-item__status-btn checklist-item__status-btn--' + button.value + '" ' +
+      'data-status="' + button.value + '" ' +
+      'aria-pressed="' + (entry.status === button.value ? 'true' : 'false') + '">' +
+      format.escapeHtml(button.label) + '</button>';
+  }).join('');
+
+  return (
+    '<div class="checklist-item' +
+        (entry.status !== STATUS.UNCHECKED ? ' checklist-item--' + entry.status : '') + '" ' +
+        'data-item="' + item.id + '" data-status-value="' + entry.status + '" ' +
+        'data-search-key="' + format.escapeHtml(format.searchKey(item.text + ' ' + normList.join(' '))) + '">' +
+
+      '<p class="checklist-item__text">' +
+        '<span class="checklist-item__index">' + number + '</span>' +
+        format.escapeHtml(item.text) +
+      '</p>' +
+
+      '<div class="checklist-item__norm">' +
+        '<button type="button" class="checklist-item__norm-toggle" data-norm-toggle ' +
+          'aria-expanded="false">Норма</button>' +
+        '<div class="checklist-item__norm-body" data-norm-body hidden>' +
+          (normList.length
+            ? '<ul>' + normList.map(function (norm) {
+                return '<li>' + format.escapeHtml(norm) + '</li>';
+              }).join('') + '</ul>'
+            : 'Окремої норми не визначено — інформаційний пункт.') +
+        '</div>' +
+      '</div>' +
+
+      '<div class="checklist-item__status" role="group" aria-label="Статус пункту ' + number + '">' +
+        statusButtons +
+      '</div>' +
+
+      '<div class="checklist-item__note">' +
+        '<button type="button" class="checklist-item__note-toggle" data-note-toggle ' +
+          'aria-expanded="' + (noteOpen ? 'true' : 'false') + '">' +
+          '<span>Нотатка</span>' +
+          '<span class="checklist-item__note-dot" data-note-dot' +
+            (entry.note ? '' : ' hidden') + '></span>' +
+        '</button>' +
+        '<div class="checklist-item__note-body" data-note-body' + (noteOpen ? '' : ' hidden') + '>' +
+          '<textarea class="textarea" data-note rows="3" ' +
+            'placeholder="Що виявлено. Для ідентифікації особи — посада й номер жетона, без ПІБ.">' +
+            format.escapeHtml(entry.note) +
+          '</textarea>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+};
+
+ChecklistView.prototype.bindEvents = function () {
+  var self = this;
+
+  dom.delegate(this.el, 'click', '[data-status]', function (event, target) {
+    var itemNode = target.closest('[data-item]');
+    var next = target.getAttribute('data-status');
+    var current = itemNode.getAttribute('data-status-value');
+    /* Повторний тап по активній кнопці знімає статус. */
+    self.props.onStatus(itemNode.getAttribute('data-item'), current === next ? STATUS.UNCHECKED : next);
+  });
+
+  dom.delegate(this.el, 'input', '[data-note]', function (event, target) {
+    var itemNode = target.closest('[data-item]');
+    var dot = dom.qs('[data-note-dot]', itemNode);
+    if (dot) { dot.hidden = !target.value; }
+    self.props.onNote(itemNode.getAttribute('data-item'), target.value);
+  });
+
+  dom.delegate(this.el, 'click', '[data-norm-toggle]', function (event, target) {
+    var expanded = target.getAttribute('aria-expanded') === 'true';
+    target.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    dom.qs('[data-norm-body]', target.closest('[data-item]')).hidden = expanded;
+  });
+
+  dom.delegate(this.el, 'click', '[data-note-toggle]', function (event, target) {
+    var expanded = target.getAttribute('aria-expanded') === 'true';
+    self.setNoteOpen(target.closest('[data-item]'), !expanded, !expanded);
+  });
+};
+
+ChecklistView.prototype.setNoteOpen = function (itemNode, open, focus) {
+  var toggle = dom.qs('[data-note-toggle]', itemNode);
+  var body = dom.qs('[data-note-body]', itemNode);
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  body.hidden = !open;
+  if (open && focus) { dom.qs('[data-note]', body).focus(); }
+};
+
+/* Патч одного пункту після зміни статусу. Поле нотатки не чіпаємо. */
+ChecklistView.prototype.patchItem = function (itemId, status) {
+  var itemNode = dom.qs('[data-item="' + itemId + '"]', this.el);
+  if (!itemNode) { return; }
+
+  itemNode.setAttribute('data-status-value', status);
+  itemNode.className = 'checklist-item' +
+    (status !== STATUS.UNCHECKED ? ' checklist-item--' + status : '');
+
+  dom.qsa('[data-status]', itemNode).forEach(function (button) {
+    button.setAttribute('aria-pressed',
+      button.getAttribute('data-status') === status ? 'true' : 'false');
+  });
+
+  /* Порушення й зауваження вимагають опису — розгортаємо нотатку без фокуса,
+     щоб на телефоні не вискакувала клавіатура посеред обходу. */
+  if (STATUS_AUTO_NOTE.indexOf(status) !== -1) { this.setNoteOpen(itemNode, true, false); }
+};
+
+ChecklistView.prototype.patchCounters = function () {
+  var inspection = this.props.inspection;
+  var self = this;
+  CHECKLIST_TEMPLATE.sections.forEach(function (section) {
+    var counts = model.sectionStats(inspection, section);
+    var badges = ['<span class="badge badge--neutral">' + counts.filled + ' / ' + counts.total + '</span>'];
+    if (counts.violation) {
+      badges.push('<span class="badge badge--violation">' + counts.violation + '</span>');
+    }
+    if (counts.remark) {
+      badges.push('<span class="badge badge--remark">' + counts.remark + '</span>');
+    }
+    var node = dom.qs('[data-section-counters="' + section.id + '"]', self.el);
+    if (node) { node.innerHTML = badges.join(''); }
+  });
+};
+
+/* Фільтр і пошук — через приховування вузлів, без перебудови DOM. */
+ChecklistView.prototype.applyFilters = function () {
+  var query = format.searchKey(this.state.query).trim();
+  var filters = this.state.filters;
+  var wanted = filters.reduce(function (acc, filterId) {
+    var filter = FILTERS.filter(function (f) { return f.id === filterId; })[0];
+    return filter ? acc.concat(filter.statuses) : acc;
+  }, []);
+  var isFiltering = !!query || wanted.length > 0;
+  var self = this;
+
+  CHECKLIST_TEMPLATE.sections.forEach(function (section) {
+    var sectionNode = dom.qs('[data-section="' + section.id + '"]', self.el);
+    if (!sectionNode) { return; }
+    var visible = 0;
+
+    section.items.forEach(function (item) {
+      var itemNode = dom.qs('[data-item="' + item.id + '"]', sectionNode);
+      if (!itemNode) { return; }
+      var matchesQuery = !query || itemNode.getAttribute('data-search-key').indexOf(query) !== -1;
+      var matchesStatus = !wanted.length ||
+        wanted.indexOf(itemNode.getAttribute('data-status-value')) !== -1;
+      var show = matchesQuery && matchesStatus;
+      itemNode.hidden = !show;
+      if (show) { visible += 1; }
+    });
+
+    dom.qs('[data-section-empty="' + section.id + '"]', sectionNode).hidden = visible > 0;
+    sectionNode.hidden = isFiltering && visible === 0;
+    if (isFiltering && visible > 0) { sectionNode.open = true; }
+  });
+};
+
+ChecklistView.prototype.setAllOpen = function (open) {
+  dom.qsa('[data-section]', this.el).forEach(function (node) { node.open = open; });
+};
+
+/* ───────────────────────── BottomBar — прогрес і експорт ─────────────────── */
+
+function BottomBar(props) {
+  Component.call(this, props);
+  this.state = { saveState: 'idle', savedAt: null, error: null };
+}
+BottomBar.prototype = Object.create(Component.prototype);
+BottomBar.prototype.constructor = BottomBar;
+BottomBar.prototype.rootClass = 'bottombar';
+
+BottomBar.prototype.render = function () {
+  var counts = model.stats(this.props.inspection);
+  var percent = counts.total ? Math.round((counts.filled / counts.total) * 100) : 0;
+
+  this.el.innerHTML =
+    '<div class="bottombar__inner">' +
+      '<div class="bottombar__stats">' +
+        '<div class="bottombar__line">' +
+          '<span>' + counts.filled + ' / ' + counts.total + '</span>' +
+          '<span class="badge badge--violation">П: ' + counts.violation + '</span>' +
+          '<span class="badge badge--remark">З: ' + counts.remark + '</span>' +
+          this.renderSaveState() +
+        '</div>' +
+        '<div class="progress bottombar__progress">' +
+          '<div class="progress__fill" style="width:' + percent + '%"></div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="btn btn--primary" data-export-open>Експорт</button>' +
+    '</div>';
+};
+
+BottomBar.prototype.renderSaveState = function () {
+  var state = this.state;
+  if (state.saveState === 'error') {
+    return '<span class="save-state save-state--error">Не збережено</span>';
+  }
+  if (state.saveState === 'saving') {
+    return '<span class="save-state save-state--saving">Збереження…</span>';
+  }
+  if (state.saveState === 'saved') {
+    return '<span class="save-state save-state--saved">Збережено ' +
+      format.escapeHtml(format.timeHuman(state.savedAt)) + '</span>';
+  }
+  return '<span class="save-state"></span>';
+};
+
+BottomBar.prototype.bindEvents = function () {
+  var self = this;
+  dom.delegate(this.el, 'click', '[data-export-open]', function () {
+    self.props.onExport();
+  });
+};
+
+/* ───────────────────────── InspectionView — екран перевірки ──────────────── */
+
+function InspectionView(props) {
+  Component.call(this, props);
+  this.inspection = props.inspection;
+  this.dirty = false;
+  this.children = {};
+
+  var self = this;
+  this.saveDebounced = fn.debounce(function () { self.flushSave(); }, CONFIG.SAVE_DEBOUNCE_MS);
+}
+InspectionView.prototype = Object.create(Component.prototype);
+InspectionView.prototype.constructor = InspectionView;
+
+InspectionView.prototype.render = function () {
+  this.el.innerHTML =
+    '<header class="topbar">' +
+      '<button class="topbar__back" data-back aria-label="До списку перевірок">‹</button>' +
+      '<div class="topbar__title-wrap">' +
+        '<div class="topbar__title" data-title>' +
+          format.escapeHtml(model.title(this.inspection)) + '</div>' +
+        '<div class="topbar__subtitle" data-subtitle>' +
+          format.escapeHtml(model.subtitle(this.inspection)) + '</div>' +
+      '</div>' +
+    '</header>' +
+    '<div class="screen">' +
+      '<div data-slot="banner"></div>' +
+      '<div data-slot="meta"></div>' +
+      '<div data-slot="toolbar"></div>' +
+      '<div data-slot="checklist"></div>' +
+    '</div>' +
+    '<div data-slot="bottombar"></div>';
+
+  this.mountChildren();
+};
+
+InspectionView.prototype.mountChildren = function () {
+  var self = this;
+  var inspection = this.inspection;
+
+  this.children.meta = new MetaPanel({
+    inspection: inspection,
+    onChange: function (key, value) { self.handleMetaChange(key, value); }
+  }).mount(dom.qs('[data-slot="meta"]', this.el));
+
+  this.children.checklist = new ChecklistView({
+    inspection: inspection,
+    onStatus: function (itemId, status) { self.handleStatus(itemId, status); },
+    onNote: function (itemId, note) { self.handleNote(itemId, note); }
+  }).mount(dom.qs('[data-slot="checklist"]', this.el));
+
+  this.children.toolbar = new Toolbar({
+    onSearch: function (query) { self.children.checklist.setState({ query: query }); },
+    onFilter: function (filters) { self.children.checklist.setState({ filters: filters }); },
+    onToggleAll: function (open) { self.children.checklist.setAllOpen(open); }
+  }).mount(dom.qs('[data-slot="toolbar"]', this.el));
+
+  this.children.bottombar = new BottomBar({
+    inspection: inspection,
+    onExport: function () { new ExportModal({ title: 'Експорт', inspection: inspection }).open(); }
+  }).mount(dom.qs('[data-slot="bottombar"]', this.el));
+
+  this.children.checklist.patchCounters();
+};
+
+InspectionView.prototype.bindEvents = function () {
+  var self = this;
+  dom.delegate(this.el, 'click', '[data-back]', function () {
+    self.saveDebounced.flush();
+    self.props.onBack();
+  });
+};
+
+/* --- Зміни моделі. Пишемо в пам'ять синхронно, у сховище — з дебоунсом. --- */
+
+InspectionView.prototype.handleMetaChange = function (key, value) {
+  this.inspection.meta[key] = value;
+  dom.qs('[data-title]', this.el).textContent = model.title(this.inspection);
+  dom.qs('[data-subtitle]', this.el).textContent = model.subtitle(this.inspection);
+  this.markDirty();
+};
+
+InspectionView.prototype.handleStatus = function (itemId, status) {
+  var entry = this.inspection.items[itemId] || model.emptyEntry();
+  entry.status = status;
+  entry.checkedAt = status === STATUS.UNCHECKED ? null : new Date().toISOString();
+  this.inspection.items[itemId] = entry;
+
+  this.children.checklist.patchItem(itemId, status);
+  this.children.checklist.patchCounters();
+  this.markDirty();                      /* markDirty перемальовує нижню панель зі свіжими лічильниками */
+};
+
+InspectionView.prototype.handleNote = function (itemId, note) {
+  var entry = this.inspection.items[itemId] || model.emptyEntry();
+  entry.note = note;
+  this.inspection.items[itemId] = entry;
+  this.markDirty();
+};
+
+InspectionView.prototype.markDirty = function () {
+  this.dirty = true;
+  this.children.bottombar.setState({ saveState: 'saving' });
+  this.saveDebounced();
+};
+
+InspectionView.prototype.flushSave = function () {
+  if (!this.dirty) { return; }
+  try {
+    repository.save(this.inspection);
+    this.dirty = false;
+    this.children.bottombar.setState({
+      saveState: 'saved', savedAt: this.inspection.updatedAt, error: null
+    });
+    this.hideBanner();
+  } catch (error) {
+    /* Дані лишаються в пам'яті — користувач може експортувати JSON і не втратити роботу. */
+    this.children.bottombar.setState({ saveState: 'error', error: error.message });
+    this.showBanner(error.message);
+  }
+};
+
+InspectionView.prototype.showBanner = function (message) {
+  var slot = dom.qs('[data-slot="banner"]', this.el);
+  slot.innerHTML =
+    '<div class="banner banner--danger screen__section">' +
+      '<div class="banner__body">' +
+        '<div class="banner__title">Дані не збережено</div>' +
+        '<p>' + format.escapeHtml(message) + '</p>' +
+      '</div>' +
+    '</div>';
+};
+
+InspectionView.prototype.hideBanner = function () {
+  dom.clear(dom.qs('[data-slot="banner"]', this.el));
+};
+
+InspectionView.prototype.hasUnsaved = function () {
+  return this.dirty || this.saveDebounced.pending();
+};
+
+/* ───────────────────────── App — маршрутизація між екранами ──────────────── */
+
+function App(root) {
+  this.root = root;
+  this.current = null;
+}
+
+App.prototype.start = function () {
+  if (!storage.available()) {
+    toast.show('Сховище браузера недоступне: дані не збережуться між сеансами. ' +
+               'Вимкніть приватний режим або регулярно експортуйте JSON.', true);
+  }
+  this.showList();
+  this.bindGlobal();
+};
+
+App.prototype.swap = function (component) {
+  if (this.current) { this.current.unmount(); }
+  dom.clear(this.root);
+  this.current = component.mount(this.root);
+  window.scrollTo(0, 0);
+};
+
+App.prototype.showList = function () {
+  var self = this;
+  this.swap(new ListView({
+    onCreate: function () { self.createInspection(); },
+    onOpen: function (inspectionId) { self.openInspection(inspectionId); }
+  }));
+};
+
+App.prototype.createInspection = function () {
+  var inspection = model.create();
+  try {
+    repository.save(inspection);
+  } catch (error) {
+    toast.show(error.message, true);
+    return;
+  }
+  this.openInspection(inspection.id, inspection);
+};
+
+App.prototype.openInspection = function (inspectionId, preloaded) {
+  var inspection = preloaded || repository.load(inspectionId);
+  if (!inspection) {
+    toast.show('Перевірку не знайдено у сховищі', true);
+    this.showList();
+    return;
+  }
+  var self = this;
+  this.swap(new InspectionView({
+    inspection: inspection,
+    onBack: function () { self.showList(); }
+  }));
+};
+
+App.prototype.bindGlobal = function () {
+  var self = this;
+
+  var flush = function () {
+    if (self.current && self.current.saveDebounced) { self.current.saveDebounced.flush(); }
+  };
+
+  /* Мобільні браузери часто вбивають вкладку без beforeunload —
+     тому дописуємо на disk ще й при згортанні застосунку. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') { flush(); }
+  });
+  window.addEventListener('pagehide', flush);
+
+  window.addEventListener('beforeunload', function (event) {
+    if (self.current && self.current.hasUnsaved && self.current.hasUnsaved()) {
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    }
+  });
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   10. ІНІЦІАЛІЗАЦІЯ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+new App(dom.qs('#app')).start();
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ОПЦІЙНО, ВИМКНЕНО ЗА ЗАМОВЧУВАННЯМ — синхронізація з Google Apps Script
+
+   ⚠️ НЕ ВМИКАТИ ДЛЯ РЕАЛЬНИХ МАТЕРІАЛІВ ПЕРЕВІРОК.
+   Матеріали перевірок мобільної групи — службова інформація в розумінні
+   наказу МВС № 1351. Передача їх на сторонній сервіс (Google) без відповідного
+   дозволу неприпустима. Блок придатний лише для знеособлених або навчальних
+   даних: демонстрація, тренінг, налагодження.
+
+   Content-Type: text/plain — щоб браузер не робив preflight-запит OPTIONS,
+   якого Apps Script не обробляє.
+
+   Увімкнення руйнує головну властивість застосунку — повну автономність
+   від мережі. Після ввімкнення файл більше не є офлайн-інструментом.
+
+var SYNC = {
+  SCRIPT_URL: '',            // https://script.google.com/macros/s/<ID>/exec
+  ENABLED: false,
+
+  push: function (inspection) {
+    if (!SYNC.ENABLED || !SYNC.SCRIPT_URL) { return Promise.resolve(); }
+    return fetch(SYNC.SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ type: 'inspection', payload: inspection })
+    }).then(function (response) {
+      if (!response.ok) { throw new Error('HTTP ' + response.status); }
+      return response.json();
+    });
+  }
+};
+
+// Точка підключення — у InspectionView.prototype.flushSave, після repository.save:
+//   SYNC.push(this.inspection).catch(function () {});   // офлайн — мовчки пропускаємо
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+})();
+</script>
+</body>
+</html>
