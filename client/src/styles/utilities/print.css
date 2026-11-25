@@ -1,0 +1,10 @@
+/* Друк (довідка для наради): ховаємо оболонку застосунку */
+@media print {
+  [data-print='hide'] {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    font-size: 12px;
+  }
+}

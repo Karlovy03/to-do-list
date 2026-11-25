@@ -1,0 +1,39 @@
+.root {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  overflow-x: auto;
+  border-radius: var(--r-md);
+  background: var(--line-2);
+  scrollbar-width: none;
+}
+.root button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  min-height: var(--ctrl-sm-h);
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-2);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.root .on {
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: var(--shadow);
+}
+.count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--brand-100);
+  color: var(--brand);
+  font-size: var(--fs-xs);
+  line-height: 20px;
+}

@@ -1,0 +1,96 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: var(--ctrl-h);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: var(--fs-md);
+  transition: background var(--t-fast), transform 0.05s;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.primary:hover:not(:disabled) {
+  background: var(--brand-700);
+}
+.soft {
+  background: var(--brand-50);
+  color: var(--brand);
+}
+.soft:hover:not(:disabled) {
+  background: var(--brand-100);
+}
+.ghost {
+  background: transparent;
+  color: var(--ink-2);
+  border-color: var(--line);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--line-2);
+}
+.danger {
+  background: var(--control);
+  color: var(--on-brand);
+}
+.gold {
+  background: var(--gold);
+  color: var(--brand);
+}
+.sm {
+  min-height: var(--ctrl-sm-h);
+  padding: 0 var(--s-3);
+  font-size: var(--fs-sm);
+  border-radius: var(--r-sm);
+}
+.block {
+  width: 100%;
+}
+
+.iconBtn {
+  position: relative;
+  flex: none;
+  width: var(--icon-btn);
+  height: var(--icon-btn);
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--ink-2);
+  display: inline-grid;
+  place-items: center;
+}
+.iconBtn:hover {
+  background: var(--line-2);
+}
+.onBrand {
+  color: var(--on-brand);
+}
+.onBrand:hover {
+  background: var(--on-brand-hover);
+}
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--control);
+  color: var(--on-brand);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}

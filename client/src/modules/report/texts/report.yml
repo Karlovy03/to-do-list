@@ -1,0 +1,12 @@
+# Довідка для друку
+title: "Перелік завдань на контролі"
+as_of: "станом на"
+print: "Друк / PDF"
+col_no: "№"
+col_task: "Завдання"
+col_controller: "Контроль"
+col_assignees: "Виконавці"
+col_deadline: "Термін"
+col_state: "Стан"
+total: "Усього на контролі"
+of_them_overdue: "з них прострочено"
