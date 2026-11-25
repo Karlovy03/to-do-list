@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import http2 from 'node:http2';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../lib/prisma';
-import type { PushPayload } from './push';
+import { prisma } from '../../lib/prisma';
+import type { PushPayload } from './push.web';
 
 /*
  * Push у мобільні застосунки без сторонніх SDK:

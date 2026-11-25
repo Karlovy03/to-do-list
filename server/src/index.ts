@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 import { config } from './lib/config';
 import { prisma } from './lib/prisma';
 import { createApp } from './app';
-import { initPush } from './services/push';
-import { startReminderLoop, stopReminderLoop } from './services/reminders';
+import { initPush } from './modules/notifications/push.web';
+import { startReminderLoop, stopReminderLoop } from './modules/notifications/reminders';
 
 /** Перший запуск: якщо користувачів немає — створюємо адміністратора */
 async function bootstrapAdmin() {

@@ -1,7 +1,7 @@
 import webpush from 'web-push';
-import { prisma } from '../lib/prisma';
-import { config } from '../lib/config';
-import { sendNative } from './nativePush';
+import { prisma } from '../../lib/prisma';
+import { config } from '../../lib/config';
+import { sendNative } from './push.native';
 
 let publicKey = '';
 let ready = false;

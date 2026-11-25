@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { planReminders, type PlanTask, type PlanUser } from './reminderPlan';
-import { DEFAULT_SETTINGS } from './settings';
+import { DEFAULT_SETTINGS } from '../settings/settings.service';
 
 // 2026-11-25 — середа. 10:00 за Києвом = 08:00 UTC
 const at = (iso: string) => new Date(iso);

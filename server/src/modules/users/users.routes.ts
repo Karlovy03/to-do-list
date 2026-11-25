@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../lib/prisma';
-import { me, publicUser, requireRole } from '../lib/auth';
-import { badRequest, notFound } from '../lib/http';
-import { getSettings } from '../services/settings';
+import { prisma } from '../../lib/prisma';
+import { me, publicUser, requireRole } from '../../lib/auth';
+import { badRequest, notFound } from '../../lib/http';
+import { getSettings } from '../settings/settings.service';
 
 export const usersRouter = Router();
 

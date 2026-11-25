@@ -1,5 +1,5 @@
 import type { Priority, TaskStatus } from '@prisma/client';
-import type { ReminderSettings } from './settings';
+import type { ReminderSettings } from '../settings/settings.service';
 import { canDisturb, prefAllows, type NotifyKind } from './notify';
 
 export interface PlanUser {

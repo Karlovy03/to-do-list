@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireRole } from '../lib/auth';
-import { getSettings, reminderSettingsSchema, saveSettings } from '../services/settings';
+import { requireRole } from '../../lib/auth';
+import { getSettings, reminderSettingsSchema, saveSettings } from '../settings/settings.service';
 
 export const settingsRouter = Router();
 

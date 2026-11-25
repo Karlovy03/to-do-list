@@ -27,12 +27,12 @@ export function formatKyiv(d: Date): string {
 }
 
 function plural(n: number, base: 'day' | 'hour') {
-  if (n === 1) return tx(`${base}_one`);
-  return tx(n < 5 ? `${base}_few` : `${base}_many`, { n });
+  if (n === 1) return tx(`shared.durations.${base}_one`);
+  return tx(`shared.durations.${base}_${n < 5 ? 'few' : 'many'}`, { n });
 }
 
 export function humanMinutes(min: number): string {
   if (min % 1440 === 0) return plural(min / 1440, 'day');
   if (min % 60 === 0) return plural(min / 60, 'hour');
-  return tx('minutes', { n: min });
+  return tx('shared.durations.minutes', { n: min });
 }

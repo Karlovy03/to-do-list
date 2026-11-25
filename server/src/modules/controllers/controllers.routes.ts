@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '../lib/prisma';
-import { requireRole } from '../lib/auth';
-import { notFound } from '../lib/http';
+import { prisma } from '../../lib/prisma';
+import { requireRole } from '../../lib/auth';
+import { notFound } from '../../lib/http';
 
 /** Довідник осіб, що ставлять контроль, але не користуються системою */
 export const controllersRouter = Router();

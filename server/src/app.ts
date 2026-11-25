@@ -6,12 +6,12 @@ import helmet from 'helmet';
 import { config } from './lib/config';
 import { loadUser, requireAuth } from './lib/auth';
 import { errorHandler, notFound } from './lib/http';
-import { authRouter } from './routes/auth';
-import { tasksRouter } from './routes/tasks';
-import { usersRouter } from './routes/users';
-import { controllersRouter } from './routes/controllers';
-import { notificationsRouter, pushRouter } from './routes/notifications';
-import { settingsRouter } from './routes/settings';
+import { authRouter } from './modules/auth/auth.routes';
+import { tasksRouter } from './modules/tasks/tasks.routes';
+import { usersRouter } from './modules/users/users.routes';
+import { controllersRouter } from './modules/controllers/controllers.routes';
+import { notificationsRouter, pushRouter } from './modules/notifications/notifications.routes';
+import { settingsRouter } from './modules/settings/settings.routes';
 
 // Мобільні застосунки Capacitor звертаються до API зі своїх локальних адрес
 const NATIVE_ORIGINS = new Set(['capacitor://localhost', 'https://localhost', 'http://localhost']);

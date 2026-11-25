@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '../lib/prisma';
-import { me } from '../lib/auth';
-import { sendPush, vapidPublicKey } from '../services/push';
-import { tx } from '../lib/texts';
+import { prisma } from '../../lib/prisma';
+import { me } from '../../lib/auth';
+import { sendPush, vapidPublicKey } from './push.web';
+import { tx } from '../../lib/texts';
 
 export const notificationsRouter = Router();
 
@@ -73,6 +73,6 @@ pushRouter.delete('/device', async (req, res) => {
 
 pushRouter.post('/test', async (req, res) => {
   const u = me(req);
-  await sendPush(u.id, { title: tx('push_test_title'), body: tx('push_test_body'), url: '/settings', tag: 'test' });
+  await sendPush(u.id, { title: tx('notifications.push.test_title'), body: tx('notifications.push.test_body'), url: '/settings', tag: 'test' });
   res.json({ ok: true });
 });

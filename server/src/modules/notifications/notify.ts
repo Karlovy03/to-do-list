@@ -1,9 +1,9 @@
 import type { Priority, User } from '@prisma/client';
-import { prisma } from '../lib/prisma';
-import { kyivParts, inQuietHours } from '../lib/time';
-import { getSettings } from './settings';
-import { sendPush } from './push';
-import { tx } from '../lib/texts';
+import { prisma } from '../../lib/prisma';
+import { kyivParts, inQuietHours } from '../../lib/time';
+import { getSettings } from '../settings/settings.service';
+import { sendPush } from './push.web';
+import { tx } from '../../lib/texts';
 
 export type NotifyKind =
   | 'ASSIGNED'
@@ -66,7 +66,7 @@ export async function notify({ userIds, kind, task, title, body, actorId }: Noti
     prisma.user.findMany({ where: { id: { in: ids }, isActive: true } }),
     getSettings(),
   ]);
-  const text = body ?? tx('task_line', { number: task.number, title: task.title });
+  const text = body ?? tx('notifications.common.task_line', { number: task.number, title: task.title });
   const now = new Date();
   await prisma.notification.createMany({
     data: users.map((u) => ({ userId: u.id, taskId: task.id, kind, title, body: text })),

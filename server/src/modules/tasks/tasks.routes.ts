@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import type { Prisma, TaskStatus, User } from '@prisma/client';
-import { prisma } from '../lib/prisma';
-import { isManager, me, publicUser } from '../lib/auth';
-import { badRequest, forbidden, notFound } from '../lib/http';
-import { formatKyiv } from '../lib/time';
-import { notify } from '../services/notify';
-import { tx } from '../lib/texts';
+import { prisma } from '../../lib/prisma';
+import { isManager, me, publicUser } from '../../lib/auth';
+import { badRequest, forbidden, notFound } from '../../lib/http';
+import { formatKyiv } from '../../lib/time';
+import { notify } from '../notifications/notify';
+import { tx } from '../../lib/texts';
 
 export const tasksRouter = Router();
 
@@ -276,12 +276,12 @@ tasksRouter.post('/', async (req, res) => {
     userIds: assigneeIds,
     kind: task.isControlled ? 'CONTROL_ON' : 'ASSIGNED',
     task,
-    title: tx(task.isControlled ? 'assigned_controlled' : 'assigned'),
-    body: `${tx('task_line', { number: task.number, title: task.title })}\n${tx('deadline_line', { deadline: formatKyiv(task.deadline) })}`,
+    title: tx(task.isControlled ? 'notifications.assignment.assigned_controlled' : 'notifications.assignment.assigned'),
+    body: `${tx('notifications.common.task_line', { number: task.number, title: task.title })}\n${tx('notifications.deadline.line', { deadline: formatKyiv(task.deadline) })}`,
     actorId: u.id,
   });
   if (task.controllerUserId && task.controllerUserId !== u.id) {
-    await notify({ userIds: [task.controllerUserId], kind: 'CONTROL_ON', task, title: tx('control_yours'), actorId: u.id });
+    await notify({ userIds: [task.controllerUserId], kind: 'CONTROL_ON', task, title: tx('notifications.control.yours'), actorId: u.id });
   }
   res.status(201).json(serialize(task, u));
 });
@@ -331,7 +331,7 @@ tasksRouter.patch('/:id', async (req, res) => {
       userIds: added,
       kind: updated.isControlled ? 'CONTROL_ON' : 'ASSIGNED',
       task: updated,
-      title: tx(updated.isControlled ? 'assigned_controlled' : 'assigned'),
+      title: tx(updated.isControlled ? 'notifications.assignment.assigned_controlled' : 'notifications.assignment.assigned'),
       actorId: u.id,
     });
   }
@@ -340,8 +340,8 @@ tasksRouter.patch('/:id', async (req, res) => {
       userIds: updated.assignees.map((a) => a.userId),
       kind: 'UPDATE',
       task: updated,
-      title: tx('deadline_changed'),
-      body: `${tx('task_line', { number: updated.number, title: updated.title })}\n${tx('new_deadline_line', { deadline: formatKyiv(updated.deadline) })}`,
+      title: tx('notifications.deadline.changed'),
+      body: `${tx('notifications.common.task_line', { number: updated.number, title: updated.title })}\n${tx('notifications.deadline.new_line', { deadline: formatKyiv(updated.deadline) })}`,
       actorId: u.id,
     });
   }
@@ -367,11 +367,11 @@ tasksRouter.post('/:id/control', async (req, res) => {
     userIds: updated.assignees.map((a) => a.userId),
     kind: 'CONTROL_ON',
     task: updated,
-    title: tx(wasControlled ? 'control_changed' : 'control_on'),
+    title: tx(wasControlled ? 'notifications.control.changed' : 'notifications.control.on'),
     actorId: u.id,
   });
   if (updated.controllerUserId) {
-    await notify({ userIds: [updated.controllerUserId], kind: 'CONTROL_ON', task: updated, title: tx('control_yours'), actorId: u.id });
+    await notify({ userIds: [updated.controllerUserId], kind: 'CONTROL_ON', task: updated, title: tx('notifications.control.yours'), actorId: u.id });
   }
   res.json(serialize(updated, u));
 });
@@ -400,7 +400,7 @@ tasksRouter.delete('/:id/control', async (req, res) => {
   });
   await prisma.reminderLog.deleteMany({ where: { taskId: t.id, key: 'control' } });
   await prisma.taskUpdate.create({ data: { taskId: t.id, authorId: u.id, kind: 'CONTROL_OFF', text: reason } });
-  await notify({ userIds: updated.assignees.map((a) => a.userId), kind: 'CONTROL_OFF', task: updated, title: tx('control_off'), actorId: u.id });
+  await notify({ userIds: updated.assignees.map((a) => a.userId), kind: 'CONTROL_OFF', task: updated, title: tx('notifications.control.off'), actorId: u.id });
   res.json(serialize(updated, u));
 });
 
@@ -432,8 +432,8 @@ tasksRouter.post('/:id/updates', async (req, res) => {
     userIds: stakeholders(updated),
     kind: 'UPDATE',
     task: updated,
-    title: progressChanged ? tx('progress', { progress: input.progress! }) : tx('comment'),
-    body: `${tx('task_line', { number: updated.number, title: updated.title })}${input.text ? `\n${u.fullName}: ${input.text.slice(0, 140)}` : ''}`,
+    title: progressChanged ? tx('notifications.progress.progress', { progress: input.progress! }) : tx('notifications.progress.comment'),
+    body: `${tx('notifications.common.task_line', { number: updated.number, title: updated.title })}${input.text ? `\n${u.fullName}: ${input.text.slice(0, 140)}` : ''}`,
     actorId: u.id,
   });
   res.status(201).json(serialize(updated, u));
@@ -483,12 +483,12 @@ tasksRouter.post('/:id/status', async (req, res) => {
   const executors = updated.assignees.map((a) => a.userId);
   const leads = [updated.authorId, ...(updated.controllerUserId ? [updated.controllerUserId] : [])];
   const msg: Record<typeof action, { to: string[]; kind: Parameters<typeof notify>[0]['kind']; title: string }> = {
-    start: { to: leads, kind: 'UPDATE', title: tx('started') },
-    submit: { to: leads, kind: 'REVIEW', title: tx('submitted') },
-    accept: { to: [...executors, ...leads], kind: 'DONE', title: tx('accepted') },
-    return: { to: executors, kind: 'RETURNED', title: tx('returned') },
-    cancel: { to: [...executors, ...leads], kind: 'CANCELLED', title: tx('cancelled') },
-    reopen: { to: executors, kind: 'ASSIGNED', title: tx('reopened') },
+    start: { to: leads, kind: 'UPDATE', title: tx('notifications.progress.started') },
+    submit: { to: leads, kind: 'REVIEW', title: tx('notifications.progress.submitted') },
+    accept: { to: [...executors, ...leads], kind: 'DONE', title: tx('notifications.progress.accepted') },
+    return: { to: executors, kind: 'RETURNED', title: tx('notifications.progress.returned') },
+    cancel: { to: [...executors, ...leads], kind: 'CANCELLED', title: tx('notifications.assignment.cancelled') },
+    reopen: { to: executors, kind: 'ASSIGNED', title: tx('notifications.assignment.reopened') },
   };
   const m = msg[action];
   await notify({
@@ -496,7 +496,7 @@ tasksRouter.post('/:id/status', async (req, res) => {
     kind: m.kind,
     task: updated,
     title: m.title,
-    body: `${tx('task_line', { number: updated.number, title: updated.title })}${comment ? `\n${comment.slice(0, 160)}` : ''}`,
+    body: `${tx('notifications.common.task_line', { number: updated.number, title: updated.title })}${comment ? `\n${comment.slice(0, 160)}` : ''}`,
     actorId: u.id,
   });
   res.json(serialize(updated, u));

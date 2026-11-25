@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../lib/prisma';
-import { clearSession, me, selfUser, setSession, signToken } from '../lib/auth';
-import { HttpError } from '../lib/http';
+import { prisma } from '../../lib/prisma';
+import { clearSession, me, selfUser, setSession, signToken } from '../../lib/auth';
+import { HttpError } from '../../lib/http';
 
 export const authRouter = Router();
 

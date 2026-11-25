@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../../lib/prisma';
 
 export const reminderSettingsSchema = z.object({
   /** як часто нагадувати по контрольних завданнях, хв */

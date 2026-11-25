@@ -1,7 +1,7 @@
-import { prisma } from '../lib/prisma';
-import { humanMinutes } from '../lib/time';
-import { tx } from '../lib/texts';
-import { getSettings } from './settings';
+import { prisma } from '../../lib/prisma';
+import { humanMinutes } from '../../lib/time';
+import { tx } from '../../lib/texts';
+import { getSettings } from '../settings/settings.service';
 import { notify } from './notify';
 import { planReminders, type PlanTask, type PlanUser } from './reminderPlan';
 
@@ -51,8 +51,8 @@ export async function runRemindersOnce(now = new Date()) {
     const task = byId.get(r.taskId)!;
     const title =
       r.kind === 'DEADLINE_SOON'
-        ? tx('deadline_soon', { left: humanMinutes(r.offsetMin!) })
-        : tx(r.kind === 'OVERDUE' ? 'overdue' : 'control_reminder');
+        ? tx('notifications.deadline.soon', { left: humanMinutes(r.offsetMin!) })
+        : tx(r.kind === 'OVERDUE' ? 'notifications.deadline.overdue' : 'notifications.control.reminder');
     // спершу журнал — щоб збій push не спричинив повторів кожну хвилину
     await prisma.$transaction(
       r.logKeys.map((key) =>
