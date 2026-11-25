@@ -57,3 +57,10 @@
     display: none;
   }
 }
+@media print {
+  .md,
+  .lg {
+    display: block;
+    padding: 0;
+  }
+}

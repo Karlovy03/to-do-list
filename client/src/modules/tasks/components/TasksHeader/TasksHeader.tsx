@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Role, Summary, Task } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { formatLongDate } from '@/shared/lib/time';
-import { Segmented } from '@/shared/ui';
+import { PageHeader, Segmented } from '@/shared/ui';
 import type { Scope } from '../../api/tasks.api';
 import { groupAnchor } from '../TaskList/TaskList';
 import { ControlSummary, FilterCapsules } from '../ControlSummary';
@@ -26,10 +26,7 @@ export function TasksHeader({ scope, role, summary, tasks }: { scope: Scope; rol
 
   return (
     <header className={css.header}>
-      <div className={css.titles}>
-        <p className={css.date}>{formatLongDate(now)}</p>
-        <h1 className={css.title}>{t(`tasks.list.title_${scope}`)}</h1>
-      </div>
+      <PageHeader eyebrow={formatLongDate(now)} title={t(`tasks.list.title_${scope}`)} />
       {scope === 'mine' && (
         <>
           <ControlSummary count={summary?.controlled ?? 0} nearest={nearest} />

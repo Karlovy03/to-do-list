@@ -1,0 +1,14 @@
+.on {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--done);
+  font-weight: 600;
+}
+.inline {
+  align-self: flex-start;
+}
+.hint {
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}

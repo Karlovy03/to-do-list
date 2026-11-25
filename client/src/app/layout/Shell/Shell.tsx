@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useLogout, useSession } from '@/modules/auth';
-import { useUnread } from '@/modules/notifications';
+import { useUnread, webPushEndpoint } from '@/modules/notifications';
 import { QuickAddSheet } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
@@ -28,7 +28,7 @@ export function Shell() {
   const focused = phone && /\/t\/[^/]+$/.test(pathname);
   return (
     <div className={[css.shell, css[wc], focused && css.focused].filter(Boolean).join(' ')}>
-      {wc === 'lg' && <Sidebar me={me} unread={unread} onCreate={open} onLogout={() => logout.mutate()} />}
+      {wc === 'lg' && <Sidebar me={me} unread={unread} onCreate={open} onLogout={async () => logout.mutate({ pushEndpoint: await webPushEndpoint() })} />}
       {wc === 'md' && <Rail unread={unread} onCreate={open} />}
       <main className={css.main}>
         <Outlet />

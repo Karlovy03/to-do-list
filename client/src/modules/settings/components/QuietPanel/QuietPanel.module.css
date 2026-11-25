@@ -1,0 +1,9 @@
+.hours {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+.hint {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
