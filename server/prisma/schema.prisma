@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN   // керує користувачами, довідником і загальними налаштуваннями
+  MANAGER // ставить завдання будь-кому і бере на контроль
+  MEMBER  // виконує свої завдання, звітує про хід
+}
+
+enum TaskStatus {
+  NEW
+  IN_PROGRESS
+  REVIEW // виконавець доповів про виконання, чекає прийняття автором
+  DONE
+  CANCELLED
+}
+
+enum Priority {
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum UpdateKind {
+  CREATED
+  COMMENT
+  PROGRESS
+  STATUS
+  CONTROL_ON
+  CONTROL_OFF
+  DEADLINE
+  ASSIGNEES
+}
+
+model User {
+  id           String   @id @default(cuid())
+  login        String   @unique
+  passwordHash String
+  fullName     String
+  position     String   @default("")
+  role         Role     @default(MEMBER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Особисті налаштування сповіщень
+  quietFrom       Int     @default(20) // година, з якої не турбувати (Київ)
+  quietTo         Int     @default(8)  // година, до якої не турбувати
+  muteWeekends    Boolean @default(true)
+  notifyAssigned  Boolean @default(true)
+  notifyControl   Boolean @default(true)
+  notifyDeadline  Boolean @default(true)
+  notifyUpdates   Boolean @default(true)
+  controlInterval Int? // хв; null = загальне налаштування
+
+  authored      Task[]           @relation("TaskAuthor")
+  controlsSet   Task[]           @relation("TaskControlSetBy")
+  controlling   Task[]           @relation("TaskControllerUser")
+  assignments   TaskAssignee[]
+  updates       TaskUpdate[]
+  notifications Notification[]
+  pushSubs      PushSubscription[]
+  devices       DeviceToken[]
+  reminders     ReminderLog[]
+  snoozes       Snooze[]
+}
+
+// Довідник осіб, які можуть поставити контроль, але не мають акаунта
+model Controller {
+  id           String   @id @default(cuid())
+  fullName     String
+  position     String   @default("")
+  organization String   @default("")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  tasks        Task[]
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  number      Int        @unique @default(autoincrement())
+  title       String
+  description String     @default("")
+  priority    Priority   @default(NORMAL)
+  status      TaskStatus @default(NEW)
+  progress    Int        @default(0)
+  deadline    DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  completedAt DateTime?
+
+  authorId String
+  author   User   @relation("TaskAuthor", fields: [authorId], references: [id])
+
+  // Контроль
+  isControlled     Boolean     @default(false)
+  controlSetAt     DateTime?
+  controlSetById   String? // хто зареєстрував контроль у системі
+  controlSetBy     User?       @relation("TaskControlSetBy", fields: [controlSetById], references: [id])
+  // Контролююча особа — одне з трьох:
+  controllerUserId String? // користувач системи
+  controllerUser   User?       @relation("TaskControllerUser", fields: [controllerUserId], references: [id])
+  controllerId     String? // особа з довідника
+  controller       Controller? @relation(fields: [controllerId], references: [id])
+  controllerText   String? // або вільний текст
+  controlBasis     String? // підстава: № і дата документа
+  controlDeadline  DateTime?
+  reminderInterval Int? // хв; null = за налаштуваннями
+
+  assignees TaskAssignee[]
+  updates   TaskUpdate[]
+  notifications Notification[]
+  reminders ReminderLog[]
+  snoozes   Snooze[]
+
+  @@index([status])
+  @@index([isControlled, status])
+  @@index([deadline])
+  @@index([authorId])
+  @@index([controllerUserId])
+}
+
+model TaskAssignee {
+  taskId String
+  userId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([taskId, userId])
+  @@index([userId])
+}
+
+// Журнал ходу виконання
+model TaskUpdate {
+  id        String     @id @default(cuid())
+  taskId    String
+  task      Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String? // null = дія системи
+  author    User?      @relation(fields: [authorId], references: [id])
+  kind      UpdateKind
+  text      String     @default("")
+  progress  Int?
+  meta      Json?
+  createdAt DateTime   @default(now())
+
+  @@index([taskId, createdAt])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId    String?
+  task      Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  kind      String
+  title     String
+  body      String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Токен мобільного застосунку (Android — FCM, iPhone — APNs)
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String // android | ios
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Що й коли вже нагадали — щоб не дублювати
+model ReminderLog {
+  taskId String
+  userId String
+  key    String // control | overdue | deadline:<хв>
+  sentAt DateTime @default(now())
+  task   Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId, key])
+}
+
+model Snooze {
+  taskId String
+  userId String
+  until  DateTime
+  task   Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId])
+}
+
+model Setting {
+  key   String @id
+  value Json
+}

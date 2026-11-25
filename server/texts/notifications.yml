@@ -1,0 +1,39 @@
+# Тексти сповіщень (push і стрічка в застосунку).
+# {number}, {title}, {deadline}, {left}, {progress}, {author}, {text} — підставляються автоматично.
+
+task_line: "№{number} · {title}"
+deadline_line: "Термін: {deadline}"
+new_deadline_line: "Новий термін: {deadline}"
+
+assigned: "Вам нове завдання"
+assigned_controlled: "Вам завдання на контролі"
+control_on: "Завдання поставлено на контроль"
+control_changed: "Змінено умови контролю"
+control_yours: "Завдання взято на ваш контроль"
+control_off: "Завдання знято з контролю"
+control_reminder: "Нагадування: завдання на контролі"
+deadline_soon: "Термін спливає: залишилось {left}"
+overdue: "Термін виконання минув"
+deadline_changed: "Змінено термін виконання"
+progress: "Хід виконання: {progress}%"
+comment: "Новий коментар до завдання"
+started: "Виконавець розпочав роботу"
+submitted: "Доповідь про виконання — потрібне прийняття"
+accepted: "Завдання прийнято як виконане"
+returned: "Завдання повернуто на доопрацювання"
+cancelled: "Завдання скасовано"
+reopened: "Завдання відновлено"
+
+push_test_title: "Перевірка сповіщень"
+push_test_body: "Сповіщення на цей пристрій працюють."
+push_open: "Відкрити"
+push_snooze: "Відкласти на 2 год"
+
+# Тривалості для «залишилось …»
+day_one: "1 день"
+day_few: "{n} дні"
+day_many: "{n} днів"
+hour_one: "1 годину"
+hour_few: "{n} години"
+hour_many: "{n} годин"
+minutes: "{n} хв"
