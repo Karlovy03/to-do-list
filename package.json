@@ -1,0 +1,10 @@
+{
+  "name": "kontrol",
+  "private": true,
+  "description": "«Контроль» — планер доручень: сервер (server/), веб і мобільні застосунки (client/)",
+  "scripts": {
+    "check:texts": "node scripts/check-texts.mjs",
+    "check:size": "node scripts/check-size.mjs",
+    "check": "npm run check:texts && npm run check:size"
+  }
+}
