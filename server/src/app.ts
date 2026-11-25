@@ -3,61 +3,62 @@ import fs from 'node:fs';
 import path from 'node:path';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { config } from './lib/config';
-import { loadUser, requireAuth } from './lib/auth';
-import { errorHandler, notFound } from './lib/http';
-import { authRouter } from './modules/auth/auth.routes';
-import { tasksRouter } from './modules/tasks/tasks.routes';
-import { usersRouter } from './modules/users/users.routes';
-import { controllersRouter } from './modules/controllers/controllers.routes';
-import { notificationsRouter, pushRouter } from './modules/notifications/notifications.routes';
-import { settingsRouter } from './modules/settings/settings.routes';
-
-// Мобільні застосунки Capacitor звертаються до API зі своїх локальних адрес
-const NATIVE_ORIGINS = new Set(['capacitor://localhost', 'https://localhost', 'http://localhost']);
-
-const nativeCors: express.RequestHandler = (req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin && NATIVE_ORIGINS.has(origin) && req.path.startsWith('/api/')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Client');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Max-Age', '86400');
-    if (req.method === 'OPTIONS') {
-      res.status(204).end();
-      return;
-    }
-  }
-  next();
-};
+import { config } from './core/config';
+import { loadUser, nativeCors, originGuard, requireAuth } from './core/auth';
+import { errorHandler, notFound } from './core/http-error';
+import { authRouter } from './modules/auth';
+import { profileRouter } from './modules/profile';
+import { usersRouter } from './modules/users';
+import { directoryRouter } from './modules/directory';
+import { settingsRouter } from './modules/settings';
+import { tasksRouter } from './modules/tasks';
+import { notificationsRouter, pushRouter } from './modules/notifications';
 
 export function createApp() {
   const app = express();
-  app.set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 1));
+  app.set('trust proxy', config.TRUST_PROXY_HOPS);
   app.disable('x-powered-by');
-  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          // стилі React (style={{ width }}) — атрибути; зовнішніх стилів немає
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'"],
+          workerSrc: ["'self'"],
+          manifestSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+        },
+      },
+    }),
+  );
   app.use(nativeCors);
   app.use(express.json({ limit: '200kb' }));
   app.use(cookieParser());
-  app.use(loadUser);
 
   const api = express.Router();
+  api.use(originGuard);
+  api.use(loadUser);
   api.get('/health', (_req, res) => {
     res.json({ ok: true });
   });
   api.use('/auth', authRouter);
   api.use(requireAuth);
-  api.use('/tasks', tasksRouter);
+  api.use('/profile', profileRouter);
   api.use('/users', usersRouter);
-  api.use('/controllers', controllersRouter);
+  api.use('/directory', directoryRouter);
+  api.use('/settings', settingsRouter);
+  api.use('/tasks', tasksRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
-  api.use('/settings', settingsRouter);
   api.use((_req, _res, next) => next(notFound()));
   app.use('/api', api);
 
-  // У продакшені сервер сам віддає зібраний клієнт (один контейнер)
+  // У продакшені сервер віддає зібраний клієнт (один образ, ADR-0009)
   if (fs.existsSync(config.clientDist)) {
     app.use(express.static(config.clientDist, { index: false, maxAge: '1h' }));
     app.get(/^\/(?!api\/).*/, (_req, res) => {

@@ -1,0 +1,47 @@
+# Демо-дані для показу. Пароль у всіх демо-користувачів: demo1234
+# Терміни задано відносно моменту наповнення: deadlineInHours (від'ємне — уже прострочено).
+
+users:
+  - { login: chief, fullName: "Коваленко Олександр", position: "Начальник управління", role: MANAGER }
+  - { login: deputy, fullName: "Мельник Ірина", position: "Заступник начальника управління", role: MANAGER }
+  - { login: bondar, fullName: "Бондар Андрій", position: "Старший інспектор", role: MEMBER }
+  - { login: shevchenko, fullName: "Шевченко Оксана", position: "Інспектор", role: MEMBER }
+  - { login: tkachenko, fullName: "Ткаченко Дмитро", position: "Головний спеціаліст", role: MEMBER }
+  - { login: admin, fullName: "Адміністратор системи", position: "", role: ADMIN }
+
+directory:
+  - { key: deputyMinister, fullName: "Петренко Віктор", position: "Заступник Міністра", organization: "МВС України" }
+  - { key: department, fullName: "Савчук Леся", position: "Начальник департаменту", organization: "Апарат МВС" }
+
+tasks:
+  - title: "Підготувати аналітичну довідку щодо стану реагування на звернення громадян"
+    priority: URGENT
+    deadlineInHours: 20
+    author: chief
+    assignees: [bondar, shevchenko]
+    control: { directory: deputyMinister, basis: "Доручення МВС № 1234/01-2026 від 20.11.2026" }
+    progress: { by: bondar, percent: 40, text: "Зібрано дані від територіальних підрозділів, готую узагальнення." }
+  - title: "Надати пропозиції до плану заходів на I квартал 2027 року"
+    priority: HIGH
+    deadlineInHours: 72
+    author: chief
+    assignees: [tkachenko]
+    control: { user: chief, basis: "Протокол наради № 15 від 24.11.2026" }
+    progress: { by: tkachenko, percent: 10, text: "Опрацьовую пропозиції відділів." }
+  - title: "Опрацювати лист Держприкордонслужби щодо обміну інформацією"
+    priority: NORMAL
+    deadlineInHours: -5
+    author: chief
+    assignees: [shevchenko]
+    control: { text: "Перший заступник Голови НПУ", basis: "Лист вх. № 5678 від 18.11.2026" }
+    progress: { by: shevchenko, percent: 70, text: "Підготовлено проєкт відповіді, на погодженні." }
+  - title: "Оновити контактні дані підрозділів у довіднику"
+    priority: NORMAL
+    deadlineInHours: 144
+    author: deputy
+    assignees: [bondar]
+  - title: "Підготувати матеріали до селекторної наради"
+    priority: HIGH
+    deadlineInHours: 26
+    author: chief
+    assignees: [deputy, tkachenko]

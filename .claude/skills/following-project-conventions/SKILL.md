@@ -64,6 +64,14 @@ modules/<m>/
 npm run check:size        # з кореня репозиторію; exit 1 і перелік файлів, якщо є довші
 ```
 
+## Перевірка шарів (сервер)
+Звертання до моделей бази мають три форми — `prisma.x.op`, `db.x.op`, `tx.x.op`; шукаємо всі три:
+```bash
+cd server/src && grep -rnE "\b(prisma|db|tx)\.[a-z][A-Za-z]*\.(find|create|update|delete|upsert|count|aggregate|groupBy)" \
+  --include=*.ts . | grep -v "\.repository\.ts" | grep -v "\.spec\.ts"
+# порожньо (exit 1) — prisma лише в репозиторіях. Контроль: той самий grep з --include=*.repository.ts знаходить файли.
+```
+
 ## Перед завершенням
 - [ ] Код у правильному шарі; prisma лише в репозиторіях; права лише в policy.
 - [ ] Новий модуль має `index.ts`; імпорти — через барель.
