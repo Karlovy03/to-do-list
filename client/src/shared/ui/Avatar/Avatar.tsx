@@ -33,7 +33,7 @@ export function PersonLine({ person, note, done }: { person: Named; note?: strin
       <Avatar person={person} large done={done} />
       <div className={css.text}>
         <div>{person.fullName}</div>
-        {(note ?? person.position) && <small>{note ?? person.position}</small>}
+        {(note ?? person.position) && <small className={done ? css.doneNote : undefined}>{note ?? person.position}</small>}
       </div>
     </div>
   );

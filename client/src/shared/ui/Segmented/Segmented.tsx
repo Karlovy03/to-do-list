@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import css from './Segmented.module.css';
 
 interface Props<T extends string> {
@@ -9,8 +10,13 @@ interface Props<T extends string> {
 
 /** Перемикач вкладок; лічильник поруч із назвою */
 export function Segmented<T extends string>({ value, options, onChange, label }: Props<T>) {
+  const root = useRef<HTMLDivElement>(null);
+  // у вузькій колонці вкладки гортаються — обрана завжди на виду
+  useEffect(() => {
+    root.current?.querySelector<HTMLElement>('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [value]);
   return (
-    <div className={css.root} role="tablist" aria-label={label}>
+    <div ref={root} className={css.root} role="tablist" aria-label={label}>
       {options.map((o) => (
         <button key={o.value} type="button" role="tab" aria-selected={o.value === value} className={o.value === value ? css.on : undefined} onClick={() => onChange(o.value)}>
           {o.label}

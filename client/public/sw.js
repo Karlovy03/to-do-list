@@ -1,14 +1,15 @@
-/* Service worker: push-сповіщення і дії з ними. Кешування сторінок навмисно немає —
-   дані завжди свіжі з сервера. */
+/* Service worker: push and its actions. No page caching on purpose — data is always fresh.
+   No UI text here: title, body and action labels arrive in the payload from the server. */
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('push', (event) => {
   let data = {};
-  try { data = event.data ? event.data.json() : {}; } catch { data = { title: 'Контроль', body: event.data && event.data.text() }; }
-  const actions = data.snooze ? [{ action: 'open', title: 'Відкрити' }, { action: 'snooze', title: 'Відкласти на 2 год' }] : [];
+  try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data && event.data.text() }; }
+  const labels = data.actions || {};
+  const actions = labels.snooze ? [{ action: 'open', title: labels.open }, { action: 'snooze', title: labels.snooze }] : [];
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Контроль', {
+    self.registration.showNotification(data.title || self.registration.scope, {
       body: data.body || '',
       tag: data.tag,
       renotify: true,

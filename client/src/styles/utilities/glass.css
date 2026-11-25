@@ -1,0 +1,8 @@
+/* Скло вмикається лише там, де браузер його підтримує і користувач не обрав «Без прозорості».
+   На слабких пристроях клас no-glass ставить застосунок (shared/lib/appearance). */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root:not(.no-glass) {
+    --glass-bg: rgba(255, 255, 255, 0.78);
+    --glass-filter: blur(16px) saturate(160%);
+  }
+}

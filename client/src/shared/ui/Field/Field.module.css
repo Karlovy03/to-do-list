@@ -1,36 +1,44 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--s-1);
+  gap: 6px;
 }
 .label {
-  font-size: var(--fs-sm);
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: 600;
   color: var(--ink-2);
 }
 .hint {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
   color: var(--ink-3);
 }
 .error {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--control);
 }
 .input {
   width: 100%;
-  min-height: var(--ctrl-h);
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--r-md);
-  border: 1px solid var(--line);
-  background: var(--surface);
+  min-height: var(--ctrl-l);
+  padding: 0 var(--s-4);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-control);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-size: var(--fs-body);
   outline: none;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.input::placeholder {
+  color: var(--ink-3);
 }
 .input:focus {
-  border-color: var(--brand-500);
-  box-shadow: 0 0 0 3px var(--brand-100);
+  border-color: var(--blue);
+  background: var(--surface);
+  box-shadow: var(--focus-ring);
 }
 .textarea {
-  min-height: 88px;
+  min-height: 96px;
+  padding: var(--s-3) var(--s-4);
   resize: vertical;
 }

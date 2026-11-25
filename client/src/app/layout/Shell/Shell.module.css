@@ -1,0 +1,59 @@
+.shell {
+  position: relative;
+  min-height: 100dvh;
+  isolation: isolate;
+}
+/* холодне сяйво полотна (Figma: canvas/glow-a, glow-b) */
+.shell::before,
+.shell::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+}
+.shell::before {
+  top: -180px;
+  left: -140px;
+  width: 520px;
+  height: 520px;
+  background: var(--glow-a);
+}
+.shell::after {
+  top: -140px;
+  right: -160px;
+  width: 460px;
+  height: 460px;
+  background: var(--glow-b);
+}
+.main {
+  min-width: 0;
+}
+.xs .main,
+.sm .main {
+  padding-bottom: calc(var(--nav-h) + var(--s-12) + var(--safe-bottom));
+}
+.focused .main {
+  padding-bottom: var(--safe-bottom);
+}
+.md {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-3);
+  padding: calc(var(--s-4) + var(--safe-top)) var(--s-4) var(--s-4) var(--s-3);
+}
+.lg {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  gap: var(--s-6);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--s-4) var(--s-6) var(--s-4) var(--s-4);
+}
+@media print {
+  .shell::before,
+  .shell::after {
+    display: none;
+  }
+}

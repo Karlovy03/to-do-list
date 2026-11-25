@@ -1,18 +1,20 @@
 body {
   font-family: var(--font);
-  font-size: var(--fs-md);
-  line-height: var(--lh);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-variant-numeric: tabular-nums;
   color: var(--ink);
-  background: var(--bg);
+  background: var(--canvas);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 h1,
 h2,
 h3 {
-  line-height: 1.25;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
 }
 a {
-  color: var(--brand-500);
+  color: var(--blue);
   text-decoration: none;
 }

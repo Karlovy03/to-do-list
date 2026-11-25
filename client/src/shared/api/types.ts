@@ -1,4 +1,4 @@
-/* Форма відповідей API сервера (server/src/modules/*/*.serializer.ts) */
+// Форма відповідей API сервера — див. server/src/modules/<модуль>/<модуль>.serializer.ts
 
 export type Role = 'ADMIN' | 'MANAGER' | 'MEMBER';
 export type TaskStatus = 'NEW' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';

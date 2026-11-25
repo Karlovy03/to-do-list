@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.date {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.date::first-letter {
+  text-transform: uppercase;
+}
+.title {
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+}

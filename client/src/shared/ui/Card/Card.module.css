@@ -3,9 +3,9 @@
   flex-direction: column;
   gap: var(--s-3);
   padding: var(--s-4);
-  border-radius: var(--r);
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 .head {
   display: flex;
@@ -14,13 +14,12 @@
 }
 .title {
   flex: 1;
-  font-size: var(--fs-md);
+  font-size: var(--fs-sub);
+  font-weight: 700;
 }
 .section {
-  margin: var(--s-5) var(--s-1) var(--s-2);
-  font-size: var(--fs-sm);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+  margin: var(--s-2) var(--s-1) 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-2);
 }

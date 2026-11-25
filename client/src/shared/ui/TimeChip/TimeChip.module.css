@@ -1,0 +1,41 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 30px;
+  padding: 0 10px 0 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+.chip b {
+  font-weight: 600;
+}
+.rest {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+.calm {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+.calm .rest {
+  color: var(--ink-2);
+}
+.soon {
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+}
+.late {
+  background: var(--late-soft);
+  color: var(--late);
+}
+.done {
+  background: var(--done-soft);
+  color: var(--done);
+}
+.chip svg {
+  flex: none;
+}

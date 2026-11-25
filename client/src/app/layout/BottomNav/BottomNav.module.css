@@ -1,0 +1,86 @@
+.wrap {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--s-4) + var(--safe-bottom));
+  z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+.capsule {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-pill);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 70px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+}
+.on {
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+.icon {
+  position: relative;
+  display: grid;
+}
+.dot {
+  position: absolute;
+  top: -4px;
+  right: -10px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--r-pill);
+  background: var(--control);
+  color: var(--on-dark);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+.label {
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.on .label {
+  font-weight: 700;
+}
+.fab {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 2.5px solid var(--sky);
+  border-radius: 50%;
+  background: var(--grad-primary);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-gloss);
+  transition: transform var(--t-spring);
+}
+.fab:active {
+  transform: scale(0.94);
+}
+/* вузьке вікно: лише іконки */
+@media (max-width: 359px) {
+  .item {
+    width: 56px;
+  }
+  .label {
+    display: none;
+  }
+}

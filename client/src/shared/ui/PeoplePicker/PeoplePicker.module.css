@@ -6,19 +6,20 @@
 .list {
   display: flex;
   flex-direction: column;
-  max-height: 260px;
+  max-height: 300px;
   overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .item {
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  min-height: var(--ctrl-h);
-  padding: var(--s-2) var(--s-3);
+  min-height: 60px;
+  padding: var(--s-2) var(--s-4);
   border: 0;
-  border-bottom: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-soft);
   background: transparent;
   text-align: left;
 }
@@ -26,7 +27,7 @@
   border-bottom: 0;
 }
 .on {
-  background: var(--brand-50);
+  background: var(--blue-soft);
 }
 .text {
   flex: 1;
@@ -40,10 +41,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.name {
+  font-weight: 600;
+}
 .position {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
   color: var(--ink-3);
 }
 .check {
-  color: var(--brand-500);
+  color: var(--blue);
 }

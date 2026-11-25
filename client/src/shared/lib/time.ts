@@ -4,7 +4,7 @@ const TZ = 'Europe/Kyiv';
 const dateFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, day: 'numeric', month: 'long' });
 const timeFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
 const fullFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-const dayKey = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d);
+export const dayKey = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d);
 
 export const formatFull = (iso: string | Date) => fullFmt.format(new Date(iso));
 export const formatTime = (iso: string | Date) => timeFmt.format(new Date(iso));
@@ -49,4 +49,23 @@ export function ago(iso: string) {
 export function toLocalInput(d: Date) {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** «середа, 25 листопада» — підзаголовок великого заголовка */
+const longDateFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' });
+export const formatLongDate = (d: Date = new Date()) => longDateFmt.format(d);
+
+const partsFmt = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+function kyivParts(d: Date) {
+  const p = Object.fromEntries(partsFmt.formatToParts(d).map((x) => [x.type, Number(x.value)]));
+  return { y: p.year, m: p.month, d: p.day, h: p.hour, min: p.minute };
+}
+
+/** Мить «через days днів о hour:00 за Києвом» — незалежно від часового поясу пристрою */
+export function kyivAt(days: number, hour: number, now = new Date()): Date {
+  const day = kyivParts(new Date(now.getTime() + days * 864e5));
+  const guess = Date.UTC(day.y, day.m - 1, day.d, hour);
+  const p = kyivParts(new Date(guess));
+  const offset = Date.UTC(p.y, p.m - 1, p.d, p.h, p.min) - guess;
+  return new Date(guess - offset);
 }

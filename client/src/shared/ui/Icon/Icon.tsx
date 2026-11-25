@@ -26,6 +26,8 @@ const paths = {
   logout: 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9',
   admin: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3zM12 8a2 2 0 100 4 2 2 0 000-4zM8.5 16a3.5 3.5 0 017 0',
   phone: 'M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zM11 18h2',
+  more: 'M12 6h.01M12 12h.01M12 18h.01',
+  arrowUp: 'M12 19V5M5 12l7-7 7 7',
   inbox: 'M22 12h-6l-2 3h-4l-2-3H2M5.5 5.1L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.5-6.9A2 2 0 0016.7 4H7.3a2 2 0 00-1.8 1.1z',
 } as const;
 
@@ -35,17 +37,6 @@ export function Icon({ name, size = 20, stroke = 2 }: { name: IconName; size?: n
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d={paths[name]} />
-    </svg>
-  );
-}
-
-/** Знак застосунку — нейтральний щит; замінюється на символіку за брендбуком */
-export function BrandMark({ size = 34 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 512 512" aria-hidden="true">
-      <rect width="512" height="512" rx="112" fill="var(--brand)" />
-      <path d="M256 92 L388 140 V252 C388 334 330 394 256 424 C182 394 124 334 124 252 V140 Z" fill="none" stroke="var(--gold)" strokeWidth="28" strokeLinejoin="round" />
-      <path d="M196 258 L240 302 L320 214" fill="none" stroke="var(--on-brand)" strokeWidth="34" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

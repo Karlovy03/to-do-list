@@ -13,63 +13,64 @@
   flex-direction: column;
   width: 100%;
   max-width: 640px;
-  max-height: 92dvh;
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
-  background: var(--surface);
-  box-shadow: var(--shadow-lg);
+  max-height: 94dvh;
+  border-top: 1px solid var(--glass-border);
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--shadow-raised);
   outline: none;
-  animation: up 0.2s ease-out;
+  animation: up 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* розгорнутий аркуш щільніший — текст лишається читабельним */
+:global(:root:not(.no-glass)) .sheet {
+  background: rgba(255, 255, 255, 0.92);
 }
 .grip {
   width: 40px;
-  height: 4px;
-  margin: var(--s-2) auto 0;
-  border-radius: 2px;
+  height: 5px;
+  margin: 10px auto 0;
+  border-radius: 3px;
   background: var(--line);
 }
 .head {
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  padding: var(--s-2) var(--s-4);
+  padding: var(--s-3) var(--s-5) var(--s-2);
 }
 .title {
   flex: 1;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-title);
+  font-weight: 700;
 }
 .body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
   overflow: auto;
-  padding: 0 var(--s-4) var(--s-4);
+  padding: var(--s-2) var(--s-5) var(--s-5);
 }
 .footer {
   display: flex;
   gap: var(--s-2);
-  padding: var(--s-3) var(--s-4) calc(var(--s-3) + var(--safe-bottom));
-  border-top: 1px solid var(--line-2);
+  padding: var(--s-3) var(--s-5) calc(var(--s-4) + var(--safe-bottom));
 }
 .footer > * {
   flex: 1;
 }
-@media (min-width: 768px) {
+@media (min-width: 680px) {
   .backdrop {
     align-items: center;
     padding: var(--s-6);
   }
   .sheet {
-    border-radius: var(--r-lg);
+    border-radius: var(--r-sheet);
   }
   .grip {
     display: none;
-  }
-  .head {
-    padding: var(--s-4) var(--s-6) var(--s-2);
-  }
-  .body {
-    padding: 0 var(--s-6) var(--s-6);
-  }
-  .footer {
-    padding: var(--s-4) var(--s-6);
   }
 }
 @keyframes fade {
@@ -79,7 +80,13 @@
 }
 @keyframes up {
   from {
-    transform: translateY(24px);
-    opacity: 0.6;
+    transform: translateY(32px);
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .backdrop {
+    animation: none;
   }
 }

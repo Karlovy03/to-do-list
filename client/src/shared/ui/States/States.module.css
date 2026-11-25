@@ -4,22 +4,29 @@
   align-items: center;
   gap: var(--s-2);
   padding: var(--s-12) var(--s-4);
-  color: var(--ink-3);
-  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
   text-align: center;
 }
 .state b {
-  color: var(--ink-2);
-  font-size: var(--fs-md);
+  color: var(--ink);
+  font-size: var(--fs-sub);
 }
 .icon {
-  color: var(--brand-100);
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: var(--s-2);
+  border-radius: 28px;
+  background: var(--blue-soft);
+  color: var(--blue);
 }
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid var(--brand-100);
-  border-top-color: var(--brand-500);
+  border: 3px solid var(--blue-soft);
+  border-top-color: var(--blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

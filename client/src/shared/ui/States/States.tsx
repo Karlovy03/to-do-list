@@ -7,7 +7,7 @@ export function Empty({ icon = 'inbox', title, hint }: { icon?: IconName; title:
   return (
     <div className={css.state}>
       <span className={css.icon}>
-        <Icon name={icon} size={56} stroke={1.5} />
+        <Icon name={icon} size={40} stroke={1.6} />
       </span>
       <b>{title}</b>
       {hint && <span>{hint}</span>}
@@ -19,7 +19,7 @@ export function Loading() {
   return (
     <div className={css.state} role="status">
       <span className={css.spinner} />
-      <span>{t('app.common.loading')}</span>
+      <span>{t('shared.ui.loading')}</span>
     </div>
   );
 }
@@ -29,8 +29,8 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
     <div className={css.state} role="alert">
       <b>{message}</b>
       {onRetry && (
-        <Button size="sm" onClick={onRetry}>
-          {t('app.common.retry')}
+        <Button size="s" onClick={onRetry}>
+          {t('shared.ui.retry')}
         </Button>
       )}
     </div>

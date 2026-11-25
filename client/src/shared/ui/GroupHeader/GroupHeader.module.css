@@ -1,0 +1,30 @@
+.group {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-2) var(--s-1) 0;
+  font-size: var(--fs-sub);
+  font-weight: 700;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.late {
+  background: var(--late);
+}
+.today {
+  background: var(--sky);
+}
+.upcoming {
+  background: var(--ink-3);
+}
+.done {
+  background: var(--done);
+}
+.count {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-3);
+}

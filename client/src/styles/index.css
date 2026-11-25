@@ -1,7 +1,9 @@
 /* Лише імпорти, у порядку: база → утиліти. Стилі компонентів — у їхніх .module.css */
+@import '@fontsource-variable/montserrat/index.css';
 @import './base/tokens.css';
 @import './base/z-index.css';
 @import './base/reset.css';
 @import './base/typography.css';
+@import './utilities/glass.css';
 @import './utilities/a11y.css';
 @import './utilities/print.css';

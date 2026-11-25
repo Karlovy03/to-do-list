@@ -4,22 +4,22 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
   border: 2px solid var(--surface);
-  background: var(--brand-100);
-  color: var(--brand);
-  font-size: var(--fs-xs);
-  font-weight: 800;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e9f0fb 0%, #d3def0 100%);
+  color: var(--navy-ink);
+  font-size: 11px;
+  font-weight: 700;
 }
 .lg {
   width: 40px;
   height: 40px;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
 }
 .done {
-  background: var(--ok-50);
-  color: var(--ok);
-  box-shadow: 0 0 0 2px var(--ok);
+  border-color: var(--done);
+  background: var(--done-soft);
+  color: var(--done);
 }
 .stack {
   display: inline-flex;
@@ -38,6 +38,9 @@
 }
 .text small {
   display: block;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
   color: var(--ink-3);
+}
+.text .doneNote {
+  color: var(--done);
 }

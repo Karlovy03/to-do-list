@@ -1,39 +1,36 @@
 .root {
   display: flex;
   gap: 2px;
-  padding: 3px;
+  padding: 4px;
   overflow-x: auto;
-  border-radius: var(--r-md);
-  background: var(--line-2);
+  border-radius: var(--r-pill);
+  background: var(--surface-sunken);
   scrollbar-width: none;
 }
 .root button {
-  flex: 1;
+  flex: 1 1 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s-1);
-  min-height: var(--ctrl-sm-h);
-  padding: 0 var(--s-3);
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 clamp(8px, 2.5vw, 14px);
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-2);
-  font-weight: 700;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-small);
+  font-weight: 600;
   white-space: nowrap;
 }
 .root .on {
   background: var(--surface);
-  color: var(--brand);
-  box-shadow: var(--shadow);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
 }
 .count {
-  min-width: 20px;
-  padding: 0 6px;
-  border-radius: var(--r-pill);
-  background: var(--brand-100);
-  color: var(--brand);
-  font-size: var(--fs-xs);
-  line-height: 20px;
+  color: var(--ink-3);
+}
+.on .count {
+  color: var(--control);
 }

@@ -1,0 +1,41 @@
+.page {
+  padding: calc(var(--s-4) + var(--safe-top)) var(--s-4) var(--s-4);
+}
+.listCol,
+.detailCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  min-width: 0;
+}
+/* Fold, планшет, комп'ютер: список і картка поруч, кожна колонка гортається окремо */
+.split {
+  display: grid;
+  grid-template-columns: minmax(280px, var(--list-w)) minmax(0, 1fr);
+  gap: var(--s-5);
+  padding: 0;
+  height: calc(100dvh - 2 * var(--s-4));
+}
+.split .listCol,
+.split .detailCol {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s-1) var(--s-2) var(--s-6);
+  scrollbar-width: thin;
+}
+/* внутрішній екран Fold: картці потрібно більше місця, ніж списку */
+@media (max-width: 1199px) {
+  .split {
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+}
+@media print {
+  .split {
+    display: block;
+    height: auto;
+  }
+  .split .listCol {
+    display: none;
+  }
+}

@@ -35,7 +35,7 @@ export function Sheet({ title, onClose, children, footer }: Props) {
         <div className={css.grip} />
         <div className={css.head}>
           <h2 className={css.title}>{title}</h2>
-          <IconButton icon="x" label={t('app.common.close')} onClick={onClose} />
+          <IconButton icon="x" tone="sunken" label={t('shared.ui.close')} onClick={onClose} />
         </div>
         <div className={css.body}>{children}</div>
         {footer && <div className={css.footer}>{footer}</div>}

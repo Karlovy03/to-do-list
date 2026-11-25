@@ -1,0 +1,75 @@
+.slot {
+  position: relative;
+}
+.under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-left: var(--s-5);
+  border-radius: var(--r-card);
+  background: var(--grad-done);
+  color: var(--on-dark);
+  font-weight: 700;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 2px solid transparent;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: inherit;
+  touch-action: pan-y;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.card:hover {
+  box-shadow: var(--shadow-raised);
+}
+.selected {
+  border-color: var(--blue);
+}
+.closed .title {
+  color: var(--ink-2);
+}
+.compact {
+  gap: var(--s-2);
+  padding: var(--s-3);
+}
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.compact .title {
+  font-size: var(--fs-small);
+}
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.bottom > :first-child {
+  min-width: 0;
+  overflow: hidden;
+}
+.bottom > :last-child {
+  flex: none;
+}

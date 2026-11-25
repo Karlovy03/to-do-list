@@ -1,0 +1,61 @@
+.rail {
+  position: sticky;
+  top: calc(var(--s-4) + var(--safe-top));
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--s-3) var(--s-2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-sheet);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+}
+.fab {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--s-2);
+  border: 2px solid var(--sky);
+  border-radius: 18px;
+  background: var(--grad-primary);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-gloss);
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 72px;
+  height: 56px;
+  border-radius: 16px;
+  color: var(--ink-2);
+}
+.on {
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+.icon {
+  position: relative;
+  display: grid;
+}
+.dot {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--control);
+}
+.label {
+  font-size: 10px;
+  font-weight: 600;
+}

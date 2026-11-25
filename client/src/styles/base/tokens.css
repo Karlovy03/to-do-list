@@ -1,39 +1,62 @@
-/* Дизайн-токени «Контроль». Одна світла тема (ADR-0007).
-   Кольори МВС — тимчасові значення до отримання брендбуку: міняємо значення, не назви. */
+/* Дизайн-токени «Контроль» — Figma «Оновлений дизайн МВС», колекція «Токени МВС».
+   Одна світла тема (ADR-0007). Змінюємо значення, не назви. */
 :root {
-  /* бренд */
-  --brand: #0b2c5a;
-  --brand-700: #133e78;
-  --brand-500: #1f5aa6;
-  --brand-100: #dbe6f4;
-  --brand-50: #eef3fa;
-  --gold: #f2c230;
-  --gold-50: #fdf6dc;
-  --gold-ink: #7a5d00;
-
-  /* сигнали: червоний — контроль, бурштиновий — прострочено, зелений — виконано */
-  --control: #c8102e;
-  --control-50: #fdecee;
-  --control-200: #f5c2ca;
-  --warn: #a85d00;
-  --warn-50: #fff3e0;
-  --ok: #1a7a45;
-  --ok-50: #e6f4ec;
-
-  /* текст і поверхні */
-  --ink: #0f1b2d;
-  --ink-2: #44526a;
-  --ink-3: #6b778a;
-  --on-brand: #ffffff;
-  --line: #e1e6ee;
-  --line-2: #eef1f6;
-  --bg: #f3f5f9;
+  /* полотно і поверхні */
+  --canvas: #f3f6fb;
+  --glow-a: #d8e3fd;
+  --glow-b: #d6eefb;
   --surface: #ffffff;
-  --scrim: rgba(11, 27, 45, 0.45);
-  --on-brand-hover: rgba(255, 255, 255, 0.12);
-  --on-brand-active: rgba(255, 255, 255, 0.16);
-  --on-brand-muted: rgba(255, 255, 255, 0.78);
-  --on-brand-line: rgba(255, 255, 255, 0.16);
+  --surface-sunken: #edf1f7;
+  --line: #dce3ee;
+  --line-soft: #e9eef5;
+
+  /* бренд МВС */
+  --navy: #0e2357;
+  --blue: #3462f6;
+  --blue-soft: #e7edfe;
+  --navy-ink: #102c6e;
+  --sky: #1caae2;
+  --sky-soft: #e1f3fb;
+  --sky-ink: #075e85;
+
+  /* сигнали: малиновий — лише контроль */
+  --control: #d3163f;
+  --control-deep: #a00d2c;
+  --control-soft: #fde8ec;
+  --late: #c46a06;
+  --late-soft: #fff1e0;
+  --done: #12925a;
+  --done-soft: #e3f5ec;
+
+  /* текст */
+  --ink: #1d1d1d;
+  --ink-2: #4a5568;
+  --ink-3: #7a879b;
+  --on-dark: #ffffff;
+  --scrim: rgba(14, 26, 43, 0.32);
+
+  /* градієнти (з компонентів Figma) */
+  --grad-primary: linear-gradient(180deg, #2457a8 0%, #0e2357 100%);
+  --grad-sky: linear-gradient(180deg, #87d2f0 0%, #3cb7e7 100%);
+  --grad-control: linear-gradient(180deg, #e8395f 0%, #b30f33 100%);
+  --grad-done: linear-gradient(90deg, #12925a 0%, #24b270 100%);
+  --grad-login: linear-gradient(155deg, #17408a 0%, #0e2357 60%, #081a40 100%);
+
+  /* тіні: відтінок темно-синього, одне джерело світла згори */
+  --shadow-card: 0 1px 2px rgba(14, 35, 87, 0.06), 0 4px 10px -2px rgba(14, 35, 87, 0.06),
+    0 14px 28px -10px rgba(14, 35, 87, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-raised: 0 2px 4px rgba(14, 35, 87, 0.08), 0 10px 22px -4px rgba(14, 35, 87, 0.12),
+    0 28px 48px -14px rgba(14, 35, 87, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 1px 1px rgba(14, 35, 87, 0.2),
+    0 8px 18px -6px rgba(14, 35, 87, 0.28);
+  --shadow-seal: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 16px -4px rgba(211, 22, 63, 0.32);
+  --focus-ring: 0 0 0 4px rgba(52, 98, 246, 0.16);
+
+  /* скло — лише шар керування (навігація, шапка, аркуші); див. utilities/glass */
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-filter: none;
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 10px 30px -8px rgba(14, 35, 87, 0.12);
 
   /* відступи */
   --s-1: 4px;
@@ -43,40 +66,43 @@
   --s-5: 20px;
   --s-6: 24px;
   --s-8: 32px;
+  --s-10: 40px;
   --s-12: 48px;
 
-  /* радіуси й тіні */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r: 14px;
-  --r-lg: 20px;
+  /* радіуси — концентричні: аркуш → картка → поле → мітка */
+  --r-tag: 8px;
+  --r-control: 14px;
+  --r-card: 20px;
+  --r-sheet: 28px;
   --r-pill: 999px;
-  --shadow: 0 1px 2px rgba(15, 27, 45, 0.06), 0 2px 8px rgba(15, 27, 45, 0.05);
-  --shadow-hover: 0 2px 4px rgba(15, 27, 45, 0.08), 0 6px 16px rgba(15, 27, 45, 0.07);
-  --shadow-lg: 0 12px 40px rgba(11, 44, 90, 0.18);
 
-  /* текст */
-  --font: 'e-Ukraine', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-  --fs-xs: 11px;
-  --fs-sm: 13px;
-  --fs-md: 15px;
-  --fs-lg: 17px;
-  --fs-xl: 21px;
-  --fs-2xl: 26px;
-  --lh: 1.45;
+  /* типографіка — Montserrat */
+  --font: 'Montserrat Variable', 'Montserrat', 'Segoe UI', Roboto, system-ui, sans-serif;
+  --fs-label: 0.75rem;
+  --fs-small: 0.875rem;
+  --fs-body: 1rem;
+  --fs-sub: 1.0625rem;
+  --fs-title: 1.375rem;
+  --fs-display: 1.875rem;
+  --fs-number: 2.125rem;
+  --lh-tight: 1.2;
+  --lh-body: 1.45;
 
-  /* елементи керування: ціль для дотику ≥ 44px */
-  --ctrl-h: 44px;
-  --ctrl-sm-h: 36px;
-  --icon-btn: 40px;
-  --sidebar-w: 248px;
-  --content-max: 980px;
+  /* розміри керування: ціль для дотику ≥ 44px */
+  --ctrl-l: 52px;
+  --ctrl-m: 44px;
+  --ctrl-s: 36px;
+  --icon-btn: 44px;
+  --nav-h: 66px;
+  --rail-w: 88px;
+  --sidebar-w: 236px;
+  --list-w: 360px;
+  --content-max: 1440px;
 
-  /* безпечні зони телефона */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-
   --t-fast: 0.15s;
+  --t-spring: 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   color-scheme: light;
 }

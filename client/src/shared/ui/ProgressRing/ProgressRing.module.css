@@ -1,0 +1,32 @@
+.ring {
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+}
+.ring svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.track,
+.value {
+  fill: none;
+  stroke-width: 3.5;
+}
+.track {
+  stroke: var(--surface-sunken);
+}
+.value {
+  stroke: var(--blue);
+  stroke-linecap: round;
+}
+.full .value {
+  stroke: var(--done);
+}
+.text {
+  position: relative;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
