@@ -42,7 +42,8 @@ export async function sendWeb(sub: { endpoint: string; p256dh: string; auth: str
   try {
     await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, JSON.stringify(p), {
       TTL: 60 * 60 * 12,
-      urgency: p.urgent ? 'high' : 'normal',
+      // high — щоб Android не відкладав доставку в режимі економії заряду; усі наші push видимі людині
+      urgency: 'high',
       timeout: PUSH_TIMEOUT_MS,
     });
     return 'ok';

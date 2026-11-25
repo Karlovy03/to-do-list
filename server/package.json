@@ -10,7 +10,8 @@
     "test": "vitest run",
     "prisma:generate": "prisma generate",
     "migrate": "prisma migrate deploy",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "vapid": "node scripts/vapid.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
