@@ -14,6 +14,11 @@ jobs:
         with:
           node-version: 22
       - run: npm run check
+      - name: No native browser popups (<select>, native date inputs, title attribute)
+        run: |
+          if grep -rnE "<select|type=\"(date|time|datetime-local)\"|<[a-z][a-z0-9]*( [^>]*)? title=" client/src --include=*.tsx; then
+            echo "Use Picker / DateTimePicker / data-tip instead (styling-components)"; exit 1
+          fi
 
   server:
     name: Server
@@ -32,6 +37,8 @@ jobs:
         options: --health-cmd "pg_isready -U kontrol" --health-interval 5s --health-retries 20
     env:
       DATABASE_URL: postgresql://kontrol:kontrol@localhost:5432/kontrol
+      # права наскрізно на реальній базі (src/integration/*.db.spec.ts)
+      INTEGRATION: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,10 +49,10 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npx tsc --noEmit -p .
-      - run: npx vitest run
-      - run: npm run build
       - name: Migrations apply to an empty database
         run: npx prisma migrate deploy
+      - run: npx vitest run
+      - run: npm run build
       - name: Schema has no changes missing a migration
         run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
 
