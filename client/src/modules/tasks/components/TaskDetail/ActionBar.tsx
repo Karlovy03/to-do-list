@@ -7,9 +7,10 @@ import { Button, IconButton, Sheet } from '@/shared/ui';
 import { useTaskActions } from '../../hooks/useTaskActions';
 import { CommentSheet } from './CommentSheet';
 import { DeleteSheet } from './DeleteSheet';
+import { EditSheet } from './EditSheet';
 import css from './TaskDetail.module.css';
 
-type Open = null | 'return' | 'close' | 'cancel' | 'removeControl' | 'control' | 'more' | 'reopen' | 'delete';
+type Open = null | 'edit' | 'return' | 'close' | 'cancel' | 'removeControl' | 'control' | 'more' | 'reopen' | 'delete';
 
 /** Одна головна дія за правами сервера; рідкісні дії — у меню «⋯» */
 export function ActionBar({ task, floating, back }: { task: TaskDetail; floating: boolean; back: string }) {
@@ -21,6 +22,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
   const past = new Date(task.deadline).getTime() <= Date.now();
 
   const more = [
+    can.edit && { key: 'edit' as const, label: t('tasks.edit.action') },
     can.control && { key: 'control' as const, label: task.control ? t('tasks.actions.change_control') : t('control.control.set') },
     can.removeControl && { key: 'removeControl' as const, label: t('tasks.actions.remove_control') },
     can.closeEarly && { key: 'close' as const, label: t('tasks.actions.close_early') },
@@ -47,7 +49,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
   return (
     <>
       <div className={floating ? `${css.actions} ${css.floating}` : css.actions} data-print="hide">
-        {can.snooze && (
+        {can.snooze && (task.myAssignment || task.overdue) && (
           <Button variant="outline" size="l" icon="snooze" aria-label={t('tasks.actions.snooze_label')} onClick={() => a.snooze.mutate(undefined)}>
             {t('tasks.actions.snooze')}
           </Button>
@@ -74,7 +76,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
           busy={a.returnBack.isPending} onClose={close} onConfirm={(comment, deadline) => a.returnBack.mutate({ comment, deadline }, { onSuccess: close })} />
       )}
       {open === 'reopen' && (
-        <CommentSheet title={t('tasks.actions.reopen')} label={t('tasks.actions.cancel_reason')} required={false} needsDeadline confirmLabel={t('tasks.actions.reopen')}
+        <CommentSheet title={t('tasks.actions.reopen')} needsDeadline withComment={false} confirmLabel={t('tasks.actions.reopen')}
           busy={a.reopen.isPending} onClose={close} onConfirm={(_c, deadline) => a.reopen.mutate(deadline, { onSuccess: close })} />
       )}
       {open === 'close' && (
@@ -92,6 +94,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
       {open === 'delete' && (
         <DeleteSheet title={task.title} busy={a.remove.isPending} onClose={close} onConfirm={() => a.remove.mutate(undefined, { onSuccess: () => navigate(back, { replace: true }) })} />
       )}
+      {open === 'edit' && <EditSheet task={task} busy={a.update.isPending} onClose={close} onSave={(v) => a.update.mutate(v, { onSuccess: close })} />}
       {open === 'control' && <ControlSheet initial={task.control} busy={a.setControl.isPending} onClose={close} onSave={(v) => a.setControl.mutate(v, { onSuccess: close })} />}
     </>
   );

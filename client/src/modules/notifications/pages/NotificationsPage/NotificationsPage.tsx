@@ -2,17 +2,17 @@ import { errorText } from '@/shared/api/errors';
 import { pluralForm } from '@/shared/lib/plural';
 import { t } from '@/shared/lib/texts';
 import { dayKey } from '@/shared/lib/time';
-import { Button, Empty, ErrorState, Loading, PageHeader } from '@/shared/ui';
+import { Button, Empty, ErrorState, LoadMore, Loading, PageHeader } from '@/shared/ui';
 import { NotificationCard } from '../../components/NotificationCard/NotificationCard';
-import { useFeed, useMarkRead } from '../../hooks/useFeed';
+import { useFeedPages, useMarkRead } from '../../hooks/useFeed';
 import css from './NotificationsPage.module.css';
 
 /** Стрічка: «Сьогодні» і «Раніше»; торкання відкриває завдання і позначає прочитаним */
 export function NotificationsPage() {
-  const feed = useFeed();
+  const feed = useFeedPages();
   const markRead = useMarkRead();
-  const unread = feed.data?.unread ?? 0;
-  const items = feed.data?.items ?? [];
+  const unread = feed.first?.unread ?? 0;
+  const items = feed.items;
   const today = dayKey(new Date());
   const groups = [
     { id: 'today', items: items.filter((n) => dayKey(new Date(n.createdAt)) === today) },
@@ -48,6 +48,7 @@ export function NotificationsPage() {
           </section>
         ))
       )}
+      {feed.hasMore && <LoadMore busy={feed.loadingMore} onClick={feed.loadMore} />}
     </div>
   );
 }

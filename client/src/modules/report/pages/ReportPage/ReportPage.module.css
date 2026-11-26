@@ -30,7 +30,7 @@
   font-size: var(--fs-small);
 }
 .late b {
-  color: var(--late);
+  color: var(--late-ink);
 }
 @media print {
   .page {

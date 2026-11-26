@@ -13,6 +13,8 @@ export type TaskFull = Prisma.TaskGetPayload<{ include: typeof taskInclude }>;
 
 export const OPEN_STATUSES: TaskStatus[] = ['NEW', 'IN_PROGRESS'];
 export const LIST_PAGE = 50;
+/** «Довідка» друкується одним документом; стеля — лише запобіжник від випадкового величезного запиту */
+export const REPORT_CAP = 1000;
 
 export const taskRepository = {
   /** Разом із виконавцями, журналом, сповіщеннями й нагадуваннями (onDelete: Cascade) */
@@ -21,6 +23,9 @@ export const taskRepository = {
 
   list: (where: Prisma.TaskWhereInput, orderBy: Prisma.TaskOrderByWithRelationInput[], offset: number) =>
     prisma.task.findMany({ where, include: taskInclude, orderBy, skip: offset, take: LIST_PAGE + 1 }),
+
+  listAll: (where: Prisma.TaskWhereInput, orderBy: Prisma.TaskOrderByWithRelationInput[]) =>
+    prisma.task.findMany({ where, include: taskInclude, orderBy, take: REPORT_CAP }),
 
   count: (where: Prisma.TaskWhereInput) => prisma.task.count({ where }),
 

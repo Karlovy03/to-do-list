@@ -75,8 +75,8 @@
 .fab:active {
   transform: scale(0.94);
 }
-/* вузьке вікно: лише іконки */
-@media (max-width: 359px) {
+/* вузьке вікно (клас xs, < 340 px — обкладинка Flip): лише іконки; обкладинка Fold 344 — з підписами */
+@media (max-width: 339px) {
   .item {
     width: 56px;
   }

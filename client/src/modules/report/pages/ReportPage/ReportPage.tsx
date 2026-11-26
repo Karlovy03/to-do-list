@@ -1,4 +1,4 @@
-import { useTaskList } from '@/modules/tasks';
+import { useReport } from '@/modules/tasks';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
 import { formatFull } from '@/shared/lib/time';
@@ -8,8 +8,8 @@ import css from './ReportPage.module.css';
 
 /** Довідка для наради: підсумок і таблиця відкритих завдань на контролі; друк або збереження в PDF */
 export function ReportPage() {
-  const list = useTaskList({ scope: 'controlled', status: 'open' });
-  const tasks = [...(list.data?.items ?? [])].sort((a, b) => Number(b.overdue) - Number(a.overdue) || a.deadline.localeCompare(b.deadline));
+  const list = useReport();
+  const tasks = [...(list.data ?? [])].sort((a, b) => Number(b.overdue) - Number(a.overdue) || a.deadline.localeCompare(b.deadline));
   const overdue = tasks.filter((x) => x.overdue).length;
   const totals = [
     { key: 'total', n: tasks.length },

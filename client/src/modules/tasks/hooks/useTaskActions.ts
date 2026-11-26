@@ -3,7 +3,7 @@ import type { ControlInput } from '@/shared/api/types';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
 import { useToast } from '@/shared/ui';
-import { taskKeys, tasksApi, type NewTask } from '../api/tasks.api';
+import { taskKeys, tasksApi, type NewTask, type TaskChanges } from '../api/tasks.api';
 
 /** Будь-яка дія із завданням оновлює списки, картку і стрічку сповіщень */
 function useTaskMutation<V, R = unknown>(fn: (v: V) => Promise<R>, doneKey?: string) {
@@ -32,6 +32,7 @@ export function useTaskActions(id: string) {
     addNote: useTaskMutation((v: { text: string; progress?: number }) => tasksApi.addNote(id, v)),
     setControl: useTaskMutation((v: ControlInput) => tasksApi.setControl(id, v), 'tasks.toast.control_set'),
     removeControl: useTaskMutation((reason: string) => tasksApi.removeControl(id, reason), 'tasks.toast.control_removed'),
+    update: useTaskMutation((v: TaskChanges) => tasksApi.update(id, v), 'tasks.toast.updated'),
     remove: useTaskMutation(() => tasksApi.remove(id), 'tasks.toast.deleted'),
   };
 }

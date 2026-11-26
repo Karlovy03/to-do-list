@@ -58,7 +58,7 @@
   font-weight: 700;
 }
 .selected svg {
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .text {
   flex: 1;

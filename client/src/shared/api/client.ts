@@ -25,7 +25,7 @@ function url(path: string, query?: Query) {
   return `${API_BASE}/api${path}${qs ? `?${qs}` : ''}`;
 }
 
-export async function api<T>(path: string, init: { method?: string; body?: unknown; query?: Query } = {}): Promise<T> {
+export async function api<T>(path: string, init: { method?: string; body?: unknown; query?: Query; keepalive?: boolean } = {}): Promise<T> {
   const headers: Record<string, string> = {};
   if (init.body !== undefined) headers['Content-Type'] = 'application/json';
   if (isNative) {
@@ -40,6 +40,8 @@ export async function api<T>(path: string, init: { method?: string; body?: unkno
       headers,
       credentials: isNative ? 'omit' : 'same-origin',
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
+      // запит переживає закриття вкладки (відкладене «Виконано»)
+      keepalive: init.keepalive,
     });
   } catch {
     throw new ApiError(0, 'offline');

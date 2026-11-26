@@ -38,6 +38,11 @@ export const taskQueryService = {
     return { rows: rows.slice(0, LIST_PAGE), hasMore: rows.length > LIST_PAGE };
   },
 
+  /** Довідка для наради: усі відкриті контрольні, які людина бачить, — без сторінок */
+  report(viewer: Viewer) {
+    return taskRepository.listAll({ AND: [visibilityWhere(viewer), { isControlled: true, status: { in: OPEN_STATUSES } }] }, [{ deadline: 'asc' }]);
+  },
+
   async summary(viewer: Viewer, now = new Date()) {
     const visible = visibilityWhere(viewer);
     const open = { ...visible, status: { in: OPEN_STATUSES } };

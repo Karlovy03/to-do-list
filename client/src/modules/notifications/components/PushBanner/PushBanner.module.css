@@ -26,7 +26,7 @@
   height: 40px;
   border-radius: var(--r-control);
   background: var(--blue-soft);
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .text {
   flex: 1;

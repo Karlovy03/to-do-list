@@ -19,7 +19,7 @@
 .done {
   border-color: var(--done);
   background: var(--done-soft);
-  color: var(--done);
+  color: var(--done-ink);
 }
 .stack {
   display: inline-flex;
@@ -42,5 +42,5 @@
   color: var(--ink-3);
 }
 .text .doneNote {
-  color: var(--done);
+  color: var(--done-ink);
 }

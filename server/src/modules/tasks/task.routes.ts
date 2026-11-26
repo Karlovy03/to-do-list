@@ -5,6 +5,7 @@ export const tasksRouter = Router();
 
 tasksRouter.get('/', c.list);
 tasksRouter.get('/summary', c.summary);
+tasksRouter.get('/report', c.report);
 tasksRouter.post('/', c.create);
 tasksRouter.get('/:id', c.get);
 tasksRouter.patch('/:id', c.update);

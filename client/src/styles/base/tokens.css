@@ -27,11 +27,16 @@
   --late-soft: #fff1e0;
   --done: #12925a;
   --done-soft: #e3f5ec;
+  /* ті самі сигнали для тексту: яскраві значення вище дають на білому лише ~3.9:1, потрібно ≥ 4.5:1 (WCAG AA) */
+  --late-ink: #9a4f00;
+  --done-ink: #0b7247;
+  --blue-ink: #2a52d6;
 
   /* текст */
   --ink: #1d1d1d;
   --ink-2: #4a5568;
-  --ink-3: #7a879b;
+  /* ≥ 4.5:1 навіть на --surface-sunken (було #7a879b — 3.4:1 на --canvas) */
+  --ink-3: #5d6a80;
   --on-dark: #ffffff;
   --scrim: rgba(14, 26, 43, 0.32);
 

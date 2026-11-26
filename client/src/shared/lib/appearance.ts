@@ -3,9 +3,10 @@ const KEY = 'kt_no_glass';
 
 type DeviceNavigator = Navigator & { deviceMemory?: number };
 
+/** ≤ 4 ГБ пам'яті (docs/IDEAS.md №8). Кількість ядер не беремо: 4 ядра мають і звичайні ноутбуки */
 const weakDevice = () => {
   const n = navigator as DeviceNavigator;
-  return (n.deviceMemory !== undefined && n.deviceMemory <= 4) || navigator.hardwareConcurrency <= 4;
+  return n.deviceMemory !== undefined && n.deviceMemory <= 4;
 };
 
 export function getNoGlass(): boolean | null {

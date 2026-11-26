@@ -1,6 +1,8 @@
 /*
  * Підказка при наведенні замість системної (title): [data-tip="текст"].
  * Лише для миші — на дотикових екранах наведення немає, там підписи вже є в кнопках і aria-label.
+ * Прихована підказка — display: none, а не opacity: 0: невидимий, але присутній псевдоелемент
+ * біля правого краю розширював сторінку і давав горизонтальну прокрутку.
  */
 @media (hover: hover) and (pointer: fine) {
   [data-tip] {
@@ -21,15 +23,19 @@
     font-weight: 600;
     line-height: 1.2;
     white-space: nowrap;
-    opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -2px);
-    transition: opacity var(--t-fast), transform var(--t-fast);
+    transform: translate(-50%, 0);
+    display: none;
   }
   [data-tip]:hover::after,
   [data-tip]:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
-    transition-delay: 0.3s;
+    display: block;
+    animation: tip-in var(--t-fast) 0.3s both;
+  }
+}
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -2px);
   }
 }

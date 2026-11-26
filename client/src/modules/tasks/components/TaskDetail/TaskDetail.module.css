@@ -144,11 +144,11 @@
 }
 .info {
   background: var(--blue-soft);
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .ok {
   background: var(--done-soft);
-  color: var(--done);
+  color: var(--done-ink);
 }
 .control {
   background: var(--control-soft);
@@ -175,6 +175,12 @@
   -webkit-backdrop-filter: var(--glass-filter);
   backdrop-filter: var(--glass-filter);
   box-shadow: var(--glass-shadow);
+}
+/* обкладинка Flip 320: кнопки стискаються, а не виштовхують «⋯» за край */
+.actions > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .primary {
   flex: 1;

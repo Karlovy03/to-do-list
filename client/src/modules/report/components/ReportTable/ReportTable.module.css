@@ -34,7 +34,7 @@
   font-weight: 600;
 }
 .late .state {
-  color: var(--late);
+  color: var(--late-ink);
   font-weight: 700;
 }
 @media print {

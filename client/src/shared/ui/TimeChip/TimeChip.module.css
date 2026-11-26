@@ -30,11 +30,11 @@
 }
 .late {
   background: var(--late-soft);
-  color: var(--late);
+  color: var(--late-ink);
 }
 .done {
   background: var(--done-soft);
-  color: var(--done);
+  color: var(--done-ink);
 }
 .chip svg {
   flex: none;

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import type { TaskDetail, TaskUpdate } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { ago } from '@/shared/lib/time';
-import { Button, Icon, ProgressRing, TextArea, type IconName } from '@/shared/ui';
+import { Button, Icon, LoadMore, ProgressRing, TextArea, type IconName } from '@/shared/ui';
+import { useOlderUpdates } from '../../hooks/useTasks';
 import { useTaskActions } from '../../hooks/useTaskActions';
 import css from './TaskDetail.module.css';
 
@@ -26,6 +27,11 @@ export function Timeline({ task }: { task: TaskDetail }) {
     setProgress(task.progress);
   }
   const changed = text.trim().length > 0 || progress !== task.progress;
+  const [older, setOlder] = useState(false);
+  const history = useOlderUpdates(task.id, task.updates.length, older);
+  // нові записи зсувають offset — той самий запис може прийти двічі
+  const updates = [...new Map([...task.updates, ...history.items].map((u) => [u.id, u])).values()];
+  const hasOlder = older ? history.hasMore : task.hasMoreUpdates;
 
   const send = () =>
     actions.addNote.mutate({ text: text.trim(), progress: progress !== task.progress ? progress : undefined }, { onSuccess: () => setText('') });
@@ -58,7 +64,7 @@ export function Timeline({ task }: { task: TaskDetail }) {
         </div>
       )}
       <ol className={css.timeline}>
-        {task.updates.map((u) => {
+        {updates.map((u) => {
           const d = describe(u);
           return (
             <li key={u.id} className={css.event}>
@@ -76,6 +82,7 @@ export function Timeline({ task }: { task: TaskDetail }) {
           );
         })}
       </ol>
+      {hasOlder && <LoadMore busy={history.isFetching} onClick={() => (older ? history.loadMore() : setOlder(true))} />}
     </section>
   );
 }

@@ -51,14 +51,20 @@ export function useDeferredDone() {
     [qc, toast, forget],
   );
 
-  // запити, що чекають, при виході зі сторінки надсилаються одразу — дія людини не губиться
+  // запити, що чекають, при виході зі сторінки чи закритті вкладки надсилаються одразу — дія людини не губиться
   useEffect(() => {
     const map = timers.current;
-    return () => {
+    const flush = () => {
       for (const [id, timer] of map) {
         window.clearTimeout(timer);
-        void tasksApi.done(id).finally(() => qc.invalidateQueries({ queryKey: taskKeys.all }));
+        void tasksApi.done(id, '', true).finally(() => qc.invalidateQueries({ queryKey: taskKeys.all }));
       }
+      map.clear();
+    };
+    window.addEventListener('pagehide', flush);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      flush();
     };
   }, [qc]);
 

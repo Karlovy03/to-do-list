@@ -20,7 +20,7 @@
   margin-bottom: var(--s-2);
   border-radius: 28px;
   background: var(--blue-soft);
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .spinner {
   width: 28px;

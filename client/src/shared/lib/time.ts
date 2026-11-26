@@ -45,12 +45,6 @@ export function ago(iso: string) {
   return `${shortDuration(ms)} ${t('shared.time.ago')}`;
 }
 
-/** Значення для <input type="datetime-local"> у місцевому часі пристрою */
-export function toLocalInput(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
 /** «середа, 25 листопада» — підзаголовок великого заголовка */
 const longDateFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' });
 export const formatLongDate = (d: Date = new Date()) => longDateFmt.format(d);

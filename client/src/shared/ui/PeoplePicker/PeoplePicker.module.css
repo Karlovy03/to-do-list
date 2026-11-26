@@ -49,5 +49,20 @@
   color: var(--ink-3);
 }
 .check {
-  color: var(--blue);
+  color: var(--blue-ink);
+}
+.hint {
+  margin: 0;
+  padding: var(--s-2) var(--s-1);
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+.more {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 var(--s-2);
+  border: 0;
+  background: transparent;
+  color: var(--navy-ink);
+  font-weight: 600;
 }

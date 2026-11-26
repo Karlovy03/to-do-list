@@ -24,6 +24,10 @@ export const taskController = {
     await taskCrudService.remove(await viewerOf(req), param(req, 'id'));
     res.status(204).end();
   },
+  async report(req: Request, res: Response) {
+    const viewer = await viewerOf(req);
+    res.json((await taskQueryService.report(viewer)).map((t) => serializeTask(t, viewer)));
+  },
   async summary(req: Request, res: Response) {
     res.json(await taskQueryService.summary(await viewerOf(req)));
   },

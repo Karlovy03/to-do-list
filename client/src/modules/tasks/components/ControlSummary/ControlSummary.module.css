@@ -52,7 +52,7 @@
   font-weight: 600;
 }
 .late {
-  color: var(--late);
+  color: var(--late-ink);
 }
 .today {
   color: var(--sky-ink);

@@ -31,15 +31,15 @@
 }
 .late {
   background: var(--late-soft);
-  color: var(--late);
+  color: var(--late-ink);
 }
 .done {
   background: var(--done-soft);
-  color: var(--done);
+  color: var(--done-ink);
 }
 .info {
   background: var(--blue-soft);
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .text {
   flex: 1;

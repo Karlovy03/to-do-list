@@ -8,6 +8,7 @@ export * from './ControlSeal';
 export * from './Field';
 export * from './GroupHeader';
 export * from './Icon';
+export * from './LoadMore';
 export * from './PageHeader';
 export * from './PeoplePicker';
 export * from './Picker';

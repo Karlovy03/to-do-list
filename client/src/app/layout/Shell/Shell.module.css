@@ -3,29 +3,17 @@
   min-height: 100dvh;
   isolation: isolate;
 }
-/* холодне сяйво полотна (Figma: canvas/glow-a, glow-b) */
-.shell::before,
-.shell::after {
+/* холодне сяйво полотна (Figma: canvas/glow-a, glow-b). Градієнти на шарі розміром з вікно:
+   розмиті кола, що виходили за край, давали горизонтальну прокрутку на телефоні й важкий blur */
+.shell::before {
   content: '';
   position: fixed;
-  z-index: -1;
-  border-radius: 50%;
-  filter: blur(120px);
+  inset: 0;
+  z-index: var(--z-canvas);
   pointer-events: none;
-}
-.shell::before {
-  top: -180px;
-  left: -140px;
-  width: 520px;
-  height: 520px;
-  background: var(--glow-a);
-}
-.shell::after {
-  top: -140px;
-  right: -160px;
-  width: 460px;
-  height: 460px;
-  background: var(--glow-b);
+  background:
+    radial-gradient(420px circle at 110px 70px, var(--glow-a), transparent 70%),
+    radial-gradient(380px circle at calc(100% - 70px) 90px, var(--glow-b), transparent 70%);
 }
 .main {
   min-width: 0;

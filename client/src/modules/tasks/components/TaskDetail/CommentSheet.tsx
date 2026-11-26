@@ -5,8 +5,11 @@ import { Button, DateTimePicker, Field, FieldGroup, FormError, Sheet, TextArea, 
 
 interface Props {
   title: string;
-  label: string;
-  required: boolean;
+  /** підпис поля коментаря; без коментаря (withComment=false) не потрібен */
+  label?: string;
+  required?: boolean;
+  /** «Відновити» не має коментаря — лише новий термін */
+  withComment?: boolean;
   confirmLabel: string;
   variant?: ButtonVariant;
   /** термін минув — потрібен новий */
@@ -17,7 +20,7 @@ interface Props {
 }
 
 /** Аркуш з коментарем: повернення в роботу, дострокове закриття, скасування */
-export function CommentSheet({ title, label, required, confirmLabel, variant = 'primary', needsDeadline, busy, onConfirm, onClose }: Props) {
+export function CommentSheet({ title, label = '', required = false, withComment = true, confirmLabel, variant = 'primary', needsDeadline, busy, onConfirm, onClose }: Props) {
   const [comment, setComment] = useState('');
   const [deadline, setDeadline] = useState(() => kyivAt(2, 18));
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +41,11 @@ export function CommentSheet({ title, label, required, confirmLabel, variant = '
         </Button>
       }
     >
-      <Field label={label}>
-        <TextArea autoFocus value={comment} onChange={(e) => setComment(e.target.value)} />
-      </Field>
+      {withComment && (
+        <Field label={label}>
+          <TextArea autoFocus value={comment} onChange={(e) => setComment(e.target.value)} />
+        </Field>
+      )}
       {needsDeadline && (
         <FieldGroup label={t('tasks.actions.new_deadline')}>
           <DateTimePicker label={t('tasks.actions.new_deadline')} value={deadline} onChange={setDeadline} />

@@ -3,7 +3,7 @@ import { useSession } from '@/modules/auth';
 import { errorText } from '@/shared/api/errors';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { t } from '@/shared/lib/texts';
-import { Empty, ErrorState, Loading } from '@/shared/ui';
+import { Empty, ErrorState, LoadMore, Loading } from '@/shared/ui';
 import type { Scope } from '../../api/tasks.api';
 import { TaskDetail } from '../../components/TaskDetail/TaskDetail';
 import { TaskList } from '../../components/TaskList/TaskList';
@@ -32,7 +32,12 @@ export function TasksPage({ scope }: { scope: Scope }) {
   if (!me) return null;
   if (taskId && !wide) return <div className={css.page}><TaskDetail id={taskId} back={base || '/'} /></div>;
 
-  const tasks = [...(open.data?.items ?? []), ...(done.data?.items ?? [])];
+  const tasks = [...open.items, ...done.items];
+  const more = open.hasMore || done.hasMore;
+  const loadMore = () => {
+    if (open.hasMore) open.loadMore();
+    if (done.hasMore) done.loadMore();
+  };
   const list = open.isLoading ? (
     <Loading />
   ) : open.error ? (
@@ -40,7 +45,10 @@ export function TasksPage({ scope }: { scope: Scope }) {
   ) : tasks.length === 0 ? (
     <Empty icon="inbox" title={t(`tasks.list.${EMPTY[scope]}`)} hint={scope === 'mine' ? t('tasks.list.empty_hint') : undefined} />
   ) : (
-    <TaskList tasks={tasks} base={base} selectedId={taskId} compact={wc === 'xs'} hidden={deferred.pending} onSwipeDone={deferred.markDone} />
+    <>
+      <TaskList tasks={tasks} base={base} selectedId={taskId} compact={wc === 'xs'} hidden={deferred.pending} onSwipeDone={deferred.markDone} />
+      {more && <LoadMore onClick={loadMore} busy={open.loadingMore || done.loadingMore} />}
+    </>
   );
 
   return (

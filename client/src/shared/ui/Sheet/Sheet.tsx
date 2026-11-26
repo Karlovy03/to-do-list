@@ -15,6 +15,24 @@ interface Props {
   solid?: boolean;
 }
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/** Tab не виходить з аркуша під нього (aria-modal) — фокус ходить по колу */
+function trapFocus(e: KeyboardEvent, panel: HTMLElement) {
+  const items = [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)];
+  if (!items.length) return;
+  const first = items[0];
+  const last = items[items.length - 1];
+  const inside = panel.contains(document.activeElement);
+  if (e.shiftKey && (document.activeElement === first || !inside)) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
 /** Аркуш знизу на телефоні, діалог по центру на комп'ютері; Escape і клік по тлу закривають */
 export function Sheet({ title, onClose, children, footer, solid }: Props) {
   const panel = useRef<HTMLDivElement>(null);
@@ -23,7 +41,11 @@ export function Sheet({ title, onClose, children, footer, solid }: Props) {
   close.current = onClose;
   useEffect(() => {
     const layer = pushLayer();
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && layer.isTop() && close.current();
+    const onKey = (e: KeyboardEvent) => {
+      if (!layer.isTop()) return;
+      if (e.key === 'Escape') close.current();
+      if (e.key === 'Tab' && panel.current) trapFocus(e, panel.current);
+    };
     document.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     const prevFocus = document.activeElement as HTMLElement | null;

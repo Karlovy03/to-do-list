@@ -16,7 +16,7 @@
 }
 .trigger > svg {
   flex: none;
-  color: var(--blue);
+  color: var(--blue-ink);
 }
 .trigger:focus-visible,
 .open {

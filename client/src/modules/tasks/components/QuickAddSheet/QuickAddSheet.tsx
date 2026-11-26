@@ -66,7 +66,7 @@ export function QuickAddSheet({ me, onClose }: { me: Me; onClose: () => void }) 
 
         {lead && (
           <Field label={t('tasks.form.who')}>
-            <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} describe={describe} placeholder={t('tasks.form.who_search')} />
+            <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} describe={describe} unitId={me.unitId} placeholder={t('tasks.form.who_search')} />
           </Field>
         )}
 
