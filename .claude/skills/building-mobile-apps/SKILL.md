@@ -21,7 +21,7 @@ Node 20+, Android minSdk 23 / target 35, JDK 21, Android Studio; iOS 14+, Xcode 
 - Android 13+: дозвіл `POST_NOTIFICATIONS` (через `requestPermissions()`); канали `tasks` (важливість 4) і `urgent` (5) створюються під час старту. Важливість каналу після створення не змінюється — лише новий id каналу.
 - `google-services.json` кладемо в `android/app/`, **не комітимо**.
 - iOS: можливість Push Notifications і Time Sensitive Notifications у Xcode; AppDelegate передає токен у Capacitor. На iOS плагін дає **APNs-токен** — сервер шле напряму в APNs.
-- Натискання на сповіщення → `data.url` → навігація на `/tasks/:id`.
+- Натискання на сповіщення → `data.url` → навігація на `/t/:id`.
 
 ## Оновлення нативних проєктів
 ```bash
