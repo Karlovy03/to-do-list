@@ -1,7 +1,10 @@
+import { isNative } from '@/shared/lib/platform';
 import { t } from '@/shared/lib/texts';
 import { Button, Card, Icon } from '@/shared/ui';
 import { usePushDevice } from '../../hooks/usePushDevice';
 import css from './DevicePanel.module.css';
+
+const android = !isNative && /Android/.test(navigator.userAgent);
 
 const HINT = { denied: 'denied', unsupported: 'unsupported', ios_install: 'ios_hint' } as const;
 
@@ -19,6 +22,7 @@ export function DevicePanel() {
           <Button size="s" variant="outline" icon="bell" className={css.inline} disabled={test.isPending} onClick={() => test.mutate()}>
             {t('notifications.device.test')}
           </Button>
+          {android && <p className={css.hint}>{t('notifications.device.android_hint')}</p>}
         </>
       ) : state === 'off' ? (
         <Button size="m" variant="primary" icon="bell" className={css.inline} disabled={enable.isPending} onClick={() => enable.mutate()}>

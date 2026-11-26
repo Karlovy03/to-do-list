@@ -5,16 +5,16 @@ import { t } from '@/shared/lib/texts';
 import { useToast } from '@/shared/ui';
 import { enableWebPush, webPushState } from '../push/webPush';
 
-const key = ['push-state'] as const;
+export const PUSH_STATE_KEY = ['push-state'] as const;
 
 /** Стан сповіщень пристрою, увімкнення і пробне сповіщення */
 export function usePushDevice() {
   const qc = useQueryClient();
   const toast = useToast();
-  const state = useQuery({ queryKey: key, queryFn: webPushState, staleTime: Infinity });
+  const state = useQuery({ queryKey: PUSH_STATE_KEY, queryFn: webPushState, staleTime: Infinity });
   const enable = useMutation({
     mutationFn: enableWebPush,
-    onSuccess: (s) => qc.setQueryData(key, s),
+    onSuccess: (s) => qc.setQueryData(PUSH_STATE_KEY, s),
     onError: (err) => toast(errorText(err)),
   });
   const test = useMutation({

@@ -20,6 +20,7 @@ function manifest(root: string) {
   return JSON.stringify({
     name: n.title,
     short_name: n.name,
+    id: '/',
     lang: 'uk',
     start_url: '/',
     scope: '/',

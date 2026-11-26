@@ -22,6 +22,26 @@ self.addEventListener('push', (event) => {
   );
 });
 
+// The browser replaced the subscription (expired keys etc.): re-subscribe and tell the server.
+// On failure the app re-syncs on its next start.
+self.addEventListener('pushsubscriptionchange', (event) => {
+  const options = event.oldSubscription && event.oldSubscription.options;
+  if (!options) return;
+  event.waitUntil(
+    self.registration.pushManager
+      .subscribe(options)
+      .then((sub) =>
+        fetch('/api/push/subscribe', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sub.toJSON()),
+        }),
+      )
+      .catch(() => undefined),
+  );
+});
+
 self.addEventListener('notificationclick', (event) => {
   const { url, taskId } = event.notification.data || {};
   event.notification.close();

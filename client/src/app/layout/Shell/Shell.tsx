@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useLogout, useSession } from '@/modules/auth';
-import { useUnread, webPushEndpoint } from '@/modules/notifications';
+import { PushBanner, usePushSync, useUnread, webPushEndpoint } from '@/modules/notifications';
 import { QuickAddSheet } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
@@ -18,6 +18,7 @@ export function Shell() {
   const wc = useWindowClass();
   const [creating, setCreating] = useState(false);
   const { pathname } = useLocation();
+  usePushSync(me?.id);
 
   if (isLoading) return <Loading />;
   if (!me) return <Navigate to="/login" replace />;
@@ -33,6 +34,7 @@ export function Shell() {
       <main className={css.main}>
         <Outlet />
       </main>
+      {!focused && <PushBanner />}
       {phone && !focused && <BottomNav unread={unread} onCreate={open} />}
       {creating && <QuickAddSheet me={me} onClose={() => setCreating(false)} />}
     </div>

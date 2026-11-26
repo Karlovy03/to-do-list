@@ -3,3 +3,5 @@ export { DevicePanel } from './components/DevicePanel/DevicePanel';
 export { useFeed, useUnread, useMarkRead } from './hooks/useFeed';
 export { notificationKeys } from './api/notifications.api';
 export { webPushEndpoint } from './push/webPush';
+export { usePushSync } from './hooks/usePushSync';
+export { PushBanner } from './components/PushBanner/PushBanner';

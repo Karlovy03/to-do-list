@@ -71,7 +71,7 @@ export async function notify(input: NotifyInput, now = new Date()) {
   const payload = {
     title,
     body: pushBody,
-    url: `/tasks/${task.id}`,
+    url: `/t/${task.id}`,
     tag: `task-${task.id}-${input.event}`,
     taskId: task.id,
     urgent,
