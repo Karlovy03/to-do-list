@@ -29,4 +29,11 @@ fi
 
 timedatectl set-timezone Europe/Kyiv 2>/dev/null || true
 
+# daily database backup at 03:17 Kyiv time (scripts/backup.sh); log in backups/backup.log
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+OWNER="${SUDO_USER:-root}"
+mkdir -p "$REPO/backups" && chown "$OWNER" "$REPO/backups"
+printf '17 3 * * * %s cd %s && ./scripts/backup.sh >> backups/backup.log 2>&1\n' "$OWNER" "$REPO" > /etc/cron.d/kontrol-backup
+chmod 644 /etc/cron.d/kontrol-backup
+
 echo "Done. Close this SSH window and open it again, then continue with README (step .env)."

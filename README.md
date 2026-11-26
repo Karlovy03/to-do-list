@@ -58,10 +58,12 @@ Google дає одну невелику віртуальну машину **e2-m
 
 **Оновлення:** `git pull && ./scripts/deploy.sh`. Скрипт збирає новий образ, застосовує міграції бази, поки працює стара версія, і лише тоді перемикає (ADR-0009). Якщо крок не вдався — лишається попередня версія.
 
-**Резервна копія бази:**
+**Резервні копії бази.** `server-setup.sh` налаштовує щоденну копію о 03:17 (`scripts/backup.sh`): файли `backups/kontrol-<дата>.sql.gz`, зберігаються 14 днів, журнал — `backups/backup.log`. Копія на тому ж диску не рятує від втрати диска, тому варто копіювати її й поза машину: створіть бакет Cloud Storage у тому ж регіоні, дайте машині доступ «Storage: Read Write» і впишіть у `.env` `BACKUP_BUCKET=gs://<бакет>/kontrol`.
 ```bash
-docker compose exec -T db pg_dump -U kontrol kontrol | gzip > backup-$(date +%F).sql.gz
+./scripts/backup.sh                                   # копія зараз (напр. перед оновленням)
+./scripts/restore.sh backups/kontrol-<дата>.sql.gz    # відновлення: спитає підтвердження, зупинить застосунок
 ```
+Раз на місяць варто перевіряти, що копія відновлюється (на окремій машині чи в окрему базу) — неперевірена копія може виявитися порожньою саме тоді, коли знадобиться.
 
 ## Локальна розробка
 
@@ -73,7 +75,7 @@ npx prisma migrate deploy && npm run seed && npm run dev      # API на :3101
 cd ../client && npm ci && npm run dev                          # http://localhost:5173
 ```
 
-Демо-логіни (пароль `demo1234`): `chief`, `deputy` — керівники; `bondar`, `shevchenko`, `tkachenko` — виконавці; `admin` — адміністратор.
+Демо-логіни (пароль `demo1234`): `director` — директор; `chief`, `deputy` — керівники; `bondar`, `shevchenko`, `tkachenko` — виконавці; `admin` — адміністратор.
 
 **Перевірки перед комітом** (ті самі запускає GitHub Actions):
 ```bash
