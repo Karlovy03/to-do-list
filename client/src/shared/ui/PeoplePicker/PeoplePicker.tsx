@@ -11,16 +11,18 @@ interface Props {
   onChange: (ids: string[]) => void;
   multiple?: boolean;
   placeholder: string;
+  /** другий рядок під іменем; типово — посада */
+  describe?: (p: Person) => string;
 }
 
 /** Список людей із пошуком; обрані — вгорі */
-export function PeoplePicker({ people, selected, onChange, multiple = true, placeholder }: Props) {
+export function PeoplePicker({ people, selected, onChange, multiple = true, placeholder, describe = (p) => p.position }: Props) {
   const [query, setQuery] = useState('');
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const found = q ? people.filter((p) => `${p.fullName} ${p.position}`.toLowerCase().includes(q)) : people;
+    const found = q ? people.filter((p) => `${p.fullName} ${describe(p)}`.toLowerCase().includes(q)) : people;
     return [...found].sort((a, b) => Number(selected.includes(b.id)) - Number(selected.includes(a.id)));
-  }, [people, query, selected]);
+  }, [people, query, selected, describe]);
 
   const toggle = (id: string) => {
     if (!multiple) return onChange([id]);
@@ -38,7 +40,7 @@ export function PeoplePicker({ people, selected, onChange, multiple = true, plac
               <Avatar person={p} />
               <span className={css.text}>
                 <span className={css.name}>{p.fullName}</span>
-                <span className={css.position}>{p.position}</span>
+                <span className={css.position}>{describe(p)}</span>
               </span>
               {on && (
                 <span className={css.check}>

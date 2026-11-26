@@ -1,6 +1,6 @@
 // Форма відповідей API сервера — див. server/src/modules/<модуль>/<модуль>.serializer.ts
 
-export type Role = 'ADMIN' | 'MANAGER' | 'MEMBER';
+export type Role = 'ADMIN' | 'DIRECTOR' | 'MANAGER' | 'MEMBER';
 export type TaskStatus = 'NEW' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
 export type Priority = 'NORMAL' | 'HIGH' | 'URGENT';
 
@@ -9,8 +9,19 @@ export interface Person {
   fullName: string;
   position: string;
   role: Role;
+  /** підрозділ (ADR-0012); null — не вказано */
+  unitId: string | null;
   isActive: boolean;
   login?: string;
+}
+
+export interface Unit {
+  id: string;
+  name: string;
+  parentId: string | null;
+  /** скільки людей і дочірніх підрозділів (для заборони видалення непорожнього) */
+  users: number;
+  children: number;
 }
 
 export interface Prefs {

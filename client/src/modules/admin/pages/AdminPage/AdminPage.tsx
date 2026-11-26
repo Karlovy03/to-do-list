@@ -4,11 +4,12 @@ import { t } from '@/shared/lib/texts';
 import { PageHeader, Segmented } from '@/shared/ui';
 import { DirectoryTab } from '../../components/DirectoryTab/DirectoryTab';
 import { RemindersTab } from '../../components/RemindersTab/RemindersTab';
+import { UnitsTab } from '../../components/UnitsTab/UnitsTab';
 import { UsersTab } from '../../components/UsersTab/UsersTab';
 import css from './AdminPage.module.css';
 
-type Tab = 'users' | 'directory' | 'reminders';
-const TABS: Tab[] = ['users', 'directory', 'reminders'];
+type Tab = 'users' | 'units' | 'directory' | 'reminders';
+const TABS: Tab[] = ['users', 'units', 'directory', 'reminders'];
 
 /** Адміністрування; вкладка — в адресі (/admin/directory). Права перевіряє сервер, тут лише не показуємо */
 export function AdminPage() {
@@ -29,6 +30,7 @@ export function AdminPage() {
         />
       </div>
       {tab === 'users' && <UsersTab />}
+      {tab === 'units' && <UnitsTab />}
       {tab === 'directory' && <DirectoryTab />}
       {tab === 'reminders' && <RemindersTab />}
     </div>

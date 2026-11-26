@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { checkUser } from './userForm';
 
-const ok = { fullName: 'Карлов Ярослав Петрович', position: '', login: 'karlov@example.org', role: 'MEMBER' as const, password: 'demo12345' };
+const ok = { fullName: 'Карлов Ярослав Петрович', position: '', login: 'karlov@example.org', role: 'MEMBER' as const, unitId: null, password: 'demo12345' };
 
 describe('перевірка форми користувача', () => {
   it('пропускає пошту як логін', () => {

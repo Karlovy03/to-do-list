@@ -10,6 +10,7 @@ import { authRouter } from './modules/auth';
 import { profileRouter } from './modules/profile';
 import { usersRouter } from './modules/users';
 import { directoryRouter } from './modules/directory';
+import { unitsRouter } from './modules/units';
 import { settingsRouter } from './modules/settings';
 import { tasksRouter } from './modules/tasks';
 import { notificationsRouter, pushRouter } from './modules/notifications';
@@ -51,6 +52,7 @@ export function createApp() {
   api.use('/profile', profileRouter);
   api.use('/users', usersRouter);
   api.use('/directory', directoryRouter);
+  api.use('/units', unitsRouter);
   api.use('/settings', settingsRouter);
   api.use('/tasks', tasksRouter);
   api.use('/notifications', notificationsRouter);

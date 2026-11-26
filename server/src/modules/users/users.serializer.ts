@@ -6,6 +6,7 @@ export const publicUser = (u: User) => ({
   fullName: u.fullName,
   position: u.position,
   role: u.role,
+  unitId: u.unitId,
   isActive: u.isActive,
 });
 

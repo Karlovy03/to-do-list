@@ -1,3 +1,4 @@
+import type { Viewer } from './viewer';
 import type { User } from '@prisma/client';
 import { badRequest, conflict, forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
@@ -10,7 +11,7 @@ import { loadVisible } from './task-query.service';
 
 /** Зміни стану завдання (ADR-0002). Кожен перехід — умовний: подвійний клік дає 409, а не два переходи. */
 
-async function guard(actor: User, id: string, right: keyof TaskPermissions) {
+async function guard(actor: Viewer, id: string, right: keyof TaskPermissions) {
   const t = await loadVisible(id, actor);
   if (!permissions(t, actor)[right]) throw forbidden('transition_not_allowed');
   return t;
@@ -24,7 +25,7 @@ function nextDeadline(current: Date, proposed: Date | undefined, now: Date) {
 }
 
 export const taskLifecycleService = {
-  async start(actor: User, id: string) {
+  async start(actor: Viewer, id: string) {
     const t = await guard(actor, id, 'start');
     const task = await transaction(async (db) => {
       if (!(await taskRepository.transition(t.id, ['NEW'], { status: 'IN_PROGRESS' }, db))) throw conflict();
@@ -36,7 +37,7 @@ export const taskLifecycleService = {
   },
 
   /** «Виконано» за себе; завдання DONE, коли позначили всі виконавці */
-  async markDone(actor: User, id: string, comment: string) {
+  async markDone(actor: Viewer, id: string, comment: string) {
     const t = await guard(actor, id, 'markDone');
     const now = new Date();
     const { task, finished } = await transaction(async (db) => {
@@ -60,7 +61,7 @@ export const taskLifecycleService = {
   },
 
   /** Повернути виконане в роботу — лише з коментарем */
-  async returnBack(actor: User, id: string, comment: string, deadline?: Date) {
+  async returnBack(actor: Viewer, id: string, comment: string, deadline?: Date) {
     const t = await guard(actor, id, 'returnBack');
     const now = new Date();
     const newDeadline = nextDeadline(t.deadline, deadline, now);
@@ -87,7 +88,7 @@ export const taskLifecycleService = {
   },
 
   /** Автор/керівник закриває достроково — лише з коментарем */
-  async closeEarly(actor: User, id: string, comment: string) {
+  async closeEarly(actor: Viewer, id: string, comment: string) {
     const t = await guard(actor, id, 'closeEarly');
     const now = new Date();
     const task = await transaction(async (db) => {
@@ -107,7 +108,7 @@ export const taskLifecycleService = {
     return task;
   },
 
-  async cancel(actor: User, id: string, comment: string) {
+  async cancel(actor: Viewer, id: string, comment: string) {
     const t = await guard(actor, id, 'cancel');
     const task = await transaction(async (db) => {
       if (!(await taskRepository.transition(t.id, OPEN_STATUSES, { status: 'CANCELLED', completedAt: new Date() }, db))) throw conflict();
@@ -118,7 +119,7 @@ export const taskLifecycleService = {
     return task;
   },
 
-  async reopen(actor: User, id: string, deadline?: Date) {
+  async reopen(actor: Viewer, id: string, deadline?: Date) {
     const t = await guard(actor, id, 'reopen');
     const now = new Date();
     const newDeadline = nextDeadline(t.deadline, deadline, now);

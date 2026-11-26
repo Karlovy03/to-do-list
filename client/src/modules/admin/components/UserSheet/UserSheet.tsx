@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import type { Person, Role } from '@/shared/api/types';
 import { errorText } from '@/shared/api/errors';
+import { useUnits } from '@/shared/api/people';
+import { unitPath } from '@/shared/lib/units';
 import { t } from '@/shared/lib/texts';
-import { Button, Field, FieldGroup, FormError, Input, Segmented, Sheet, Switch } from '@/shared/ui';
+import { Button, Chip, Chips, Field, FieldGroup, FormError, Input, Picker, Sheet, Switch } from '@/shared/ui';
 import type { UserInput } from '../../api/admin.api';
 import { useSaveUser } from '../../hooks/useAdmin';
 import { checkUser, type UserFieldErrors } from '../../lib/userForm';
 
-const ROLES: Role[] = ['MEMBER', 'MANAGER', 'ADMIN'];
+const ROLES: Role[] = ['MEMBER', 'MANAGER', 'DIRECTOR', 'ADMIN'];
+const NO_UNIT = '';
 
 /** Новий користувач або редагування; порожній пароль при редагуванні — без змін */
 export function UserSheet({ user, onClose }: { user: Person | null; onClose: () => void }) {
   const save = useSaveUser();
-  const [v, setV] = useState<UserInput>({ login: user?.login ?? '', fullName: user?.fullName ?? '', position: user?.position ?? '', role: user?.role ?? 'MEMBER', isActive: user?.isActive ?? true, password: '' });
+  const units = useUnits();
+  const unitOptions = [
+    { value: NO_UNIT, label: t('admin.users.unit_none') },
+    ...(units.data ?? []).map((u) => ({ value: u.id, label: unitPath(u.id, units.data ?? []) })).sort((a, b) => a.label.localeCompare(b.label, 'uk')),
+  ];
+  const [v, setV] = useState<UserInput>({ login: user?.login ?? '', fullName: user?.fullName ?? '', position: user?.position ?? '', role: user?.role ?? 'MEMBER', unitId: user?.unitId ?? null, isActive: user?.isActive ?? true, password: '' });
   const [errors, setErrors] = useState<UserFieldErrors>({});
   const set = (patch: Partial<UserInput>) => setV((x) => ({ ...x, ...patch }));
   const err = (f: keyof UserFieldErrors) => (errors[f] ? t(errors[f]) : null);
@@ -48,8 +56,17 @@ export function UserSheet({ user, onClose }: { user: Person | null; onClose: () 
         <Input type="password" autoComplete="new-password" value={v.password} onChange={(e) => set({ password: e.target.value })} />
       </Field>
       <FieldGroup label={t('admin.users.role')}>
-        <Segmented<Role> label={t('admin.users.role')} value={v.role} onChange={(role) => set({ role })} options={ROLES.map((r) => ({ value: r, label: t(`admin.roles.${r}`) }))} />
+        <Chips>
+          {ROLES.map((r) => (
+            <Chip key={r} on={v.role === r} onClick={() => set({ role: r })}>
+              {t(`admin.roles.${r}`)}
+            </Chip>
+          ))}
+        </Chips>
       </FieldGroup>
+      <Field label={t('admin.users.unit')} hint={v.role === 'MANAGER' ? t('admin.users.unit_hint') : undefined}>
+        <Picker searchable label={t('admin.users.unit')} value={v.unitId ?? NO_UNIT} options={unitOptions} onChange={(id) => set({ unitId: id || null })} />
+      </Field>
       {user && <Switch checked={!!v.isActive} label={t('admin.common.is_active')} onChange={(isActive) => set({ isActive })} />}
       <FormError>{save.error ? errorText(save.error) : null}</FormError>
     </Sheet>

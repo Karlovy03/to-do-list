@@ -1,3 +1,4 @@
+import type { Viewer } from './viewer';
 import type { Prisma, User } from '@prisma/client';
 import { notFound } from '../../core/http-error';
 import { canView, visibilityWhere } from './task.policy';
@@ -6,14 +7,14 @@ import { JOURNAL_PAGE, journalRepository } from './journal.repository';
 import type { ListQuery } from './task.schemas';
 
 /** Завдання, яке людина має право бачити; інакше 404 — не розкриваємо існування */
-export async function loadVisible(id: string, viewer: User) {
+export async function loadVisible(id: string, viewer: Viewer) {
   const t = await taskRepository.findById(id);
   if (!t || !canView(t, viewer)) throw notFound();
   return t;
 }
 
 export const taskQueryService = {
-  async list(viewer: User, q: ListQuery) {
+  async list(viewer: Viewer, q: ListQuery) {
     const and: Prisma.TaskWhereInput[] = [visibilityWhere(viewer)];
     if (q.scope === 'mine') and.push({ assignees: { some: { userId: viewer.id } } });
     if (q.scope === 'authored') and.push({ OR: [{ authorId: viewer.id }, { controllerUserId: viewer.id }, { controlSetById: viewer.id }] });
@@ -37,7 +38,7 @@ export const taskQueryService = {
     return { rows: rows.slice(0, LIST_PAGE), hasMore: rows.length > LIST_PAGE };
   },
 
-  async summary(viewer: User, now = new Date()) {
+  async summary(viewer: Viewer, now = new Date()) {
     const visible = visibilityWhere(viewer);
     const open = { ...visible, status: { in: OPEN_STATUSES } };
     const [mine, controlled, overdue, dueSoon] = await Promise.all([
@@ -49,7 +50,7 @@ export const taskQueryService = {
     return { mine, controlled, overdue, dueSoon };
   },
 
-  async journal(id: string, viewer: User, offset: number) {
+  async journal(id: string, viewer: Viewer, offset: number) {
     await loadVisible(id, viewer);
     const rows = await journalRepository.page(id, offset);
     return { rows: rows.slice(0, JOURNAL_PAGE), hasMore: rows.length > JOURNAL_PAGE };

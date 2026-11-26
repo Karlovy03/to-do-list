@@ -8,8 +8,9 @@ datasource db {
 }
 
 enum Role {
-  ADMIN // керує користувачами, довідником і загальними налаштуваннями; права керівника
-  MANAGER // ставить завдання будь-кому, бере на контроль, керує всіма завданнями (ADR-0003)
+  ADMIN // керує користувачами, структурою, довідником і налаштуваннями; бачить і керує всіма завданнями
+  DIRECTOR // бачить і керує всіма завданнями, без адмінки (ADR-0012)
+  MANAGER // бачить і керує завданнями своєї вертикалі підрозділів; доручає будь-кому (ADR-0012)
   MEMBER // виконує свої завдання
 }
 
@@ -70,6 +71,9 @@ model User {
   fullName     String
   position     String   @default("")
   role         Role     @default(MEMBER)
+  // підрозділ задає лише адміністратор; від нього залежить вертикаль керівника (ADR-0012)
+  unitId       String?
+  unit         Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
   isActive     Boolean  @default(true)
   // зміна пароля, ролі чи вимкнення збільшує версію — старі токени стають недійсними
   tokenVersion Int      @default(0)
@@ -95,6 +99,21 @@ model User {
   devices       DeviceToken[]
   reminders     ReminderLog[]
   snoozes       Snooze[]
+
+  @@index([unitId])
+}
+
+// Структура: підрозділ і підрозділи, що входять у нього (будь-яка глибина)
+model Unit {
+  id        String   @id @default(cuid())
+  name      String
+  parentId  String?
+  parent    Unit?    @relation("UnitTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  Unit[]   @relation("UnitTree")
+  users     User[]
+  createdAt DateTime @default(now())
+
+  @@index([parentId])
 }
 
 // Довідник осіб, які ставлять контроль, але не мають акаунта

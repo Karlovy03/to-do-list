@@ -42,4 +42,4 @@ export function currentUser(req: Request): User {
   return req.user;
 }
 
-export const isManager = (u: Pick<User, 'role'>) => u.role === 'ADMIN' || u.role === 'MANAGER';
+export const isManager = (u: Pick<User, 'role'>) => u.role === 'ADMIN' || u.role === 'DIRECTOR' || u.role === 'MANAGER';

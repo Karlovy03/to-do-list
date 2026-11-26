@@ -1,13 +1,19 @@
 import { api } from '@/shared/api/client';
-import type { DirectoryPerson, Person, ReminderSettings, Role } from '@/shared/api/types';
+import type { DirectoryPerson, Person, ReminderSettings, Role, Unit } from '@/shared/api/types';
 
 export interface UserInput {
   login: string;
   fullName: string;
   position: string;
   role: Role;
+  unitId: string | null;
   password?: string;
   isActive?: boolean;
+}
+
+export interface UnitInput {
+  name: string;
+  parentId: string | null;
 }
 
 export type PersonInput = Pick<DirectoryPerson, 'fullName' | 'position' | 'organization'> & { isActive?: boolean };
@@ -25,6 +31,9 @@ export const adminApi = {
   directory: () => api<DirectoryPerson[]>('/directory', { query: { all: '1' } }),
   createPerson: (v: PersonInput) => api<DirectoryPerson>('/directory', { method: 'POST', body: v }),
   updatePerson: (id: string, v: Partial<PersonInput>) => api<DirectoryPerson>(`/directory/${id}`, { method: 'PATCH', body: v }),
+  createUnit: (v: UnitInput) => api<Unit>('/units', { method: 'POST', body: v }),
+  updateUnit: (id: string, v: Partial<UnitInput>) => api<Unit>(`/units/${id}`, { method: 'PATCH', body: v }),
+  removeUnit: (id: string) => api<void>(`/units/${id}`, { method: 'DELETE' }),
   settings: () => api<ReminderSettings>('/settings'),
   saveSettings: (v: ReminderSettings) => api<ReminderSettings>('/settings', { method: 'PUT', body: v }),
 };

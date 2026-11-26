@@ -5,5 +5,5 @@
   padding: calc(var(--s-4) + var(--safe-top)) var(--s-4) var(--s-4);
 }
 .tabs {
-  max-width: 520px;
+  max-width: 680px;
 }

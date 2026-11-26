@@ -1,3 +1,4 @@
+import type { Viewer } from './viewer';
 import type { User } from '@prisma/client';
 import { forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
@@ -10,7 +11,7 @@ import { loadVisible } from './task-query.service';
 
 export const taskProgressService = {
   /** Необов'язкова нотатка про хід і/або відсоток готовності */
-  async addNote(actor: User, id: string, input: { text: string; progress?: number }) {
+  async addNote(actor: Viewer, id: string, input: { text: string; progress?: number }) {
     const t = await loadVisible(id, actor);
     if (!permissions(t, actor).note) throw forbidden();
     const progressChanged = input.progress !== undefined && input.progress !== t.progress;
@@ -45,7 +46,7 @@ export const taskProgressService = {
     return task;
   },
 
-  async snooze(actor: User, id: string, minutes: number) {
+  async snooze(actor: Viewer, id: string, minutes: number) {
     const t = await loadVisible(id, actor);
     if (!permissions(t, actor).snooze) throw forbidden();
     return snoozeReminders(t.id, actor.id, minutes);

@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { canAssignTo, canControlOnCreate, canView, permissions, type PolicyTask, type PolicyUser } from './task.policy';
+import { canAssignTo, canControlOnCreate, canView, permissions, visibilityWhere, type PolicyTask, type PolicyUser } from './task.policy';
 
-const chief: PolicyUser = { id: 'chief', role: 'MANAGER' };
-const otherManager: PolicyUser = { id: 'deputy', role: 'MANAGER' };
-const admin: PolicyUser = { id: 'admin', role: 'ADMIN' };
+// ADR-0012: вертикаль — відділ A входить в управління; відділ B — сусідній
+const chief: PolicyUser = { id: 'chief', role: 'MANAGER', scope: new Set(['dept', 'a', 'b']) };
+const otherManager: PolicyUser = { id: 'deputy', role: 'MANAGER', scope: new Set(['a']) };
+const foreignManager: PolicyUser = { id: 'headB', role: 'MANAGER', scope: new Set(['b']) };
+const noUnitManager: PolicyUser = { id: 'lost', role: 'MANAGER', scope: new Set() };
+const admin: PolicyUser = { id: 'admin', role: 'ADMIN', scope: 'all' };
+const director: PolicyUser = { id: 'dir', role: 'DIRECTOR', scope: 'all' };
 const exec: PolicyUser = { id: 'exec', role: 'MEMBER' };
 const stranger: PolicyUser = { id: 'stranger', role: 'MEMBER' };
 const controller: PolicyUser = { id: 'ctrl', role: 'MEMBER' };
@@ -13,13 +17,17 @@ const task = (over: Partial<PolicyTask> = {}): PolicyTask => ({
   authorId: 'chief',
   isControlled: true,
   controllerUserId: 'ctrl',
-  assignees: [{ userId: 'exec', doneAt: null }, { userId: 'exec2', doneAt: null }],
+  author: { unitId: 'dept' },
+  assignees: [
+    { userId: 'exec', doneAt: null, user: { unitId: 'a' } },
+    { userId: 'exec2', doneAt: null, user: { unitId: 'a' } },
+  ],
   ...over,
 });
 
 describe('видимість', () => {
-  it('автор, виконавець, контролер-користувач і будь-який керівник бачать завдання', () => {
-    for (const u of [chief, exec, controller, otherManager, admin]) expect(canView(task(), u)).toBe(true);
+  it('автор, виконавець, контролер-користувач, керівник вертикалі, директор і адмін бачать завдання', () => {
+    for (const u of [chief, exec, controller, otherManager, admin, director]) expect(canView(task(), u)).toBe(true);
   });
   it('сторонній виконавець не бачить завдання', () => {
     expect(canView(task(), stranger)).toBe(false);
@@ -48,15 +56,15 @@ describe('дії виконавця', () => {
   });
 });
 
-describe('рішення керівника (ADR-0003)', () => {
-  it('будь-який керівник повертає виконане завдання в роботу', () => {
+describe('рішення керівника (ADR-0012)', () => {
+  it('керівник вертикалі повертає виконане завдання в роботу', () => {
     expect(permissions(task({ status: 'DONE' }), otherManager).returnBack).toBe(true);
     expect(permissions(task({ status: 'DONE' }), controller).returnBack).toBe(true);
   });
   it('повернути можна лише виконане', () => {
     expect(permissions(task(), chief).returnBack).toBe(false);
   });
-  it('закрити достроково й скасувати може автор або керівник, лише відкрите', () => {
+  it('закрити достроково й скасувати може автор або керівник вертикалі, лише відкрите', () => {
     expect(permissions(task(), chief).closeEarly).toBe(true);
     expect(permissions(task(), otherManager).cancel).toBe(true);
     expect(permissions(task({ status: 'DONE' }), chief).closeEarly).toBe(false);
@@ -68,7 +76,9 @@ describe('рішення керівника (ADR-0003)', () => {
 });
 
 describe('контроль', () => {
-  it('змінити умови контролю може керівник або сам контролер-користувач', () => {
+  it('змінити умови контролю може керівник вертикалі або сам контролер-користувач', () => {
+    expect(permissions(task(), otherManager).control).toBe(true);
+    expect(permissions(task(), foreignManager).control).toBe(false);
     expect(permissions(task(), chief).control).toBe(true);
     expect(permissions(task(), controller).control).toBe(true);
     expect(permissions(task(), exec).control).toBe(false);
@@ -91,13 +101,55 @@ describe('кому можна доручати', () => {
 });
 
 describe('видалення (ADR-0011)', () => {
-  it('автор і адміністратор можуть видалити завдання, зокрема на контролі й завершене', () => {
+  it('автор, адміністратор і директор можуть видалити завдання, зокрема на контролі й завершене', () => {
     for (const status of ['NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'] as const) {
-      expect(permissions(task({ status }), chief).delete).toBe(true);
-      expect(permissions(task({ status }), admin).delete).toBe(true);
+      for (const u of [chief, admin, director]) expect(permissions(task({ status }), u).delete).toBe(true);
     }
   });
   it('інший керівник, виконавець і контролер-користувач не можуть видалити чуже завдання', () => {
     for (const u of [otherManager, exec, controller, stranger]) expect(permissions(task(), u).delete).toBe(false);
+  });
+});
+
+describe('вертикаль підрозділів (ADR-0012)', () => {
+  const inB = task({ authorId: 'headB', author: { unitId: 'b' }, assignees: [{ userId: 'x', doneAt: null, user: { unitId: 'b' } }] });
+
+  it('керівник бачить і керує завданнями нижчого підрозділу своєї вертикалі', () => {
+    expect(canView(task(), chief)).toBe(true);
+    expect(permissions(task(), chief).cancel).toBe(true);
+  });
+  it('керівник НЕ бачить і НЕ керує завданнями сусіднього відділу', () => {
+    expect(canView(inB, otherManager)).toBe(false);
+    const p = permissions(inB, otherManager);
+    expect([p.cancel, p.closeEarly, p.control, p.edit, p.delete]).toEqual([false, false, false, false, false]);
+  });
+  it('керівник НЕ бачить завдань вищого підрозділу, якщо в них немає людей його вертикалі', () => {
+    const top = task({ authorId: 'boss', author: { unitId: 'dept' }, assignees: [{ userId: 'y', doneAt: null, user: { unitId: 'dept' } }] });
+    expect(canView(top, otherManager)).toBe(false);
+  });
+  it('достатньо одного виконавця з вертикалі, щоб керівник бачив завдання', () => {
+    const mixed = task({ author: { unitId: 'b' }, assignees: [{ userId: 'x', doneAt: null, user: { unitId: 'b' } }, { userId: 'z', doneAt: null, user: { unitId: 'a' } }] });
+    expect(canView(mixed, otherManager)).toBe(true);
+  });
+  it('керівник без підрозділу бачить лише завдання, де він учасник', () => {
+    expect(canView(task(), noUnitManager)).toBe(false);
+    expect(canView(task({ authorId: 'lost' }), noUnitManager)).toBe(true);
+  });
+  it('директор бачить і керує завданнями будь-якого підрозділу', () => {
+    expect(canView(inB, director)).toBe(true);
+    expect(permissions(inB, director).cancel).toBe(true);
+  });
+  it('доручати будь-кому можуть керівник, директор і адмін; ставити на контроль — теж', () => {
+    for (const u of [chief, foreignManager, director, admin]) {
+      expect(canAssignTo(u, ['x', 'y'])).toBe(true);
+      expect(canControlOnCreate(u)).toBe(true);
+    }
+  });
+  it('умова для списків: адмін і директор — без обмежень, керівник — свої + вертикаль, виконавець — лише свої', () => {
+    expect(visibilityWhere(admin)).toEqual({});
+    expect(visibilityWhere(director)).toEqual({});
+    expect(JSON.stringify(visibilityWhere(otherManager))).toContain('"in":["a"]');
+    expect(JSON.stringify(visibilityWhere(noUnitManager))).not.toContain('"in"');
+    expect(JSON.stringify(visibilityWhere(exec))).not.toContain('unitId');
   });
 });

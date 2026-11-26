@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { ControlInput, Me, Priority } from '@/shared/api/types';
-import { usePeople } from '@/shared/api/people';
+import type { ControlInput, Me, Person, Priority } from '@/shared/api/types';
+import { unitPath } from '@/shared/lib/units';
+import { usePeople, useUnits } from '@/shared/api/people';
 import { ControlFields, isComplete, normalize } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
 import { Button, Chip, Chips, DateTimePicker, Field, FormError, PeoplePicker, Sheet, Switch, TextArea } from '@/shared/ui';
@@ -15,6 +16,8 @@ const PRIORITIES: Priority[] = ['NORMAL', 'HIGH', 'URGENT'];
 export function QuickAddSheet({ me, onClose }: { me: Me; onClose: () => void }) {
   const lead = me.role !== 'MEMBER';
   const people = usePeople();
+  const units = useUnits();
+  const describe = (p: Person) => [p.position, unitPath(p.unitId, units.data ?? [])].filter(Boolean).join(' · ');
   const create = useCreateTask();
   const navigate = useNavigate();
   const quick = useMemo(() => quickDeadlines(), []);
@@ -63,7 +66,7 @@ export function QuickAddSheet({ me, onClose }: { me: Me; onClose: () => void }) 
 
         {lead && (
           <Field label={t('tasks.form.who')}>
-            <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} placeholder={t('tasks.form.who_search')} />
+            <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} describe={describe} placeholder={t('tasks.form.who_search')} />
           </Field>
         )}
 

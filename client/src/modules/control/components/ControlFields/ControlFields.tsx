@@ -1,5 +1,6 @@
 import type { ControlBy, ControlInput } from '@/shared/api/types';
-import { useDirectory, usePeople } from '@/shared/api/people';
+import { useDirectory, usePeople, useUnits } from '@/shared/api/people';
+import { unitPath } from '@/shared/lib/units';
 import { t } from '@/shared/lib/texts';
 import { Field, FieldGroup, Input, Picker, Segmented } from '@/shared/ui';
 import { IntervalChips } from '../IntervalChips/IntervalChips';
@@ -17,6 +18,7 @@ const empty: Record<Kind, ControlBy> = {
 /** Хто поставив на контроль (я / користувач / довідник / інша особа), підстава, інтервал нагадувань */
 export function ControlFields({ value, onChange }: { value: ControlInput; onChange: (v: ControlInput) => void }) {
   const people = usePeople();
+  const units = useUnits();
   const directory = useDirectory();
   const set = (patch: Partial<ControlInput>) => onChange({ ...value, ...patch });
   const by = value.by;
@@ -38,7 +40,7 @@ export function ControlFields({ value, onChange }: { value: ControlInput; onChan
           placeholder={t('control.control.pick_user')}
           value={by.userId}
           onChange={(userId) => set({ by: { type: 'user', userId } })}
-          options={(people.data ?? []).filter((p) => p.isActive).map((p) => ({ value: p.id, label: p.fullName, hint: p.position }))}
+          options={(people.data ?? []).filter((p) => p.isActive).map((p) => ({ value: p.id, label: p.fullName, hint: [p.position, unitPath(p.unitId, units.data ?? [])].filter(Boolean).join(' · ') }))}
         />
       )}
       {by.type === 'directory' && (

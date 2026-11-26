@@ -1,3 +1,4 @@
+import type { Viewer } from './viewer';
 import type { User } from '@prisma/client';
 import { forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
@@ -11,7 +12,7 @@ import { loadVisible } from './task-query.service';
 
 export const taskControlService = {
   /** Поставити на контроль або змінити умови; таймер нагадувань починається заново */
-  async set(actor: User, id: string, input: ControlInput) {
+  async set(actor: Viewer, id: string, input: ControlInput) {
     const t = await loadVisible(id, actor);
     if (!permissions(t, actor).control) throw forbidden();
     const fields = await resolveControl(input, actor);
@@ -30,7 +31,7 @@ export const taskControlService = {
     return task;
   },
 
-  async remove(actor: User, id: string, reason: string) {
+  async remove(actor: Viewer, id: string, reason: string) {
     const t = await loadVisible(id, actor);
     if (!permissions(t, actor).removeControl) throw forbidden();
     // отримувачі — за станом ДО зняття, щоб дізнався й колишній контролер

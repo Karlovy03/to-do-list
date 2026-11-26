@@ -6,7 +6,8 @@ import bcrypt from 'bcryptjs';
 import { parse } from 'yaml';
 
 interface Fixture {
-  users: { login: string; fullName: string; position: string; role: Role }[];
+  units: { key: string; name: string; parent?: string }[];
+  users: { login: string; fullName: string; position: string; role: Role; unit?: string }[];
   directory: { key: string; fullName: string; position: string; organization: string }[];
   tasks: {
     title: string;
@@ -30,9 +31,15 @@ async function main() {
   const data = parse(fs.readFileSync(path.join(__dirname, 'fixtures/demo.yml'), 'utf8')) as Fixture;
   const passwordHash = await bcrypt.hash('demo1234', 10);
 
+  const units = new Map<string, string>();
+  for (const u of data.units) {
+    const parentId = u.parent ? units.get(u.parent) : undefined;
+    units.set(u.key, (await prisma.unit.create({ data: { name: u.name, parentId } })).id);
+  }
   const users = new Map<string, string>();
-  for (const u of data.users) {
-    const row = await prisma.user.upsert({ where: { login: u.login }, update: {}, create: { ...u, passwordHash } });
+  for (const { unit, ...u } of data.users) {
+    const unitId = unit ? units.get(unit) : undefined;
+    const row = await prisma.user.upsert({ where: { login: u.login }, update: { unitId }, create: { ...u, unitId, passwordHash } });
     users.set(u.login, row.id);
   }
   const directory = new Map<string, string>();

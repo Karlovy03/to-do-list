@@ -1,3 +1,4 @@
+import type { Viewer } from './viewer';
 import type { User } from '@prisma/client';
 import type { z } from 'zod';
 import { badRequest, forbidden } from '../../core/http-error';
@@ -12,7 +13,7 @@ import { taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
 import type { createTaskSchema, updateTaskSchema } from './task.schemas';
 
-async function checkAssignees(actor: User, ids: string[]) {
+async function checkAssignees(actor: Viewer, ids: string[]) {
   const unique = [...new Set(ids)];
   if (!canAssignTo(actor, unique)) throw forbidden('only_self_assign');
   if ((await usersRepository.countActiveByIds(unique)) !== unique.length) throw badRequest('assignee_not_found');
@@ -20,7 +21,7 @@ async function checkAssignees(actor: User, ids: string[]) {
 }
 
 export const taskCrudService = {
-  async create(actor: User, input: z.infer<typeof createTaskSchema>) {
+  async create(actor: Viewer, input: z.infer<typeof createTaskSchema>) {
     if (input.control && !canControlOnCreate(actor)) throw forbidden('control_requires_manager');
     const assigneeIds = await checkAssignees(actor, input.assigneeIds);
     const control = input.control ? await resolveControl(input.control, actor) : NO_CONTROL;
@@ -62,7 +63,7 @@ export const taskCrudService = {
     return task;
   },
 
-  async update(actor: User, id: string, input: z.infer<typeof updateTaskSchema>) {
+  async update(actor: Viewer, id: string, input: z.infer<typeof updateTaskSchema>) {
     const t = await loadVisible(id, actor);
     if (!permissions(t, actor).edit) throw forbidden();
 
@@ -107,7 +108,7 @@ export const taskCrudService = {
     return task;
   },
 
-  async remove(actor: User, id: string) {
+  async remove(actor: Viewer, id: string) {
     const task = await loadVisible(id, actor);
     if (!permissions(task, actor).delete) throw forbidden('delete_not_allowed');
     await taskRepository.remove(task.id);

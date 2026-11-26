@@ -1,12 +1,19 @@
 # Демо-дані для показу. Пароль у всіх демо-користувачів: demo1234
 # Терміни задано відносно моменту наповнення: deadlineInHours (від'ємне — уже прострочено).
 
+# Структура (ADR-0012): parent — ключ батьківського підрозділу
+units:
+  - { key: dept, name: "Управління організаційно-аналітичного забезпечення" }
+  - { key: analytics, name: "Відділ аналітики", parent: dept }
+  - { key: control, name: "Відділ контролю", parent: dept }
+
 users:
-  - { login: chief, fullName: "Коваленко Олександр", position: "Начальник управління", role: MANAGER }
-  - { login: deputy, fullName: "Мельник Ірина", position: "Заступник начальника управління", role: MANAGER }
-  - { login: bondar, fullName: "Бондар Андрій", position: "Старший інспектор", role: MEMBER }
-  - { login: shevchenko, fullName: "Шевченко Оксана", position: "Інспектор", role: MEMBER }
-  - { login: tkachenko, fullName: "Ткаченко Дмитро", position: "Головний спеціаліст", role: MEMBER }
+  - { login: director, fullName: "Гончаренко Сергій", position: "Директор департаменту", role: DIRECTOR }
+  - { login: chief, fullName: "Коваленко Олександр", position: "Начальник управління", role: MANAGER, unit: dept }
+  - { login: deputy, fullName: "Мельник Ірина", position: "Начальник відділу аналітики", role: MANAGER, unit: analytics }
+  - { login: bondar, fullName: "Бондар Андрій", position: "Старший інспектор", role: MEMBER, unit: analytics }
+  - { login: shevchenko, fullName: "Шевченко Оксана", position: "Інспектор", role: MEMBER, unit: control }
+  - { login: tkachenko, fullName: "Ткаченко Дмитро", position: "Головний спеціаліст", role: MEMBER, unit: control }
   - { login: admin, fullName: "Адміністратор системи", position: "", role: ADMIN }
 
 directory:
