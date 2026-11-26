@@ -1,4 +1,6 @@
 /* Демо-наповнення з prisma/fixtures/demo.yml (тексти — у YAML, не в коді) */
+// зчитує server/.env (DATABASE_URL), як і сервер — інакше README-команда «npm run seed» падала
+import '../src/core/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import { PrismaClient, type Priority, type Role } from '@prisma/client';

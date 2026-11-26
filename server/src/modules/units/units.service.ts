@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import { badRequest, conflict, notFound } from '../../core/http-error';
-import { invalidateUnitTree, unitTree } from './units.cache';
+import { invalidateUnitTree } from './units.cache';
 import { unitsRepository } from './units.repository';
 import type { createUnitSchema, updateUnitSchema } from './units.schemas';
 import { wouldCycle } from './units.tree';
@@ -23,11 +23,12 @@ export const unitsService = {
   },
   async update(id: string, input: z.infer<typeof updateUnitSchema>) {
     if (!(await unitsRepository.findById(id))) throw notFound();
-    if (input.parentId) {
-      await checkParent(input.parentId);
-      if (wouldCycle(id, input.parentId, await unitTree(0))) throw badRequest('unit_cycle');
-    }
-    const unit = await unitsRepository.update(id, input);
+    if (input.parentId) await checkParent(input.parentId);
+    // дерево — з бази, не з кешу: кеш іншого процесу може бути застарілим
+    const unit = await unitsRepository.withTreeLock(async (db) => {
+      if (input.parentId && wouldCycle(id, input.parentId, await unitsRepository.all(db))) throw badRequest('unit_cycle');
+      return unitsRepository.update(id, input, db);
+    });
     invalidateUnitTree();
     return unit;
   },
