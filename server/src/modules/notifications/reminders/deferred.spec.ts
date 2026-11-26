@@ -12,6 +12,7 @@ const row = (over: Partial<DeferredRow> = {}): DeferredRow =>
     createdAt: new Date('2026-11-25T20:00:00Z'), pushDeferred: true,
     user: { id: 'u1', isActive: true, quietFrom: 20, quietTo: 8, muteWeekends: true },
     task: { id: 't1', status: 'NEW', priority: 'NORMAL' },
+    event: null,
     ...over,
   }) as DeferredRow;
 

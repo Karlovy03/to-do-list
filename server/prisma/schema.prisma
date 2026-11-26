@@ -57,6 +57,16 @@ enum NotificationKind {
   RETURNED
   CANCELLED
   REOPENED
+  EVENT_INVITED
+  EVENT_CHANGED
+  EVENT_CANCELLED
+  EVENT_SOON
+}
+
+// Стан заходу зберігається лише такий; «триває» і «минув» рахуються з часу (ADR-0016)
+enum EventStatus {
+  PLANNED
+  CANCELLED
 }
 
 enum DevicePlatform {
@@ -80,25 +90,30 @@ model User {
   createdAt    DateTime @default(now())
 
   // Особисті налаштування сповіщень (типові значення бере сервіс із загальних налаштувань)
-  quietFrom       Int     @default(20)
-  quietTo         Int     @default(8)
-  muteWeekends    Boolean @default(true)
-  notifyAssigned  Boolean @default(true)
-  notifyControl   Boolean @default(true)
-  notifyDeadline  Boolean @default(true)
-  notifyUpdates   Boolean @default(true)
-  controlInterval Int? // хв; null = загальне налаштування
+  quietFrom          Int     @default(20)
+  quietTo            Int     @default(8)
+  muteWeekends       Boolean @default(true)
+  notifyAssigned     Boolean @default(true)
+  notifyControl      Boolean @default(true)
+  notifyDeadline     Boolean @default(true)
+  notifyUpdates      Boolean @default(true)
+  controlInterval    Int? // хв; null = загальне налаштування
+  notifyEvents       Boolean @default(true)
+  // анімація «Виконано!» на контрольному завданні (ADR-0018); налаштування людини, а не пристрою
+  cheerOnControlDone Boolean @default(true)
 
-  authored      Task[]             @relation("TaskAuthor")
-  controlsSet   Task[]             @relation("TaskControlSetBy")
-  controlling   Task[]             @relation("TaskControllerUser")
-  assignments   TaskAssignee[]
-  updates       TaskUpdate[]
-  notifications Notification[]
-  pushSubs      PushSubscription[]
-  devices       DeviceToken[]
-  reminders     ReminderLog[]
-  snoozes       Snooze[]
+  authored            Task[]             @relation("TaskAuthor")
+  controlsSet         Task[]             @relation("TaskControlSetBy")
+  controlling         Task[]             @relation("TaskControllerUser")
+  assignments         TaskAssignee[]
+  updates             TaskUpdate[]
+  notifications       Notification[]
+  pushSubs            PushSubscription[]
+  devices             DeviceToken[]
+  reminders           ReminderLog[]
+  snoozes             Snooze[]
+  organizedEvents     Event[]            @relation("EventOrganizer")
+  eventParticipations EventParticipant[]
 
   @@index([unitId])
 }
@@ -171,6 +186,7 @@ model Task {
   @@index([controllerId])
   @@index([controlSetById])
   @@index([completedAt])
+  @@index([createdAt])
 }
 
 model TaskAssignee {
@@ -208,6 +224,8 @@ model Notification {
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   taskId       String?
   task         Task?            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  eventId      String?
+  event        Event?           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   kind         NotificationKind
   title        String
   body         String
@@ -219,6 +237,43 @@ model Notification {
   @@index([userId, readAt])
   @@index([userId, createdAt])
   @@index([pushDeferred])
+  @@index([eventId])
+}
+
+// Захід: нарада, зустріч, навчання — початок і орієнтовна тривалість (ADR-0016).
+// Кінець зберігається, щоб вибірка за період була одним порівнянням інтервалів.
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String      @default("")
+  startsAt    DateTime
+  endsAt      DateTime
+  status      EventStatus @default(PLANNED)
+  cancelledAt DateTime?
+  organizerId String
+  organizer   User        @relation("EventOrganizer", fields: [organizerId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  participants  EventParticipant[]
+  notifications Notification[]
+
+  @@index([startsAt])
+  @@index([endsAt])
+  @@index([organizerId])
+}
+
+model EventParticipant {
+  eventId    String
+  userId     String
+  addedAt    DateTime  @default(now())
+  // нагадування перед початком уже надіслано; скидається, якщо змінився час
+  remindedAt DateTime?
+  event      Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@id([eventId, userId])
+  @@index([userId])
 }
 
 model PushSubscription {

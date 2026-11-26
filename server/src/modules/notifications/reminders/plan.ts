@@ -11,6 +11,7 @@ export interface PlanUser {
   notifyControl: boolean;
   notifyDeadline: boolean;
   notifyUpdates: boolean;
+  notifyEvents: boolean;
   controlInterval: number | null;
 }
 

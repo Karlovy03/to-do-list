@@ -26,6 +26,14 @@ export function formatKyiv(d: Date): string {
   }).format(d);
 }
 
+const timeFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
+
+/** «26.11, 17:30–18:00»; якщо кінець іншого дня — «26.11, 17:30 – 27.11, 09:00» */
+export function formatKyivRange(start: Date, end: Date): string {
+  const sameDay = formatKyiv(start).slice(0, 5) === formatKyiv(end).slice(0, 5);
+  return sameDay ? `${formatKyiv(start)}–${timeFmt.format(end)}` : `${formatKyiv(start)} – ${formatKyiv(end)}`;
+}
+
 type Form = 'one' | 'few' | 'many';
 
 /** Українська множина: 1, 21 день · 2–4, 22 дні · 5–20, 11–14 днів */

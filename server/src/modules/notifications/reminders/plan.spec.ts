@@ -11,7 +11,7 @@ const ahead = (ms: number) => new Date(WED_10.getTime() + ms);
 
 const user = (over: Partial<PlanUser> = {}): PlanUser => ({
   id: 'u1', quietFrom: 20, quietTo: 8, muteWeekends: true,
-  notifyAssigned: true, notifyControl: true, notifyDeadline: true, notifyUpdates: true, controlInterval: null, ...over,
+  notifyAssigned: true, notifyControl: true, notifyDeadline: true, notifyUpdates: true, notifyEvents: true, controlInterval: null, ...over,
 });
 
 const assignee = (userId: string, over: Partial<PlanTask['assignees'][number]> = {}) => ({ userId, addedAt: ago(10 * 24 * H), doneAt: null, ...over });

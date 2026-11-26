@@ -1,7 +1,7 @@
 import type { NotificationKind } from '@prisma/client';
 
 /** Яке налаштування людини вимикає цей тип сповіщень */
-export type PrefKey = 'notifyAssigned' | 'notifyControl' | 'notifyDeadline' | 'notifyUpdates';
+export type PrefKey = 'notifyAssigned' | 'notifyControl' | 'notifyDeadline' | 'notifyUpdates' | 'notifyEvents';
 
 interface EventMeta {
   pref: PrefKey;
@@ -10,6 +10,8 @@ interface EventMeta {
   /** у сповіщенні є кнопка «Відкласти» */
   snooze?: boolean;
   urgent?: boolean;
+  /** надсилається і в тихі години (нагадування про захід, що починається) */
+  ignoresQuiet?: boolean;
 }
 
 export const EVENTS: Record<NotificationKind, EventMeta> = {
@@ -30,4 +32,8 @@ export const EVENTS: Record<NotificationKind, EventMeta> = {
   STARTED: { pref: 'notifyUpdates', title: 'notifications.progress.started' },
   DONE_PART: { pref: 'notifyUpdates', title: 'notifications.progress.done_part' },
   DONE: { pref: 'notifyUpdates', title: 'notifications.progress.done' },
+  EVENT_INVITED: { pref: 'notifyEvents', title: 'notifications.event.invited' },
+  EVENT_CHANGED: { pref: 'notifyEvents', title: 'notifications.event.changed' },
+  EVENT_CANCELLED: { pref: 'notifyEvents', title: 'notifications.event.cancelled' },
+  EVENT_SOON: { pref: 'notifyEvents', title: 'notifications.event.soon', urgent: true, ignoresQuiet: true },
 };

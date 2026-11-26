@@ -13,6 +13,7 @@ import { directoryRouter } from './modules/directory';
 import { unitsRouter } from './modules/units';
 import { settingsRouter } from './modules/settings';
 import { tasksRouter } from './modules/tasks';
+import { eventsRouter } from './modules/events';
 import { notificationsRouter, pushRouter } from './modules/notifications';
 
 export function createApp() {
@@ -55,6 +56,7 @@ export function createApp() {
   api.use('/units', unitsRouter);
   api.use('/settings', settingsRouter);
   api.use('/tasks', tasksRouter);
+  api.use('/events', eventsRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
   api.use((_req, _res, next) => next(notFound()));

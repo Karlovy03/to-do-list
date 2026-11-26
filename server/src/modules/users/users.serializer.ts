@@ -26,5 +26,7 @@ export const selfUser = (u: User) => ({
     notifyDeadline: u.notifyDeadline,
     notifyUpdates: u.notifyUpdates,
     controlInterval: u.controlInterval,
+    notifyEvents: u.notifyEvents,
+    cheerOnControlDone: u.cheerOnControlDone,
   },
 });

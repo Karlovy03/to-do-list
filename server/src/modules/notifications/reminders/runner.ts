@@ -2,7 +2,7 @@ import { LOCKS, withAdvisoryLock } from '../../../core/lock';
 import { humanDuration } from '../../../core/time';
 import { getSettings } from '../../settings';
 import { deferredPushRepository } from '../feed.repository';
-import { notify, pushPayload } from '../notify.service';
+import { eventSubject, notify, pushPayload, taskSubject } from '../notify.service';
 import { pushToUser } from '../push/dispatcher';
 import { planDeferred } from './deferred';
 import { planReminders, type PlanUser, type Reminder } from './plan';
@@ -64,7 +64,7 @@ export async function runRemindersOnce(now = new Date()): Promise<number> {
   await send(result.plan, result.tasks, now);
   await Promise.all(
     result.deferred.map((r) =>
-      pushToUser(r.userId, pushPayload(r.kind, r.task!, r.title, r.body)).catch((err) => console.error('[reminders] deferred push', err)),
+      pushToUser(r.userId, pushPayload(r.kind, r.task ? taskSubject(r.task) : eventSubject(r.event!.id), r.title, r.body)).catch((err) => console.error('[reminders] deferred push', err)),
     ),
   );
   return result.plan.length + result.deferred.length;

@@ -17,6 +17,7 @@ let server: Server;
 let base = '';
 const ids: Record<string, string> = {};
 let taskId = '';
+let eventId = '';
 
 const as = (who: string) => ({ Authorization: `Bearer ${signToken(ids[who], 0)}`, 'Content-Type': 'application/json' });
 const call = async (who: string, method: string, path: string, body?: unknown) =>
@@ -46,12 +47,20 @@ describe.skipIf(!run)('права на реальній базі (ADR-0012)', ()
     });
     expect(res.status).toBe(201);
     taskId = ((await res.json()) as { id: string }).id;
+    const ev = await fetch(`${base}/api/events`, {
+      method: 'POST',
+      headers: as('headA'),
+      body: JSON.stringify({ title: `${tag} нарада`, startsAt: new Date(Date.now() + 864e5).toISOString(), durationMin: 30, participantIds: [ids.execA] }),
+    });
+    expect(ev.status).toBe(201);
+    eventId = ((await ev.json()) as { id: string }).id;
   });
 
   afterAll(async () => {
     server?.close();
     if (!run) return;
     await prisma.task.deleteMany({ where: { title: { startsWith: tag } } });
+    await prisma.event.deleteMany({ where: { title: { startsWith: tag } } });
     await prisma.user.deleteMany({ where: { login: { startsWith: tag } } });
     await prisma.unit.deleteMany({ where: { name: { startsWith: tag }, parentId: { not: null } } });
     await prisma.unit.deleteMany({ where: { name: { startsWith: tag } } });
@@ -78,6 +87,16 @@ describe.skipIf(!run)('права на реальній базі (ADR-0012)', ()
     for (const who of ['headB', 'execB']) {
       for (const [method, path, body] of routes()) expect(`${who} ${method} ${path.replace(taskId, ':id')} → ${await call(who, method, path, body)}`).toMatch(/→ 404$/);
     }
+  });
+
+  it('захід: сусідній керівник і чужий виконавець — 404 на кожному маршруті; учасник бачить, але не змінює', async () => {
+    const routes: [string, string, unknown?][] = [['GET', `/events/${eventId}`], ['PATCH', `/events/${eventId}`, { title: 'Чуже' }], ['POST', `/events/${eventId}/cancel`, {}], ['DELETE', `/events/${eventId}`]];
+    for (const who of ['headB', 'execB']) for (const [m, p, b] of routes) expect(`${who} ${m} ${p.replace(eventId, ':id')} → ${await call(who, m, p, b)}`).toMatch(/→ 404$/);
+    expect(await call('execA', 'GET', `/events/${eventId}`)).toBe(200);
+    expect(await call('execA', 'PATCH', `/events/${eventId}`, { title: 'Інше' })).toBe(403);
+    expect(await call('chief', 'GET', `/events/${eventId}`)).toBe(200);
+    const list = (await (await fetch(`${base}/api/events`, { headers: as('headB') })).json()) as { items: { id: string }[] };
+    expect(list.items.map((e) => e.id)).not.toContain(eventId);
   });
 
   it('чуже завдання не потрапляє ні в список, ні в довідку, ні в зведення', async () => {

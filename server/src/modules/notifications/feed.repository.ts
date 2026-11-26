@@ -25,7 +25,7 @@ export const deferredPushRepository = {
   pending: () =>
     prisma.notification.findMany({
       where: { pushDeferred: true },
-      include: { user: true, task: { select: { id: true, status: true, priority: true } } },
+      include: { user: true, task: { select: { id: true, status: true, priority: true } }, event: { select: { id: true, status: true, endsAt: true } } },
       orderBy: { createdAt: 'asc' },
     }),
   /** Знімає позначку до надсилання — як журнал нагадувань: збій push не дає повторів щохвилини */
