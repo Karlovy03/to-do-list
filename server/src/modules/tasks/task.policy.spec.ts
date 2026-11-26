@@ -100,6 +100,17 @@ describe('кому можна доручати', () => {
   });
 });
 
+describe('«Відкласти нагадування»', () => {
+  it('відкласти може виконавець, автор і контролер (усі отримують нагадування), сторонній — ні', () => {
+    const t = task();
+    expect(permissions(t, exec).snooze).toBe(true);
+    expect(permissions(t, chief).snooze).toBe(true);
+    expect(permissions(t, controller).snooze).toBe(true);
+    expect(permissions(t, stranger).snooze).toBe(false);
+    expect(permissions(task({ status: 'DONE' }), chief).snooze).toBe(false);
+  });
+});
+
 describe('видалення (ADR-0011)', () => {
   it('автор, адміністратор і директор можуть видалити завдання, зокрема на контролі й завершене', () => {
     for (const status of ['NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'] as const) {

@@ -6,6 +6,7 @@ import { usersRepository } from '../users';
 import { EVENTS, type PrefKey } from './events';
 import { feedRepository } from './feed.repository';
 import { pushToUser } from './push/dispatcher';
+import type { PushPayload } from './push/types';
 
 export interface NotifyTask {
   id: string;
@@ -28,9 +29,14 @@ export interface NotifyInput {
   withDeadline?: 'line' | 'new_line';
   /** коментар — лише в стрічку застосунку, НЕ в push (ADR-0005) */
   comment?: { name: string; text: string };
+  /** хто виконав дію — лише в стрічку: ПІБ не передаємо через сервери Google/Apple (ADR-0005) */
+  who?: string;
 }
 
-type QuietUser = { quietFrom: number; quietTo: number; muteWeekends: boolean } & Record<PrefKey, boolean>;
+/** Push про ці події не губиться в тихі години, а приходить, щойно їх закінчено (рішення власника) */
+const DEFER_IN_QUIET = new Set<NotificationKind>(['ASSIGNED', 'CONTROL_ON', 'CONTROL_CHANGED']);
+
+export type QuietUser = { quietFrom: number; quietTo: number; muteWeekends: boolean } & Record<PrefKey, boolean>;
 
 /** Чи можна зараз турбувати людину push-сповіщенням */
 export function canDisturb(u: QuietUser, now: Date, priority: Priority, urgentBypass: boolean): boolean {
@@ -57,31 +63,40 @@ export async function notify(input: NotifyInput, now = new Date()) {
   const [users, settings] = await Promise.all([usersRepository.findActiveByIds(ids), getSettings()]);
   if (!users.length) return;
 
-  const meta = EVENTS[input.event];
   const { task } = input;
-  const title = tx(input.titleKey ?? meta.title, input.vars);
+  const title = tx(input.titleKey ?? EVENTS[input.event].title, input.vars);
   const lines = [tx('notifications.common.task_line', { number: task.number, title: task.title })];
   if (input.withDeadline) lines.push(tx(`notifications.deadline.${input.withDeadline}`, { deadline: formatKyiv(task.deadline) }));
   const pushBody = lines.join('\n');
-  const feedBody = input.comment ? `${pushBody}\n${tx('notifications.common.comment_line', input.comment)}` : pushBody;
+  const feedLines = [pushBody];
+  if (input.who) feedLines.push(tx('notifications.common.who_line', { name: input.who }));
+  if (input.comment) feedLines.push(tx('notifications.common.comment_line', input.comment));
+  const feedBody = feedLines.join('\n');
 
-  await feedRepository.createMany(users.map((u) => ({ userId: u.id, taskId: task.id, kind: input.event, title, body: feedBody })));
+  const wanted = users.filter((u) => prefAllows(input.event, u));
+  const free = (u: QuietUser) => canDisturb(u, now, task.priority, settings.urgentBypassQuiet);
+  const deferred = new Set(DEFER_IN_QUIET.has(input.event) ? wanted.filter((u) => !free(u)).map((u) => u.id) : []);
 
-  const urgent = !!meta.urgent || task.priority === 'URGENT';
-  const payload = {
+  await feedRepository.createMany(
+    users.map((u) => ({ userId: u.id, taskId: task.id, kind: input.event, title, body: feedBody, pushDeferred: deferred.has(u.id) })),
+  );
+
+  const payload = pushPayload(input.event, task, title, pushBody);
+  await Promise.all(wanted.filter(free).map((u) => pushToUser(u.id, payload)));
+}
+
+/** Вміст push (ADR-0005): тип події, № і назва завдання, термін — і нічого більше */
+export function pushPayload(event: NotificationKind, task: Pick<NotifyTask, 'id' | 'priority'>, title: string, body: string): PushPayload {
+  const meta = EVENTS[event];
+  return {
     title,
-    body: pushBody,
+    body,
     url: `/t/${task.id}`,
-    tag: `task-${task.id}-${input.event}`,
+    tag: `task-${task.id}-${event}`,
     taskId: task.id,
-    urgent,
+    urgent: !!meta.urgent || task.priority === 'URGENT',
     actions: { open: tx('notifications.push.action_open'), ...(meta.snooze ? { snooze: tx('notifications.push.action_snooze') } : {}) },
   };
-  await Promise.all(
-    users
-      .filter((u) => prefAllows(input.event, u) && canDisturb(u, now, task.priority, settings.urgentBypassQuiet))
-      .map((u) => pushToUser(u.id, payload)),
-  );
 }
 
 /** Після коміту: не блокує відповідь, помилка лише логується */

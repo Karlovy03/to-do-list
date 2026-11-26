@@ -19,3 +19,15 @@ export const feedRepository = {
 };
 
 export const FEED_PAGE = PAGE;
+
+/** Push, що чекають кінця тихих годин: разом із людиною і станом завдання */
+export const deferredPushRepository = {
+  pending: () =>
+    prisma.notification.findMany({
+      where: { pushDeferred: true },
+      include: { user: true, task: { select: { id: true, status: true, priority: true } } },
+      orderBy: { createdAt: 'asc' },
+    }),
+  /** Знімає позначку до надсилання — як журнал нагадувань: збій push не дає повторів щохвилини */
+  release: (ids: string[]) => prisma.notification.updateMany({ where: { id: { in: ids } }, data: { pushDeferred: false } }),
+};

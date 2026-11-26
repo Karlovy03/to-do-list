@@ -70,7 +70,8 @@ export function permissions(t: PolicyTask, u: PolicyUser) {
     closeEarly: open && owner,
     cancel: open && owner,
     reopen: t.status === 'CANCELLED' && owner,
-    snooze: open && isAssignee(t, u),
+    // нагадування отримують і виконавці, і автор/контролер (прострочення) — відкласти може кожен із них
+    snooze: open && (isAssignee(t, u) || isLead(t, u)),
     // ADR-0011/0012: видаляє назавжди автор, адміністратор або директор — у будь-якому стані, зокрема на контролі
     delete: isAuthor(t, u) || hasFullAccess(u),
   };

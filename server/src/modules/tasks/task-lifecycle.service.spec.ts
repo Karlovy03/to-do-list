@@ -50,7 +50,8 @@ describe('«Виконано»', () => {
     repo.pendingAssignees.mockResolvedValue(1);
     await life.markDone(exec, 't1', '');
     expect(repo.transition).not.toHaveBeenCalled();
-    expect(lastNotify()).toMatchObject({ event: 'DONE_PART', vars: { name: 'ПІБ exec' } });
+    expect(lastNotify()).toMatchObject({ event: 'DONE_PART', who: 'ПІБ exec' });
+    expect(lastNotify().vars).toBeUndefined(); // ПІБ не потрапляє в заголовок push (ADR-0005)
     expect(lastNotify().to).toContain('chief');
   });
 

@@ -203,19 +203,22 @@ model TaskUpdate {
 }
 
 model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  taskId    String?
-  task      Task?            @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  kind      NotificationKind
-  title     String
-  body      String
-  readAt    DateTime?
-  createdAt DateTime         @default(now())
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId       String?
+  task         Task?            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  kind         NotificationKind
+  title        String
+  body         String
+  readAt       DateTime?
+  createdAt    DateTime         @default(now())
+  // push відкладено до кінця тихих годин людини (нове завдання, контроль); стрічка вже має запис
+  pushDeferred Boolean          @default(false)
 
   @@index([userId, readAt])
   @@index([userId, createdAt])
+  @@index([pushDeferred])
 }
 
 model PushSubscription {

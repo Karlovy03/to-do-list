@@ -54,7 +54,7 @@ export const taskLifecycleService = {
       task,
       to: leads(t),
       actorId: actor.id,
-      vars: { name: actor.fullName },
+      who: actor.fullName,
       comment: comment ? { name: actor.fullName, text: comment } : undefined,
     });
     return task;

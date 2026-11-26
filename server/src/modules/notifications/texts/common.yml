@@ -1,3 +1,4 @@
 # Спільні рядки тіла сповіщення
 task_line: "№{number} · {title}"
 comment_line: "{name}: {text}"
+who_line: "Виконавець: {name}"
