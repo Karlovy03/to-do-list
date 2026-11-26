@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Me, Prefs } from '@/shared/api/types';
-import { authApi, authKeys } from '@/modules/auth';
+import { authKeys } from '@/modules/auth';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
 import { setToken } from '@/shared/lib/token';
