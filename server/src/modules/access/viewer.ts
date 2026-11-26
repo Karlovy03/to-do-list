@@ -2,7 +2,7 @@ import type { Request } from 'express';
 import type { User } from '@prisma/client';
 import { currentUser } from '../../core/auth';
 import { subtreeIds, unitTree } from '../units';
-import { hasFullAccess, type Scope } from './task.policy';
+import { hasFullAccess, type Scope } from './access.policy';
 
 /** Користувач разом із вертикаллю, яку він бачить (ADR-0012) — рахується раз на запит */
 export type Viewer = User & { scope: Scope };

@@ -1,4 +1,4 @@
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 import { badRequest, conflict, forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
 import { notifyInBackground } from '../notifications';

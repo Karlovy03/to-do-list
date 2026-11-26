@@ -1,4 +1,4 @@
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 import { forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
 import { NO_CONTROL, resolveControl, type ControlInput } from '../control';

@@ -1,4 +1,4 @@
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 import type { Prisma } from '@prisma/client';
 import { notFound } from '../../core/http-error';
 import { canView, visibilityWhere } from './task.policy';

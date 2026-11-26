@@ -9,7 +9,7 @@ import { taskControlService } from './task-control.service';
 import { taskLifecycleService as life } from './task-lifecycle.service';
 import { taskProgressService } from './task-progress.service';
 import type { TaskFull } from './task.repository';
-import { viewerOf } from './viewer';
+import { viewerOf } from '../access';
 
 /** Відповідь на будь-яку дію — оновлене завдання з правами поточного користувача */
 const reply = async (req: Request, res: Response, task: TaskFull, status = 200) => res.status(status).json(serializeTask(task, await viewerOf(req)));

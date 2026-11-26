@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { User } from '@prisma/client';
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 
 const repo = vi.hoisted(() => ({
   findById: vi.fn(),

@@ -1,4 +1,4 @@
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 import type { z } from 'zod';
 import { badRequest, forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';

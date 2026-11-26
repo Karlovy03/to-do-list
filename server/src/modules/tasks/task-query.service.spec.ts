@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Viewer } from './viewer';
+import type { Viewer } from '../access';
 
 const repo = vi.hoisted(() => ({ listAll: vi.fn().mockResolvedValue([]) }));
 vi.mock('./task.repository', () => ({ taskRepository: repo, OPEN_STATUSES: ['NEW', 'IN_PROGRESS'], LIST_PAGE: 50 }));

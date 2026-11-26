@@ -1,20 +1,14 @@
-import type { Role, TaskStatus } from '@prisma/client';
+import type { TaskStatus } from '@prisma/client';
+import { hasFullAccess, isManagerRole, managesUnits, scopeUnits, type PolicyUser } from '../access';
 
 /**
  * Хто що може із завданням — єдине місце (working-on-tasks-and-control).
  * ADR-0012: адміністратор і директор бачать і керують усіма завданнями;
  * керівник — завданнями своєї вертикалі (автор або виконавець у його підрозділі чи нижчому)
- * і тими, де він сам учасник; виконавець — лише своїми.
+ * і тими, де він сам учасник; виконавець — лише своїми. Спільні правила вертикалі — модуль access.
  */
 
-/** 'all' — усі завдання; інакше — підрозділи вертикалі (порожньо — лише власні завдання) */
-export type Scope = 'all' | ReadonlySet<string>;
-
-export interface PolicyUser {
-  id: string;
-  role: Role;
-  scope?: Scope;
-}
+export type { PolicyUser };
 
 export interface PolicyTask {
   status: TaskStatus;
@@ -28,22 +22,9 @@ export interface PolicyTask {
 const OPEN: TaskStatus[] = ['NEW', 'IN_PROGRESS'];
 
 export const isOpen = (t: Pick<PolicyTask, 'status'>) => OPEN.includes(t.status);
-/** Може ставити завдання будь-кому і брати на контроль */
-export const isManagerRole = (u: PolicyUser) => u.role === 'ADMIN' || u.role === 'DIRECTOR' || u.role === 'MANAGER';
-/** Бачить і керує всіма завданнями */
-export const hasFullAccess = (u: PolicyUser) => u.role === 'ADMIN' || u.role === 'DIRECTOR';
 
-/** Автор або хоч один виконавець — у вертикалі керівника */
-function inScope(t: PolicyTask, u: PolicyUser) {
-  const scope = u.scope;
-  if (scope === 'all') return true;
-  if (!scope || scope.size === 0) return false;
-  const has = (unitId: string | null | undefined) => !!unitId && scope.has(unitId);
-  return has(t.author?.unitId) || t.assignees.some((a) => has(a.user?.unitId));
-}
-
-/** Керує завданням як керівник: повний доступ або керівник, у чиїй вертикалі завдання */
-const managesTask = (t: PolicyTask, u: PolicyUser) => hasFullAccess(u) || (u.role === 'MANAGER' && inScope(t, u));
+/** Керує завданням як керівник: автор або хоч один виконавець — у його вертикалі */
+const managesTask = (t: PolicyTask, u: PolicyUser) => managesUnits(u, [t.author?.unitId, ...t.assignees.map((a) => a.user?.unitId)]);
 
 const isAuthor = (t: PolicyTask, u: PolicyUser) => t.authorId === u.id;
 const isAssignee = (t: PolicyTask, u: PolicyUser) => t.assignees.some((a) => a.userId === u.id);
@@ -91,7 +72,7 @@ export function visibilityWhere(u: PolicyUser) {
     { assignees: { some: { userId: u.id } } },
     { isControlled: true, controllerUserId: u.id },
   ];
-  const units = u.role === 'MANAGER' && u.scope && u.scope !== 'all' ? [...u.scope] : [];
+  const units = scopeUnits(u);
   if (!units.length) return { OR: own };
   return {
     OR: [...own, { author: { unitId: { in: units } } }, { assignees: { some: { user: { unitId: { in: units } } } } }],
