@@ -1,10 +1,12 @@
 /**
- * Обмеження спроб входу: окремо за логіном (перебір пароля одного акаунта)
- * і за адресою (перебір логінів). Пам'ять процесу — достатньо для одного екземпляра
- * сервера (ADR-0009); для кількох — винести в БД.
+ * Обмеження спроб входу. Пам'ять процесу — достатньо для одного екземпляра сервера (ADR-0009).
+ * - пара логін+адреса: перебір пароля одного акаунта з однієї адреси;
+ * - адреса: перебір логінів;
+ * - логін з будь-яких адрес: поріг високий навмисно — інакше будь-хто з 10 спробами
+ *   блокував би вхід директору чи керівнику на 15 хвилин.
  */
 const WINDOW_MS = 15 * 60_000;
-const LIMITS = { login: 10, ip: 30 };
+const LIMITS = { pair: 10, ip: 30, login: 100 };
 
 const hits = new Map<string, { n: number; until: number }>();
 
@@ -14,8 +16,9 @@ function prune(now: number) {
 }
 
 const keys = (login: string, ip: string) => [
-  { key: `login:${login}`, limit: LIMITS.login },
+  { key: `pair:${login}:${ip}`, limit: LIMITS.pair },
   { key: `ip:${ip}`, limit: LIMITS.ip },
+  { key: `login:${login}`, limit: LIMITS.login },
 ];
 
 export const loginLimiter = {
@@ -32,8 +35,9 @@ export const loginLimiter = {
       hits.set(key, h && h.until > now ? { n: h.n + 1, until: h.until } : { n: 1, until: now + WINDOW_MS });
     }
   },
-  /** Успіх скидає лічильник лише цього логіна — лічильник адреси лишається */
-  success(login: string) {
+  /** Успіх скидає лічильники цього логіна — лічильник адреси лишається */
+  success(login: string, ip: string) {
+    hits.delete(`pair:${login}:${ip}`);
     hits.delete(`login:${login}`);
   },
   reset() {

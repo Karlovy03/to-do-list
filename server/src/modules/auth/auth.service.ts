@@ -17,16 +17,15 @@ export const authService = {
       loginLimiter.fail(login, ip);
       throw unauthorized('invalid_credentials');
     }
-    loginLimiter.success(login);
+    loginLimiter.success(login, ip);
     return { user, token: signToken(user.id, user.tokenVersion) };
   },
 
-  async logout(userId: string, device: { pushEndpoint?: string; deviceToken?: string }) {
-    await pushSubscriptions.removeForUser(userId, device);
-  },
-
-  /** «Вийти на всіх пристроях» — усі видані токени стають недійсними */
-  async logoutEverywhere(userId: string) {
+  /**
+   * Вихід завершує всі сесії людини (рішення власника): інакше скопійований токен
+   * діяв би до кінця строку. Push на всі пристрої теж припиняється — до наступного входу.
+   */
+  async logout(userId: string) {
     await usersRepository.update(userId, { tokenVersion: { increment: 1 } });
     await pushSubscriptions.removeAllForUser(userId);
   },

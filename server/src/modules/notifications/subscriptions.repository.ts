@@ -36,6 +36,5 @@ export const subscriptionsRepository = {
 
 /** Публічний інтерфейс для інших модулів (вихід із системи) */
 export const pushSubscriptions = {
-  removeForUser: subscriptionsRepository.removeForUser,
   removeAllForUser: subscriptionsRepository.removeAllForUser,
 };

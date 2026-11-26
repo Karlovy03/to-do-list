@@ -45,8 +45,8 @@ export function useLogin() {
 export function useLogout() {
   const qc = useQueryClient();
   return useMutation({
-    // адреса web push або токен пристрою — щоб сервер перестав слати сюди сповіщення
-    mutationFn: (device: { pushEndpoint?: string; deviceToken?: string } = {}) => authApi.logout(device),
+    // сервер завершує всі сесії людини і прибирає її підписки на push
+    mutationFn: () => authApi.logout(),
     onSettled: async () => {
       await setToken(null);
       qc.clear();

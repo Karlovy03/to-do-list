@@ -6,5 +6,4 @@ export const authRouter = Router();
 
 authRouter.post('/login', authController.login);
 authRouter.post('/logout', authController.logout);
-authRouter.post('/logout-everywhere', requireAuth, authController.logoutEverywhere);
 authRouter.get('/me', requireAuth, authController.me);

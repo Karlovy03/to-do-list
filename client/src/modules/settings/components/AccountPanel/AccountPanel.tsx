@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import type { Me } from '@/shared/api/types';
 import { useLogout } from '@/modules/auth';
-import { webPushEndpoint } from '@/modules/notifications';
 import { t } from '@/shared/lib/texts';
 import { Card } from '@/shared/ui';
-import { useLogoutEverywhere } from '../../hooks/useProfile';
 import { PasswordSheet } from '../PasswordSheet/PasswordSheet';
 import { RowButton } from '../RowButton/RowButton';
 
@@ -12,7 +10,6 @@ import { RowButton } from '../RowButton/RowButton';
 export function AccountPanel({ me, phone }: { me: Me; phone: boolean }) {
   const [password, setPassword] = useState(false);
   const logout = useLogout();
-  const everywhere = useLogoutEverywhere();
   const lead = me.role !== 'MEMBER';
 
   return (
@@ -25,8 +22,7 @@ export function AccountPanel({ me, phone }: { me: Me; phone: boolean }) {
       )}
       <Card title={t('settings.account.title')}>
         <RowButton onClick={() => setPassword(true)}>{t('settings.account.password')}</RowButton>
-        {phone && <RowButton onClick={async () => logout.mutate({ pushEndpoint: await webPushEndpoint() })}>{t('settings.account.logout')}</RowButton>}
-        <RowButton danger onClick={() => everywhere.mutate()}>{t('settings.account.logout_everywhere')}</RowButton>
+        <RowButton danger onClick={() => logout.mutate()}>{t('settings.account.logout')}</RowButton>
       </Card>
       {password && <PasswordSheet onClose={() => setPassword(false)} />}
     </>

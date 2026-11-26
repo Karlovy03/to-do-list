@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { clearSessionCookie, currentUser, isNativeClient, setSessionCookie } from '../../core/auth';
 import { selfUser } from '../users';
-import { loginSchema, logoutSchema } from './auth.schemas';
+import { loginSchema } from './auth.schemas';
 import { authService } from './auth.service';
 
 export const authController = {
@@ -18,13 +18,7 @@ export const authController = {
   },
 
   async logout(req: Request, res: Response) {
-    if (req.user) await authService.logout(req.user.id, logoutSchema.parse(req.body ?? {}));
-    clearSessionCookie(res);
-    res.json({ ok: true });
-  },
-
-  async logoutEverywhere(req: Request, res: Response) {
-    await authService.logoutEverywhere(currentUser(req).id);
+    if (req.user) await authService.logout(req.user.id);
     clearSessionCookie(res);
     res.json({ ok: true });
   },

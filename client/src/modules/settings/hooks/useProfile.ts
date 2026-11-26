@@ -33,15 +33,3 @@ export function useChangePassword() {
     },
   });
 }
-
-export function useLogoutEverywhere() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: authApi.logoutEverywhere,
-    onSettled: async () => {
-      await setToken(null);
-      qc.clear();
-      qc.setQueryData(authKeys.me, null);
-    },
-  });
-}

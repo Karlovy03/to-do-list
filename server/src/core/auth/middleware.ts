@@ -2,8 +2,8 @@ import type { Request, RequestHandler } from 'express';
 import type { Role, User } from '@prisma/client';
 import { sessionRepository } from './session.repository';
 import { forbidden, unauthorized } from '../http-error';
-import { verifyToken } from './jwt';
-import { readToken } from './session';
+import { SESSION_RENEW_AFTER_S, signToken, verifyToken } from './jwt';
+import { readToken, setSessionCookie } from './session';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -14,13 +14,20 @@ declare global {
   }
 }
 
-/** Підставляє req.user, якщо токен дійсний, версія збігається і користувач активний */
-export const loadUser: RequestHandler = async (req, _res, next) => {
+/**
+ * Підставляє req.user, якщо токен дійсний, версія збігається і користувач активний.
+ * Cookie активної веб-сесії раз на добу замінюється свіжою — строк рахується від останньої активності.
+ */
+export const loadUser: RequestHandler = async (req, res, next) => {
   const token = readToken(req);
   const claims = token ? verifyToken(token) : null;
   if (claims) {
     const user = await sessionRepository.findUser(claims.sub);
-    if (user?.isActive && user.tokenVersion === claims.v) req.user = user;
+    if (user?.isActive && user.tokenVersion === claims.v) {
+      req.user = user;
+      const fromCookie = !req.headers.authorization;
+      if (fromCookie && Date.now() / 1000 - claims.iat > SESSION_RENEW_AFTER_S) setSessionCookie(res, signToken(user.id, user.tokenVersion));
+    }
   }
   next();
 };

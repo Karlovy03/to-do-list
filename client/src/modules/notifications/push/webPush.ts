@@ -44,8 +44,3 @@ export async function enableWebPush(): Promise<PushState> {
 export async function syncWebPush() {
   if (supported() && Notification.permission === 'granted') await subscribe();
 }
-
-/** Адреса підписки — сервер забуває її при виході з акаунта */
-export async function webPushEndpoint(): Promise<string | undefined> {
-  return supported() ? (await currentSubscription())?.endpoint : undefined;
-}
