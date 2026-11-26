@@ -1,0 +1,23 @@
+.dock {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-pill);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+}
+/* обкладинка Flip 320: кнопки стискаються, а не виштовхують сусідів за край */
+.dock > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.floating {
+  position: sticky;
+  bottom: calc(var(--s-3) + var(--safe-bottom));
+  z-index: var(--z-sticky);
+}

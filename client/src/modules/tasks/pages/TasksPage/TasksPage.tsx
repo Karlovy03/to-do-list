@@ -3,14 +3,13 @@ import { useSession } from '@/modules/auth';
 import { errorText } from '@/shared/api/errors';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { t } from '@/shared/lib/texts';
-import { Empty, ErrorState, LoadMore, Loading } from '@/shared/ui';
+import { Empty, ErrorState, ListDetail, LoadMore, Loading } from '@/shared/ui';
 import type { Scope } from '../../api/tasks.api';
 import { TaskDetail } from '../../components/TaskDetail/TaskDetail';
 import { TaskList } from '../../components/TaskList/TaskList';
 import { SCOPE_PATH, TasksHeader } from '../../components/TasksHeader/TasksHeader';
 import { useDeferredDone } from '../../hooks/useDeferredDone';
 import { useSummary, useTaskList } from '../../hooks/useTasks';
-import css from './TasksPage.module.css';
 
 const EMPTY: Record<Scope, string> = { mine: 'empty', controlled: 'empty_controlled', authored: 'empty_authored', all: 'empty' };
 
@@ -30,7 +29,6 @@ export function TasksPage({ scope }: { scope: Scope }) {
   const base = SCOPE_PATH[scope];
 
   if (!me) return null;
-  if (taskId && !wide) return <div className={css.page}><TaskDetail id={taskId} back={base || '/'} /></div>;
 
   const tasks = [...open.items, ...done.items];
   const more = open.hasMore || done.hasMore;
@@ -52,22 +50,16 @@ export function TasksPage({ scope }: { scope: Scope }) {
   );
 
   return (
-    <div className={wide ? `${css.page} ${css.split}` : css.page}>
-      <div className={css.listCol}>
-        <TasksHeader scope={scope} role={me.role} summary={summary.data} tasks={tasks} />
-        {list}
-      </div>
-      {wide && (
-        <div className={css.detailCol}>
-          {taskId ? (
-            <TaskDetail key={taskId} id={taskId} back={base || '/'} />
-          ) : (
-            <div className={css.emptyPane}>
-              <Empty icon="list" title={t('tasks.detail.select_hint')} />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <ListDetail
+      wide={wide}
+      list={
+        <>
+          <TasksHeader scope={scope} role={me.role} summary={summary.data} tasks={tasks} />
+          {list}
+        </>
+      }
+      detail={taskId ? <TaskDetail key={taskId} id={taskId} back={base || '/'} /> : null}
+      placeholder={{ icon: 'list', title: t('tasks.detail.select_hint') }}
+    />
   );
 }

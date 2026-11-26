@@ -4,7 +4,7 @@ import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { t } from '@/shared/lib/texts';
 import { ControlSeal, ErrorState, IconButton, Loading, Tag, TimeChip } from '@/shared/ui';
 import { useTask } from '../../hooks/useTasks';
-import { shortName } from '../../lib/names';
+import { shortName } from '@/shared/lib/names';
 import { timeChipFor } from '../../lib/timeTone';
 import { ActionBar } from './ActionBar';
 import { ControlPanel } from './ControlPanel';

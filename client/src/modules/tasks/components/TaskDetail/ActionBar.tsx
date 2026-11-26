@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { TaskDetail } from '@/shared/api/types';
 import { ControlSheet } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
-import { Button, IconButton, Sheet } from '@/shared/ui';
+import { ActionDock, Button, IconButton, Sheet } from '@/shared/ui';
 import { useTaskActions } from '../../hooks/useTaskActions';
 import { CommentSheet } from './CommentSheet';
 import { DeleteSheet } from './DeleteSheet';
@@ -48,7 +48,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
 
   return (
     <>
-      <div className={floating ? `${css.actions} ${css.floating}` : css.actions} data-print="hide">
+      <ActionDock floating={floating}>
         {can.snooze && (task.myAssignment || task.overdue) && (
           <Button variant="outline" size="l" icon="snooze" aria-label={t('tasks.actions.snooze_label')} onClick={() => a.snooze.mutate(undefined)}>
             {t('tasks.actions.snooze')}
@@ -60,7 +60,7 @@ export function ActionBar({ task, floating, back }: { task: TaskDetail; floating
           </Button>
         ))}
         {more.length > (primary ? 0 : 1) && <IconButton icon="more" tone="sunken" label={t('tasks.detail.more')} onClick={() => setOpen('more')} />}
-      </div>
+      </ActionDock>
 
       {open === 'more' && (
         <Sheet title={t('tasks.detail.more')} onClose={close}>

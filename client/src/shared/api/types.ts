@@ -33,6 +33,10 @@ export interface Prefs {
   notifyDeadline: boolean;
   notifyUpdates: boolean;
   controlInterval: number | null;
+  /** запрошення, зміни й нагадування про заходи */
+  notifyEvents: boolean;
+  /** ящірка «Виконано!» на контрольному завданні (ADR-0018) */
+  cheerOnControlDone: boolean;
 }
 
 export interface Me extends Person {
@@ -125,6 +129,33 @@ export interface Summary {
   dueSoon: number;
 }
 
+export type EventStatus = 'PLANNED' | 'CANCELLED';
+
+export interface EventPermissions {
+  edit: boolean;
+  cancel: boolean;
+  delete: boolean;
+}
+
+/** Захід: нарада, зустріч, навчання (ADR-0016). «Триває / минув» — з часу, не зі статусу */
+export interface AppEvent {
+  id: string;
+  title: string;
+  description: string;
+  startsAt: string;
+  /** орієнтовний кінець = початок + тривалість */
+  endsAt: string;
+  durationMin: number;
+  status: EventStatus;
+  cancelledAt: string | null;
+  organizer: Person;
+  /** без організатора — він окремо */
+  participants: Person[];
+  /** я організатор або учасник */
+  mine: boolean;
+  can: EventPermissions;
+}
+
 export interface DirectoryPerson {
   id: string;
   fullName: string;
@@ -136,11 +167,13 @@ export interface DirectoryPerson {
 export type NotificationKind =
   | 'ASSIGNED' | 'UNASSIGNED' | 'CONTROL_ON' | 'CONTROL_CHANGED' | 'CONTROL_OFF' | 'CONTROL_REMINDER'
   | 'DEADLINE_SOON' | 'DEADLINE_CHANGED' | 'OVERDUE' | 'PROGRESS' | 'COMMENT' | 'STARTED'
-  | 'DONE_PART' | 'DONE' | 'RETURNED' | 'CANCELLED' | 'REOPENED';
+  | 'DONE_PART' | 'DONE' | 'RETURNED' | 'CANCELLED' | 'REOPENED'
+  | 'EVENT_INVITED' | 'EVENT_CHANGED' | 'EVENT_CANCELLED' | 'EVENT_SOON';
 
 export interface AppNotification {
   id: string;
   taskId: string | null;
+  eventId: string | null;
   kind: NotificationKind;
   title: string;
   body: string;
@@ -161,6 +194,8 @@ export interface ReminderSettings {
   defaultQuietFrom: number;
   defaultQuietTo: number;
   defaultMuteWeekends: boolean;
+  /** за скільки хвилин до початку заходу нагадати учасникам */
+  eventReminderMin: number;
 }
 
 export type ControlBy =

@@ -18,3 +18,11 @@ export const OVERDUE_REPEATS = [
   { value: 240, key: 'every_4h' },
   { value: 1440, key: 'daily' },
 ];
+
+/** Нагадування учасникам заходу до його початку (ADR-0016) */
+export const EVENT_REMINDERS = [
+  { value: 5, key: 'before_5m' },
+  { value: 15, key: 'before_15m' },
+  { value: 30, key: 'before_30m' },
+  { value: 60, key: 'before_1h' },
+];

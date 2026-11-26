@@ -29,6 +29,8 @@ const paths = {
   more: 'M12 6h.01M12 12h.01M12 18h.01',
   arrowUp: 'M12 19V5M5 12l7-7 7 7',
   inbox: 'M22 12h-6l-2 3h-4l-2-3H2M5.5 5.1L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.5-6.9A2 2 0 0016.7 4H7.3a2 2 0 00-1.8 1.1z',
+  calendar: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z',
+  event: 'M21 11V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h6M8 2v4M16 2v4M3 10h18M17 14v3l2 1M17 22a5 5 0 100-10 5 5 0 000 10z',
 } as const;
 
 export type IconName = keyof typeof paths;

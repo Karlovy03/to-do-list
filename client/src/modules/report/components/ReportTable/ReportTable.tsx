@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Task } from '@/shared/api/types';
-import { shortName } from '@/modules/tasks';
+import { shortName } from '@/shared/lib/names';
 import { t } from '@/shared/lib/texts';
 import { formatFull } from '@/shared/lib/time';
 import css from './ReportTable.module.css';

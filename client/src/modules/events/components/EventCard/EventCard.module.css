@@ -1,0 +1,91 @@
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: var(--s-4);
+  border: 2px solid transparent;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: inherit;
+  transition: box-shadow var(--t-fast);
+}
+.card:hover {
+  box-shadow: var(--shadow-raised);
+}
+.selected {
+  border-color: var(--blue);
+}
+.time {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 3.2em;
+  font-variant-numeric: tabular-nums;
+}
+.time b {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--navy-ink);
+}
+.time small {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.divider {
+  flex: none;
+  align-self: stretch;
+  width: 1px;
+  max-height: 44px;
+  background: var(--line);
+}
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.375;
+  overflow-wrap: break-word;
+}
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.bottom > :first-child {
+  min-width: 0;
+  overflow: hidden;
+}
+/* минулі й скасовані — приглушені; скасовані ще й закреслені */
+.over .time b {
+  color: var(--ink-3);
+}
+.over .title {
+  color: var(--ink-2);
+}
+.cancelled .title {
+  text-decoration: line-through;
+}
+.compact {
+  gap: var(--s-3);
+  padding: var(--s-3);
+}
+.compact .title {
+  font-size: var(--fs-small);
+  -webkit-line-clamp: 2;
+}

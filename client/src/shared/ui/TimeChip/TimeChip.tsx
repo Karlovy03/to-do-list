@@ -1,9 +1,10 @@
 import { Icon } from '../Icon';
 import css from './TimeChip.module.css';
 
-export type TimeTone = 'calm' | 'soon' | 'late' | 'done';
+/** live — захід триває зараз */
+export type TimeTone = 'calm' | 'soon' | 'late' | 'done' | 'live';
 
-const ICON = { calm: 'clock', soon: 'clock', late: 'alert', done: 'check' } as const;
+const ICON = { calm: 'clock', soon: 'clock', late: 'alert', done: 'check', live: 'clock' } as const;
 
 /** Термін і залишок разом; колір = терміновість */
 export function TimeChip({ tone, time, rest }: { tone: TimeTone; time: string; rest?: string }) {

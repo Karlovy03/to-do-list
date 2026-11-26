@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { peopleKeys } from '@/shared/api/people';
+import { settingsKey } from '@/shared/api/settings';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
 import { useToast } from '@/shared/ui';
@@ -20,7 +21,6 @@ function useSave<V, R>(fn: (v: V) => Promise<R>, keys: QueryKey[]) {
 
 export const useAdminUsers = () => useQuery({ queryKey: adminKeys.users, queryFn: adminApi.users });
 export const useAdminDirectory = () => useQuery({ queryKey: adminKeys.directory, queryFn: adminApi.directory });
-export const useReminderSettings = () => useQuery({ queryKey: adminKeys.settings, queryFn: adminApi.settings });
 
 export const useSaveUser = () =>
   useSave((v: { id?: string; input: UserInput }) => (v.id ? adminApi.updateUser(v.id, v.input) : adminApi.createUser(v.input)), [adminKeys.users, peopleKeys.users]);
@@ -35,6 +35,6 @@ export const useRemoveUnit = () => useSave((id: string) => adminApi.removeUnit(i
 
 export function useSaveSettings() {
   const toast = useToast();
-  const save = useSave(adminApi.saveSettings, [adminKeys.settings]);
+  const save = useSave(adminApi.saveSettings, [settingsKey]);
   return { ...save, mutate: (v: Parameters<typeof adminApi.saveSettings>[0]) => save.mutate(v, { onError: (err) => toast(errorText(err)) }) };
 }

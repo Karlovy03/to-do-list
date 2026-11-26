@@ -18,6 +18,7 @@ export function NotificationCard({ item }: { item: AppNotification }) {
   const open = () => {
     read();
     if (item.taskId) navigate(`/t/${item.taskId}`);
+    else if (item.eventId) navigate(`/events/e/${item.eventId}`);
   };
 
   return (

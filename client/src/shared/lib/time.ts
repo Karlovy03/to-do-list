@@ -9,17 +9,18 @@ export const dayKey = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: 
 export const formatFull = (iso: string | Date) => fullFmt.format(new Date(iso));
 export const formatTime = (iso: string | Date) => timeFmt.format(new Date(iso));
 
-/** «сьогодні, 18:00», «завтра, 10:00», «3 грудня, 12:00» */
-export function formatDeadline(iso: string | Date) {
-  const d = new Date(iso);
-  const now = new Date();
-  const k = dayKey(d);
-  const day =
-    k === dayKey(now) ? t('shared.time.today')
+/** «сьогодні», «завтра», «вчора», «3 грудня» — за київським днем */
+export function formatDay(iso: string | Date, now = new Date()) {
+  const k = dayKey(new Date(iso));
+  return k === dayKey(now) ? t('shared.time.today')
     : k === dayKey(new Date(now.getTime() + 864e5)) ? t('shared.time.tomorrow')
     : k === dayKey(new Date(now.getTime() - 864e5)) ? t('shared.time.yesterday')
-    : dateFmt.format(d);
-  return `${day}, ${timeFmt.format(d)}`;
+    : dateFmt.format(new Date(iso));
+}
+
+/** «сьогодні, 18:00», «завтра, 10:00», «3 грудня, 12:00» */
+export function formatDeadline(iso: string | Date) {
+  return `${formatDay(iso)}, ${timeFmt.format(new Date(iso))}`;
 }
 
 /** Скорочена тривалість: «45 хв», «5 год», «3 дн» */

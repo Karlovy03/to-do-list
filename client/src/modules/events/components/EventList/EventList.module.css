@@ -1,0 +1,12 @@
+.list,
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.list {
+  gap: var(--s-5);
+}
+.group {
+  scroll-margin-top: var(--s-4);
+}

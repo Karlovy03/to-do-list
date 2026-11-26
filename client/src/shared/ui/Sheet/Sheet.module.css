@@ -67,6 +67,9 @@
 .footer > * {
   flex: 1;
 }
+.footer:empty {
+  display: none;
+}
 @media (min-width: 680px) {
   .backdrop {
     align-items: center;

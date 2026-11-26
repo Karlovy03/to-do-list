@@ -3,6 +3,30 @@
   flex-direction: column;
   gap: var(--s-2);
 }
+.picked {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 2px 10px 2px 2px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--blue-soft);
+  color: var(--navy-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pick svg {
+  flex: none;
+  color: var(--navy-ink);
+}
 .list {
   display: flex;
   flex-direction: column;

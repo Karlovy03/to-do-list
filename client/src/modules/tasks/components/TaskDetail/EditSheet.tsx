@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import type { Person, Priority, TaskDetail } from '@/shared/api/types';
+import type { Priority, TaskDetail } from '@/shared/api/types';
 import { useSession } from '@/modules/auth';
-import { usePeople, useUnits } from '@/shared/api/people';
+import { useDescribePerson, usePeople } from '@/shared/api/people';
 import { t } from '@/shared/lib/texts';
-import { unitPath } from '@/shared/lib/units';
 import { Button, Chip, Chips, DateTimePicker, Field, FieldGroup, FormError, PeoplePicker, Sheet, TextArea } from '@/shared/ui';
 import type { TaskChanges } from '../../api/tasks.api';
 import { taskChanges } from '../../lib/taskChanges';
@@ -22,8 +21,7 @@ export function EditSheet({ task, busy, onSave, onClose }: Props) {
   const { me } = useSession();
   const lead = !!me && me.role !== 'MEMBER';
   const people = usePeople();
-  const units = useUnits();
-  const describe = (p: Person) => [p.position, unitPath(p.unitId, units.data ?? [])].filter(Boolean).join(' · ');
+  const describe = useDescribePerson();
   const active = useMemo(() => {
     const current = new Set(task.assignees.map((a) => a.id));
     return (people.data ?? []).filter((p) => p.isActive || current.has(p.id));
@@ -74,9 +72,9 @@ export function EditSheet({ task, busy, onSave, onClose }: Props) {
         </Chips>
       </FieldGroup>
       {lead && (
-        <Field label={t('tasks.form.who')} hint={t('tasks.edit.assignees_hint')}>
+        <FieldGroup label={t('tasks.form.who')} hint={t('tasks.edit.assignees_hint')}>
           <PeoplePicker people={active} selected={assignees} onChange={setAssignees} describe={describe} unitId={me?.unitId} placeholder={t('tasks.form.who_search')} />
-        </Field>
+        </FieldGroup>
       )}
       <FormError>{error}</FormError>
     </Sheet>

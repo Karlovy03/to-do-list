@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { pushLayer } from '../../lib/layers';
 import { t } from '../../lib/texts';
@@ -13,6 +13,15 @@ interface Props {
   footer?: ReactNode;
   /** суцільний фон — для аркуша поверх іншого аркуша (список, календар), щоб нижній не проступав */
   solid?: boolean;
+}
+
+/** Місце під кнопки внизу аркуша: форма всередині кладе туди свою кнопку через SheetFooter */
+const FooterSlot = createContext<HTMLElement | null>(null);
+
+/** Кнопки дії форми — у нижню панель аркуша, хоча сама форма в тілі (стан і права лишаються у формі) */
+export function SheetFooter({ children }: { children: ReactNode }) {
+  const slot = useContext(FooterSlot);
+  return slot ? createPortal(children, slot) : null;
 }
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -36,6 +45,7 @@ function trapFocus(e: KeyboardEvent, panel: HTMLElement) {
 /** Аркуш знизу на телефоні, діалог по центру на комп'ютері; Escape і клік по тлу закривають */
 export function Sheet({ title, onClose, children, footer, solid }: Props) {
   const panel = useRef<HTMLDivElement>(null);
+  const [slot, setSlot] = useState<HTMLDivElement | null>(null);
   // свіжий onClose без перезапуску ефекту: інакше кожен рендер батька крав би фокус і місце в стеку шарів
   const close = useRef(onClose);
   close.current = onClose;
@@ -67,8 +77,12 @@ export function Sheet({ title, onClose, children, footer, solid }: Props) {
           <h2 className={css.title}>{title}</h2>
           <IconButton icon="x" tone="sunken" label={t('shared.ui.close')} onClick={onClose} />
         </div>
-        <div className={css.body}>{children}</div>
-        {footer && <div className={css.footer}>{footer}</div>}
+        <div className={css.body}>
+          <FooterSlot.Provider value={slot}>{children}</FooterSlot.Provider>
+        </div>
+        <div ref={setSlot} className={css.footer}>
+          {footer}
+        </div>
       </div>
     </div>,
     document.body,

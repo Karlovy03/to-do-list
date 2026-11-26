@@ -1,0 +1,1 @@
+export { ListDetail } from './ListDetail';

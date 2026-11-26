@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../../api/types';
+import { shortName } from '../../lib/names';
 import { recentPeople, rememberPerson } from '../../lib/recentPeople';
 import { t } from '../../lib/texts';
 import { Avatar } from '../Avatar';
@@ -32,6 +33,8 @@ export function PeoplePicker({ people, selected, onChange, multiple = true, plac
     return suggestPeople(people, selected, recent, unitId);
   }, [people, query, searching, all, selected, recent, unitId, describe]);
   const hidden = !searching && !all && people.length > list.length;
+  // обрані — капсулами над пошуком: їх видно, навіть коли список згорнуто чи шукаємо іншого
+  const picked = multiple ? selected.map((id) => people.find((p) => p.id === id)).filter((p): p is Person => !!p) : [];
 
   const toggle = (id: string) => {
     if (!selected.includes(id)) rememberPerson(id);
@@ -41,7 +44,26 @@ export function PeoplePicker({ people, selected, onChange, multiple = true, plac
 
   return (
     <div className={css.root}>
-      <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={placeholder} aria-label={placeholder} />
+      {picked.length > 0 && (
+        <div className={css.picked}>
+          {picked.map((p) => (
+            <button type="button" key={p.id} className={css.pick} onClick={() => toggle(p.id)} aria-label={t('shared.people.remove', { name: p.fullName })}>
+              <Avatar person={p} />
+              {shortName(p.fullName)}
+              <Icon name="x" size={16} />
+            </button>
+          ))}
+        </div>
+      )}
+      <Input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        // Enter у пошуку не надсилає форму, в якій стоїть вибір
+        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+        placeholder={placeholder}
+        aria-label={placeholder}
+      />
       {list.length > 0 ? (
         <div className={css.list}>
           {list.map((p) => {

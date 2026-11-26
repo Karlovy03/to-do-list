@@ -1,0 +1,112 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  min-width: 0;
+}
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--icon-btn);
+}
+.kind {
+  margin-left: auto;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.title {
+  font-size: var(--fs-title);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.struck {
+  color: var(--ink-2);
+  text-decoration: line-through;
+}
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.row svg {
+  flex: none;
+  color: var(--ink-3);
+}
+.strong {
+  color: var(--ink);
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+.strong svg {
+  color: var(--navy-ink);
+}
+/* підписи розділів картки: «Організатор», «Учасники · 3», «Опис» */
+.label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.desc {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.more {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--navy-ink);
+  font-weight: 600;
+}
+.grow {
+  flex: 1;
+}
+.spacer {
+  height: var(--s-2);
+}
+.sheetSubject {
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+.sheetHint {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.warning {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-control);
+  background: var(--control-soft);
+  color: var(--control-deep);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.warning svg {
+  flex: none;
+}

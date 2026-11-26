@@ -3,7 +3,7 @@ import type { Task } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { Avatars, ControlSeal, Icon, Tag, TimeChip } from '@/shared/ui';
 import { timeChipFor } from '../../lib/timeTone';
-import { shortName } from '../../lib/names';
+import { shortName } from '@/shared/lib/names';
 import { useSwipe } from './useSwipe';
 import css from './TaskCard.module.css';
 

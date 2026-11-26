@@ -11,6 +11,8 @@ export function kindLook(kind: NotificationKind): { icon: IconName; tone: KindTo
   if (kind === 'DONE' || kind === 'DONE_PART') return { icon: 'check', tone: 'done' };
   if (kind === 'RETURNED' || kind === 'REOPENED') return { icon: 'undo', tone: 'late' };
   if (kind === 'COMMENT' || kind === 'PROGRESS') return { icon: 'message', tone: 'info' };
+  if (kind === 'EVENT_CANCELLED') return { icon: 'event', tone: 'late' };
+  if (kind.startsWith('EVENT')) return { icon: 'event', tone: 'info' };
   return { icon: 'bell', tone: 'info' };
 }
 

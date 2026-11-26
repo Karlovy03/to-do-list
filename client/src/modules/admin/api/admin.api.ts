@@ -21,7 +21,6 @@ export type PersonInput = Pick<DirectoryPerson, 'fullName' | 'position' | 'organ
 export const adminKeys = {
   users: ['admin', 'users'] as const,
   directory: ['admin', 'directory'] as const,
-  settings: ['admin', 'settings'] as const,
 };
 
 export const adminApi = {
@@ -34,6 +33,5 @@ export const adminApi = {
   createUnit: (v: UnitInput) => api<Unit>('/units', { method: 'POST', body: v }),
   updateUnit: (id: string, v: Partial<UnitInput>) => api<Unit>(`/units/${id}`, { method: 'PATCH', body: v }),
   removeUnit: (id: string) => api<void>(`/units/${id}`, { method: 'DELETE' }),
-  settings: () => api<ReminderSettings>('/settings'),
   saveSettings: (v: ReminderSettings) => api<ReminderSettings>('/settings', { method: 'PUT', body: v }),
 };

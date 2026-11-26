@@ -1,0 +1,20 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-control);
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.hint svg {
+  flex: none;
+  margin-top: 1px;
+}

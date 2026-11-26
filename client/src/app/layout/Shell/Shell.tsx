@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useLogout, useSession } from '@/modules/auth';
 import { PushBanner, usePushSync, useUnread } from '@/modules/notifications';
-import { QuickAddSheet } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
 import { UpdateBanner } from '../../update/UpdateBanner/UpdateBanner';
 import { BottomNav } from '../BottomNav/BottomNav';
+import { CreateSheet } from '../CreateSheet/CreateSheet';
 import { Rail } from '../Rail/Rail';
 import { Sidebar } from '../Sidebar/Sidebar';
 import css from './Shell.module.css';
@@ -26,8 +26,8 @@ export function Shell() {
 
   const open = () => setCreating(true);
   const phone = wc === 'sm' || wc === 'xs';
-  // на телефоні картка завдання — окремий екран: замість навігації панель дій
-  const focused = phone && /\/t\/[^/]+$/.test(pathname);
+  // на телефоні картка завдання чи заходу — окремий екран: замість навігації панель дій
+  const focused = phone && /\/[te]\/[^/]+$/.test(pathname);
   return (
     <div className={[css.shell, css[wc], focused && css.focused].filter(Boolean).join(' ')}>
       {wc === 'lg' && <Sidebar me={me} unread={unread} onCreate={open} onLogout={() => logout.mutate()} />}
@@ -38,7 +38,7 @@ export function Shell() {
       <UpdateBanner />
       {!focused && <PushBanner />}
       {phone && !focused && <BottomNav unread={unread} onCreate={open} />}
-      {creating && <QuickAddSheet me={me} onClose={() => setCreating(false)} />}
+      {creating && <CreateSheet me={me} initial={pathname.startsWith('/events') ? 'event' : 'task'} onClose={() => setCreating(false)} />}
     </div>
   );
 }

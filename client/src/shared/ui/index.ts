@@ -1,3 +1,4 @@
+export * from './ActionDock';
 export * from './Avatar';
 export * from './BrandMark';
 export * from './Button';
@@ -8,6 +9,7 @@ export * from './ControlSeal';
 export * from './Field';
 export * from './GroupHeader';
 export * from './Icon';
+export * from './ListDetail';
 export * from './LoadMore';
 export * from './PageHeader';
 export * from './PeoplePicker';
