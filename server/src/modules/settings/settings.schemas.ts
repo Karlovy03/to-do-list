@@ -17,6 +17,8 @@ export const reminderSettingsSchema = z.object({
   defaultQuietFrom: z.number().int().min(0).max(23),
   defaultQuietTo: z.number().int().min(0).max(23),
   defaultMuteWeekends: z.boolean(),
+  /** за скільки хвилин до початку заходу нагадувати учасникам (ADR-0016); default — для адмінки старої версії */
+  eventReminderMin: minutes(5, 240).default(15),
 });
 
 export type ReminderSettings = z.infer<typeof reminderSettingsSchema>;
@@ -30,4 +32,5 @@ export const DEFAULT_SETTINGS: ReminderSettings = {
   defaultQuietFrom: 20,
   defaultQuietTo: 8,
   defaultMuteWeekends: true,
+  eventReminderMin: 15,
 };

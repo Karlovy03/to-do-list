@@ -27,6 +27,17 @@ export const remindersRepository = {
       ),
     ),
 
+  /** Заходи, що почнуться впродовж найближчих minutes хв, з учасниками, яким ще не нагадали */
+  upcomingEvents: (now: Date, minutes: number) =>
+    prisma.event.findMany({
+      where: { status: 'PLANNED', startsAt: { gt: now, lte: new Date(now.getTime() + minutes * 60_000) } },
+      include: { participants: { where: { remindedAt: null }, include: { user: true } } },
+    }),
+
+  /** Позначка «нагадано» — перед надсиланням, як журнал нагадувань (ADR-0004) */
+  markEventReminded: (pairs: { eventId: string; userId: string }[], now: Date) =>
+    prisma.$transaction(pairs.map((p) => prisma.eventParticipant.update({ where: { eventId_userId: p }, data: { remindedAt: now } }))),
+
   snooze: (taskId: string, userId: string, until: Date) =>
     prisma.snooze.upsert({ where: { taskId_userId: { taskId, userId } }, create: { taskId, userId, until }, update: { until } }),
 

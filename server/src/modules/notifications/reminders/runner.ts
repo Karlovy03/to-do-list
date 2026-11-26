@@ -5,6 +5,7 @@ import { deferredPushRepository } from '../feed.repository';
 import { eventSubject, notify, pushPayload, taskSubject } from '../notify.service';
 import { pushToUser } from '../push/dispatcher';
 import { planDeferred } from './deferred';
+import { planEventReminders, type EventReminder, type PlanEvent } from './event-plan';
 import { planReminders, type PlanUser, type Reminder } from './plan';
 import { remindersRepository as repo } from './reminders.repository';
 
@@ -17,12 +18,15 @@ type OpenTask = Awaited<ReturnType<typeof repo.openTasks>>[number];
 async function decide(now: Date) {
   return withAdvisoryLock(LOCKS.reminders, async () => {
     const settings = await getSettings();
-    const [tasks, deferredRows] = await Promise.all([repo.openTasks(), deferredPushRepository.pending()]);
+    const [tasks, deferredRows, upcoming] = await Promise.all([repo.openTasks(), deferredPushRepository.pending(), repo.upcomingEvents(now, settings.eventReminderMin)]);
 
     const deferred = planDeferred(deferredRows, now, settings);
     const released = [...deferred.send, ...deferred.drop];
     if (released.length) await deferredPushRepository.release(released.map((r) => r.id));
-    if (!tasks.length) return { plan: [] as Reminder[], tasks, deferred: deferred.send };
+
+    const eventPlan = planEventReminders(now, settings, upcoming as PlanEvent[]);
+    if (eventPlan.length) await repo.markEventReminded(eventPlan.flatMap((r) => r.userIds.map((userId) => ({ eventId: r.event.id, userId }))), now);
+    if (!tasks.length) return { plan: [] as Reminder[], tasks, deferred: deferred.send, eventPlan };
 
     const taskIds = tasks.map((t) => t.id);
     const userIds = [...new Set(tasks.flatMap((t) => [t.authorId, t.controllerUserId, t.controlSetById, ...t.assignees.map((a) => a.userId)]))]
@@ -39,7 +43,7 @@ async function decide(now: Date) {
     });
     // спершу журнал — збій push не повинен давати повторів щохвилини
     if (plan.length) await repo.markSent(plan.flatMap((r) => r.logKeys.map((key) => ({ taskId: r.taskId, userId: r.userId, key }))), now);
-    return { plan, tasks, deferred: deferred.send };
+    return { plan, tasks, deferred: deferred.send, eventPlan };
   });
 }
 
@@ -57,17 +61,24 @@ async function send(plan: Reminder[], tasks: OpenTask[], now: Date) {
   }
 }
 
+async function sendEventReminders(plan: EventReminder[], now: Date) {
+  for (const { event: e, userIds, leftMs } of plan) {
+    await notify({ event: 'EVENT_SOON', calendarEvent: e, to: userIds, vars: { left: humanDuration(leftMs) } }, now).catch((err) => console.error('[reminders] event', err));
+  }
+}
+
 /** Один прохід: рішення й журнал під блокуванням → надсилання */
 export async function runRemindersOnce(now = new Date()): Promise<number> {
   const result = await decide(now);
   if (!result) return 0;
   await send(result.plan, result.tasks, now);
+  await sendEventReminders(result.eventPlan, now);
   await Promise.all(
     result.deferred.map((r) =>
       pushToUser(r.userId, pushPayload(r.kind, r.task ? taskSubject(r.task) : eventSubject(r.event!.id), r.title, r.body)).catch((err) => console.error('[reminders] deferred push', err)),
     ),
   );
-  return result.plan.length + result.deferred.length;
+  return result.plan.length + result.deferred.length + result.eventPlan.length;
 }
 
 const DAY = 24 * 3600_000;
