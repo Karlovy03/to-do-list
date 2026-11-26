@@ -34,6 +34,7 @@ export const tasksApi = {
   get: (id: string) => api<TaskDetail>(`/tasks/${id}`),
   updates: (id: string, offset: number) => api<Page<TaskUpdate>>(`/tasks/${id}/updates`, { query: { offset } }),
   create: (input: NewTask) => post<Task>('/tasks', input),
+  remove: (id: string) => api<void>(`/tasks/${id}`, { method: 'DELETE' }),
   addNote: (id: string, input: { text: string; progress?: number }) => post<Task>(`/tasks/${id}/notes`, input),
   start: (id: string) => post<Task>(`/tasks/${id}/start`),
   done: (id: string, comment = '') => post<Task>(`/tasks/${id}/done`, { comment }),

@@ -58,6 +58,8 @@ export interface TaskPermissions {
   cancel: boolean;
   reopen: boolean;
   snooze: boolean;
+  /** видалити назавжди (ADR-0011) */
+  delete: boolean;
 }
 
 export interface Assignee extends Person {

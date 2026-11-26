@@ -15,6 +15,8 @@ export const OPEN_STATUSES: TaskStatus[] = ['NEW', 'IN_PROGRESS'];
 export const LIST_PAGE = 50;
 
 export const taskRepository = {
+  /** Разом із виконавцями, журналом, сповіщеннями й нагадуваннями (onDelete: Cascade) */
+  remove: (id: string) => prisma.task.delete({ where: { id } }),
   findById: (id: string, db: Db = prisma) => db.task.findUnique({ where: { id }, include: taskInclude }),
 
   list: (where: Prisma.TaskWhereInput, orderBy: Prisma.TaskOrderByWithRelationInput[], offset: number) =>

@@ -49,5 +49,7 @@ export async function api<T>(path: string, init: { method?: string; body?: unkno
     if (res.status === 401 && path !== '/auth/login') window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     throw new ApiError(res.status, data.error ?? 'internal');
   }
+  // 204 — успіх без тіла (напр. видалення)
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }

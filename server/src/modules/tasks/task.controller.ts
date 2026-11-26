@@ -20,6 +20,10 @@ export const taskController = {
     const { rows, hasMore } = await taskQueryService.list(viewer, s.listQuery.parse(req.query));
     res.json({ items: rows.map((t) => serializeTask(t, viewer)), hasMore });
   },
+  async remove(req: Request, res: Response) {
+    await taskCrudService.remove(currentUser(req), param(req, 'id'));
+    res.status(204).end();
+  },
   async summary(req: Request, res: Response) {
     res.json(await taskQueryService.summary(currentUser(req)));
   },

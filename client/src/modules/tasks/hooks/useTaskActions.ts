@@ -32,6 +32,7 @@ export function useTaskActions(id: string) {
     addNote: useTaskMutation((v: { text: string; progress?: number }) => tasksApi.addNote(id, v)),
     setControl: useTaskMutation((v: ControlInput) => tasksApi.setControl(id, v), 'tasks.toast.control_set'),
     removeControl: useTaskMutation((reason: string) => tasksApi.removeControl(id, reason), 'tasks.toast.control_removed'),
+    remove: useTaskMutation(() => tasksApi.remove(id), 'tasks.toast.deleted'),
   };
 }
 

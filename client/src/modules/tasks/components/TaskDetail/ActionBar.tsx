@@ -1,17 +1,20 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { TaskDetail } from '@/shared/api/types';
 import { ControlSheet } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
 import { Button, IconButton, Sheet } from '@/shared/ui';
 import { useTaskActions } from '../../hooks/useTaskActions';
 import { CommentSheet } from './CommentSheet';
+import { DeleteSheet } from './DeleteSheet';
 import css from './TaskDetail.module.css';
 
-type Open = null | 'return' | 'close' | 'cancel' | 'removeControl' | 'control' | 'more' | 'reopen';
+type Open = null | 'return' | 'close' | 'cancel' | 'removeControl' | 'control' | 'more' | 'reopen' | 'delete';
 
 /** Одна головна дія за правами сервера; рідкісні дії — у меню «⋯» */
-export function ActionBar({ task, floating }: { task: TaskDetail; floating: boolean }) {
+export function ActionBar({ task, floating, back }: { task: TaskDetail; floating: boolean; back: string }) {
   const a = useTaskActions(task.id);
+  const navigate = useNavigate();
   const [open, setOpen] = useState<Open>(null);
   const close = () => setOpen(null);
   const can = task.can;
@@ -22,6 +25,7 @@ export function ActionBar({ task, floating }: { task: TaskDetail; floating: bool
     can.removeControl && { key: 'removeControl' as const, label: t('tasks.actions.remove_control') },
     can.closeEarly && { key: 'close' as const, label: t('tasks.actions.close_early') },
     can.cancel && { key: 'cancel' as const, label: t('tasks.actions.cancel') },
+    can.delete && { key: 'delete' as const, label: t('tasks.actions.delete') },
   ].filter(Boolean) as { key: Open; label: string }[];
 
   const primary = can.markDone ? (
@@ -59,7 +63,7 @@ export function ActionBar({ task, floating }: { task: TaskDetail; floating: bool
       {open === 'more' && (
         <Sheet title={t('tasks.detail.more')} onClose={close}>
           {more.map((m) => (
-            <Button key={m.key} variant={m.key === 'cancel' ? 'danger' : 'outline'} size="l" block onClick={() => setOpen(m.key)}>
+            <Button key={m.key} variant={m.key === 'cancel' || m.key === 'delete' ? 'danger' : 'outline'} size="l" block onClick={() => setOpen(m.key)}>
               {m.label}
             </Button>
           ))}
@@ -84,6 +88,9 @@ export function ActionBar({ task, floating }: { task: TaskDetail; floating: bool
       {open === 'removeControl' && (
         <CommentSheet title={t('tasks.actions.remove_control')} label={t('tasks.actions.remove_reason')} required={false} confirmLabel={t('tasks.actions.remove_control')}
           busy={a.removeControl.isPending} onClose={close} onConfirm={(reason) => a.removeControl.mutate(reason, { onSuccess: close })} />
+      )}
+      {open === 'delete' && (
+        <DeleteSheet title={task.title} busy={a.remove.isPending} onClose={close} onConfirm={() => a.remove.mutate(undefined, { onSuccess: () => navigate(back, { replace: true }) })} />
       )}
       {open === 'control' && <ControlSheet initial={task.control} busy={a.setControl.isPending} onClose={close} onSave={(v) => a.setControl.mutate(v, { onSuccess: close })} />}
     </>

@@ -8,6 +8,7 @@ tasksRouter.get('/summary', c.summary);
 tasksRouter.post('/', c.create);
 tasksRouter.get('/:id', c.get);
 tasksRouter.patch('/:id', c.update);
+tasksRouter.delete('/:id', c.remove);
 tasksRouter.get('/:id/updates', c.journal);
 
 tasksRouter.post('/:id/control', c.setControl);

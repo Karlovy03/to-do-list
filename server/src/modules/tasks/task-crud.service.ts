@@ -106,4 +106,10 @@ export const taskCrudService = {
     }
     return task;
   },
+
+  async remove(actor: User, id: string) {
+    const task = await loadVisible(id, actor);
+    if (!permissions(task, actor).delete) throw forbidden('delete_not_allowed');
+    await taskRepository.remove(task.id);
+  },
 };

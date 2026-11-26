@@ -89,3 +89,15 @@ describe('кому можна доручати', () => {
     expect(canAssignTo(chief, ['exec', 'exec2'])).toBe(true);
   });
 });
+
+describe('видалення (ADR-0011)', () => {
+  it('автор і адміністратор можуть видалити завдання, зокрема на контролі й завершене', () => {
+    for (const status of ['NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'] as const) {
+      expect(permissions(task({ status }), chief).delete).toBe(true);
+      expect(permissions(task({ status }), admin).delete).toBe(true);
+    }
+  });
+  it('інший керівник, виконавець і контролер-користувач не можуть видалити чуже завдання', () => {
+    for (const u of [otherManager, exec, controller, stranger]) expect(permissions(task(), u).delete).toBe(false);
+  });
+});

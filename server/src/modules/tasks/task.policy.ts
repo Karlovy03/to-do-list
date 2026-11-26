@@ -49,6 +49,8 @@ export function permissions(t: PolicyTask, u: PolicyUser) {
     cancel: open && owner,
     reopen: t.status === 'CANCELLED' && owner,
     snooze: open && isAssignee(t, u),
+    // ADR-0011: видаляє назавжди лише автор або адміністратор, у будь-якому стані, зокрема на контролі
+    delete: isAuthor(t, u) || u.role === 'ADMIN',
   };
 }
 

@@ -188,3 +188,24 @@
 .spacer {
   height: var(--s-2);
 }
+.deleteTask {
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+.deleteWarning {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-control);
+  background: var(--control-soft);
+  color: var(--control-deep);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.deleteWarning svg {
+  flex: none;
+}
+.deleteHint {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}

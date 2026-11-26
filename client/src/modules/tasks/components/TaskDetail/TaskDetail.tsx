@@ -49,7 +49,7 @@ export function TaskDetail({ id, back }: { id: string; back: string }) {
       {task.control && <ControlPanel control={task.control} />}
       <PeoplePanel task={task} />
       <Timeline task={task} />
-      <ActionBar task={task} floating={phone} />
+      <ActionBar task={task} floating={phone} back={back} />
       <div className={css.spacer} />
     </article>
   );
