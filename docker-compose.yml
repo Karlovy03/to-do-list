@@ -4,6 +4,8 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
+    # small server (1 GB RAM): modest buffers and few connections are enough for this app
+    command: postgres -c shared_buffers=64MB -c max_connections=20
     environment:
       POSTGRES_DB: kontrol
       POSTGRES_USER: kontrol
@@ -24,6 +26,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      NODE_OPTIONS: --max-old-space-size=256
       DATABASE_URL: postgresql://kontrol:${POSTGRES_PASSWORD}@db:5432/kontrol
       PUBLIC_URL: https://${DOMAIN:?set DOMAIN in .env}
       TRUST_PROXY_HOPS: 1
