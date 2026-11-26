@@ -12,6 +12,8 @@ export const usersRepository = {
       orderBy: [{ isActive: 'desc' }, { fullName: 'asc' }],
     }),
 
+  findActiveByUnits: (unitIds: string[]) =>
+    prisma.user.findMany({ where: { unitId: { in: unitIds }, isActive: true }, orderBy: { fullName: 'asc' } }),
   findActiveByIds: (ids: string[]) => prisma.user.findMany({ where: { id: { in: ids }, isActive: true } }),
   countActiveByIds: (ids: string[]) => prisma.user.count({ where: { id: { in: ids }, isActive: true } }),
 

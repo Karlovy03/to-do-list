@@ -43,6 +43,25 @@ export const taskQueryService = {
     return taskRepository.listAll({ AND: [visibilityWhere(viewer), { isControlled: true, status: { in: OPEN_STATUSES } }] }, [{ deadline: 'asc' }]);
   },
 
+  /**
+   * Для календаря: завдання, чия смуга «від постановки до терміну» перетинає період.
+   * Відкрите прострочене тягнеться до «зараз», завершене — до часу завершення.
+   */
+  inRange(viewer: Viewer, from: Date, to: Date, people: string[] | null, now = new Date()) {
+    const openSpan = now.getTime() > from.getTime() ? {} : { deadline: { gt: from } };
+    return taskRepository.listAll(
+      {
+        AND: [
+          visibilityWhere(viewer),
+          people ? { assignees: { some: { userId: { in: people } } } } : {},
+          { createdAt: { lt: to } },
+          { OR: [{ status: { in: OPEN_STATUSES }, ...openSpan }, { status: { in: ['DONE', 'CANCELLED'] }, completedAt: { gt: from } }] },
+        ],
+      },
+      [{ createdAt: 'asc' }],
+    );
+  },
+
   async summary(viewer: Viewer, now = new Date()) {
     const visible = visibilityWhere(viewer);
     const open = { ...visible, status: { in: OPEN_STATUSES } };

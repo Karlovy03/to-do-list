@@ -28,6 +28,7 @@ describe.skipIf(!run)('права на реальній базі (ADR-0012)', ()
     const dept = await prisma.unit.create({ data: { name: `${tag} Управління` } });
     const a = await prisma.unit.create({ data: { name: `${tag} Відділ А`, parentId: dept.id } });
     const b = await prisma.unit.create({ data: { name: `${tag} Відділ Б`, parentId: dept.id } });
+    ids.unitA = a.id;
     const user = async (key: string, role: 'ADMIN' | 'DIRECTOR' | 'MANAGER' | 'MEMBER', unitId: string | null) => {
       ids[key] = (await prisma.user.create({ data: { login: `${tag}-${key}`, fullName: `${tag} ${key}`, role, unitId, passwordHash: 'x' } })).id;
     };
@@ -97,6 +98,16 @@ describe.skipIf(!run)('права на реальній базі (ADR-0012)', ()
     expect(await call('chief', 'GET', `/events/${eventId}`)).toBe(200);
     const list = (await (await fetch(`${base}/api/events`, { headers: as('headB') })).json()) as { items: { id: string }[] };
     expect(list.items.map((e) => e.id)).not.toContain(eventId);
+  });
+
+  it('календар: сусідній керівник, обравши чужий відділ, не бачить ні смуг, ні блоків; свій керівник — бачить', async () => {
+    const q = `/calendar?unit=${ids.unitA}&from=${new Date(Date.now() - 864e5).toISOString()}&to=${new Date(Date.now() + 2 * 864e5).toISOString()}`;
+    type Cal = { items: { id: string }[] };
+    const foreign = (await (await fetch(`${base}/api${q}`, { headers: as('headB') })).json()) as Cal;
+    const own = (await (await fetch(`${base}/api${q}`, { headers: as('headA') })).json()) as Cal;
+    expect(foreign.items.map((i) => i.id)).not.toContain(taskId);
+    expect(foreign.items.map((i) => i.id)).not.toContain(eventId);
+    expect(own.items.map((i) => i.id)).toEqual(expect.arrayContaining([taskId, eventId]));
   });
 
   it('чуже завдання не потрапляє ні в список, ні в довідку, ні в зведення', async () => {
