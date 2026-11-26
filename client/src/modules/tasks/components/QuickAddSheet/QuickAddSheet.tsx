@@ -4,8 +4,7 @@ import type { ControlInput, Me, Priority } from '@/shared/api/types';
 import { usePeople } from '@/shared/api/people';
 import { ControlFields, isComplete, normalize } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
-import { toLocalInput } from '@/shared/lib/time';
-import { Button, Chip, Chips, Field, FormError, Input, PeoplePicker, Sheet, Switch, TextArea } from '@/shared/ui';
+import { Button, Chip, Chips, DateTimePicker, Field, FormError, PeoplePicker, Sheet, Switch, TextArea } from '@/shared/ui';
 import { useCreateTask } from '../../hooks/useTaskActions';
 import { quickDeadlines } from '../../lib/deadlines';
 import css from './QuickAddSheet.module.css';
@@ -79,7 +78,7 @@ export function QuickAddSheet({ me, onClose }: { me: Me; onClose: () => void }) 
             <Chip on={custom} onClick={() => setCustom(true)}>{t('tasks.form.custom_deadline')}</Chip>
           </Chips>
           {custom && (
-            <Input type="datetime-local" aria-label={t('tasks.form.custom_deadline')} value={deadline ? toLocalInput(deadline) : ''} onChange={(e) => setDeadline(e.target.value ? new Date(e.target.value) : null)} />
+            <DateTimePicker label={t('tasks.form.custom_deadline')} value={deadline} onChange={setDeadline} />
           )}
         </div>
 

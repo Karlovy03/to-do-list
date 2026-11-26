@@ -1,0 +1,79 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-2);
+  padding: 0 var(--s-3);
+  border-radius: var(--r-control);
+  background: var(--surface-sunken);
+  color: var(--ink-3);
+}
+.search {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--ctrl-m);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+}
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s-1);
+  list-style: none;
+  outline: none;
+  overscroll-behavior: contain;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--ctrl-m);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-control);
+  color: var(--ink);
+  cursor: pointer;
+}
+.large .option {
+  min-height: var(--ctrl-l);
+  font-size: var(--fs-body);
+}
+.active {
+  background: var(--surface-sunken);
+}
+.list:focus-visible .active,
+.searchRow:focus-within + .list .active {
+  box-shadow: inset 0 0 0 2px var(--blue);
+}
+.selected {
+  color: var(--navy);
+  font-weight: 700;
+}
+.selected svg {
+  color: var(--blue);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.text small {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.empty {
+  padding: var(--s-4);
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  text-align: center;
+}

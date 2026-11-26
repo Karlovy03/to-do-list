@@ -33,7 +33,7 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /** Кругла кнопка-іконка; підпис обов'язковий для екранних читачів */
 export function IconButton({ icon, label, badge, tone = 'plain', className, type = 'button', ...rest }: IconButtonProps) {
   return (
-    <button type={type} aria-label={label} title={label} className={[css.iconBtn, css[`icon_${tone}`], className].filter(Boolean).join(' ')} {...rest}>
+    <button type={type} aria-label={label} data-tip={label} className={[css.iconBtn, css[`icon_${tone}`], className].filter(Boolean).join(' ')} {...rest}>
       <Icon name={icon} size={20} />
       {!!badge && <span className={css.badge}>{badge > 99 ? '99+' : badge}</span>}
     </button>

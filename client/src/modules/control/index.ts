@@ -1,4 +1,4 @@
 export { ControlFields } from './components/ControlFields/ControlFields';
 export { ControlSheet } from './components/ControlSheet/ControlSheet';
 export { fromControl, isComplete, normalize } from './lib/controlInput';
-export { INTERVALS } from './lib/controlInput';
+export { IntervalChips } from './components/IntervalChips/IntervalChips';

@@ -6,4 +6,5 @@
 @import './base/typography.css';
 @import './utilities/glass.css';
 @import './utilities/a11y.css';
+@import './utilities/tooltip.css';
 @import './utilities/print.css';

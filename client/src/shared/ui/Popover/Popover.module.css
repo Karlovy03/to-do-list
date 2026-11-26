@@ -1,0 +1,24 @@
+/* суцільний фон: крізь скло проступав би вміст аркуша під списком і заважав читати */
+.popover {
+  position: fixed;
+  z-index: var(--z-popover);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+  animation: drop var(--t-fast);
+}
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .popover {
+    animation: none;
+  }
+}

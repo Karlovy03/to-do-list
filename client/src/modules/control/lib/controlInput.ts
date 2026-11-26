@@ -1,15 +1,7 @@
 import type { ControlBy, ControlInput, TaskControl } from '@/shared/api/types';
 
-export const INTERVALS: { value: number | null; key: string }[] = [
-  { value: null, key: 'default' },
-  { value: 30, key: 'm30' },
-  { value: 60, key: 'h1' },
-  { value: 120, key: 'h2' },
-  { value: 180, key: 'h3' },
-  { value: 240, key: 'h4' },
-  { value: 480, key: 'h8' },
-  { value: 1440, key: 'd1' },
-];
+/** Варіанти інтервалу, хв; null — за налаштуваннями людини чи загальними */
+export const INTERVALS: (number | null)[] = [null, 60, 120, 240, 1440];
 
 /** Поточні умови контролю → початкові значення форми */
 export function fromControl(c: TaskControl | null | undefined): ControlInput {

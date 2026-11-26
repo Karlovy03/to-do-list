@@ -56,16 +56,32 @@ const longDateFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, weekday: 'l
 export const formatLongDate = (d: Date = new Date()) => longDateFmt.format(d);
 
 const partsFmt = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-function kyivParts(d: Date) {
+
+export interface KyivParts {
+  y: number;
+  /** 1–12 */
+  m: number;
+  d: number;
+  h: number;
+  min: number;
+}
+
+/** Календарна дата і час цієї миті за Києвом */
+export function kyivParts(d: Date): KyivParts {
   const p = Object.fromEntries(partsFmt.formatToParts(d).map((x) => [x.type, Number(x.value)]));
   return { y: p.year, m: p.month, d: p.day, h: p.hour, min: p.minute };
 }
 
-/** Мить «через days днів о hour:00 за Києвом» — незалежно від часового поясу пристрою */
-export function kyivAt(days: number, hour: number, now = new Date()): Date {
-  const day = kyivParts(new Date(now.getTime() + days * 864e5));
-  const guess = Date.UTC(day.y, day.m - 1, day.d, hour);
+/** Мить, коли в Києві буде вказана дата й час — незалежно від часового поясу пристрою */
+export function fromKyiv(y: number, m: number, d: number, h: number, min = 0): Date {
+  const guess = Date.UTC(y, m - 1, d, h, min);
   const p = kyivParts(new Date(guess));
   const offset = Date.UTC(p.y, p.m - 1, p.d, p.h, p.min) - guess;
   return new Date(guess - offset);
+}
+
+/** Мить «через days днів о hour:00 за Києвом» */
+export function kyivAt(days: number, hour: number, now = new Date()): Date {
+  const day = kyivParts(new Date(now.getTime() + days * 864e5));
+  return fromKyiv(day.y, day.m, day.d, hour);
 }

@@ -12,7 +12,7 @@ export const initials = (name: string) =>
 export function Avatar({ person, large, done }: { person: Named; large?: boolean; done?: boolean }) {
   const cls = [css.avatar, large && css.lg, done && css.done].filter(Boolean).join(' ');
   return (
-    <span className={cls} title={person.fullName} aria-hidden="true">
+    <span className={cls} data-tip={person.fullName} aria-hidden="true">
       {initials(person.fullName)}
     </span>
   );

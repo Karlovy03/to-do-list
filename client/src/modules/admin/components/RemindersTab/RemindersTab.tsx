@@ -2,13 +2,13 @@ import { useState } from 'react';
 import type { ReminderSettings } from '@/shared/api/types';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
-import { Button, Card, ErrorState, Field, Loading, Select, Switch } from '@/shared/ui';
+import { Button, Card, ErrorState, Field, Loading, Picker, Switch } from '@/shared/ui';
 import { useReminderSettings, useSaveSettings } from '../../hooks/useAdmin';
 import { CONTROL_INTERVALS, DEADLINE_OFFSETS, OVERDUE_REPEATS } from '../../lib/options';
 import { OptionChips } from '../OptionChips/OptionChips';
 import css from './RemindersTab.module.css';
 
-const HOURS = Array.from({ length: 24 }, (_, h) => h);
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, h) => ({ value: h, label: `${String(h).padStart(2, '0')}:00` }));
 
 export function RemindersTab() {
   const q = useReminderSettings();
@@ -26,11 +26,7 @@ function RemindersForm({ initial }: { initial: ReminderSettings }) {
     set({ deadlineOffsetsMin: v.deadlineOffsetsMin.includes(m) ? v.deadlineOffsetsMin.filter((x) => x !== m) : [...v.deadlineOffsetsMin, m].sort((a, b) => b - a) });
   const hour = (field: 'defaultQuietFrom' | 'defaultQuietTo', label: string) => (
     <Field label={label}>
-      <Select value={v[field]} onChange={(e) => set({ [field]: Number(e.target.value) })}>
-        {HOURS.map((h) => (
-          <option key={h} value={h}>{`${String(h).padStart(2, '0')}:00`}</option>
-        ))}
-      </Select>
+      <Picker label={label} value={v[field]} options={HOUR_OPTIONS} onChange={(h) => set({ [field]: h })} />
     </Field>
   );
 

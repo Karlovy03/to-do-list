@@ -1,0 +1,43 @@
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: var(--ctrl-l);
+  padding: 0 var(--s-3) 0 var(--s-4);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-control);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-body);
+  text-align: left;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.trigger > svg {
+  flex: none;
+  color: var(--ink-3);
+  transform: rotate(90deg);
+  transition: transform var(--t-fast);
+}
+.trigger:focus-visible,
+.open {
+  border-color: var(--blue);
+  background: var(--surface);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.open > svg {
+  transform: rotate(-90deg);
+}
+.value,
+.placeholder {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.placeholder {
+  color: var(--ink-3);
+}

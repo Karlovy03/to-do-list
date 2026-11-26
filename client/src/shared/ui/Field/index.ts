@@ -1,1 +1,1 @@
-export { Field, Input, TextArea, Select, FormError } from './Field';
+export { Field, FieldGroup, Input, TextArea, FormError } from './Field';

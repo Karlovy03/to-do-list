@@ -1,8 +1,8 @@
 import type { ControlBy, ControlInput } from '@/shared/api/types';
 import { useDirectory, usePeople } from '@/shared/api/people';
 import { t } from '@/shared/lib/texts';
-import { Field, Input, Segmented, Select } from '@/shared/ui';
-import { INTERVALS } from '../../lib/controlInput';
+import { Field, FieldGroup, Input, Picker, Segmented } from '@/shared/ui';
+import { IntervalChips } from '../IntervalChips/IntervalChips';
 import css from './ControlFields.module.css';
 
 type Kind = ControlBy['type'];
@@ -23,29 +23,35 @@ export function ControlFields({ value, onChange }: { value: ControlInput; onChan
 
   return (
     <div className={css.fields}>
-      <Field label={t('control.control.who')}>
+      <FieldGroup label={t('control.control.who')}>
         <Segmented<Kind>
           label={t('control.control.who')}
           value={by.type}
           onChange={(k) => set({ by: empty[k] })}
           options={(['self', 'user', 'directory', 'text'] as const).map((k) => ({ value: k, label: t(`control.control.by_${k}`) }))}
         />
-      </Field>
+      </FieldGroup>
       {by.type === 'user' && (
-        <Select aria-label={t('control.control.pick_user')} value={by.userId} onChange={(e) => set({ by: { type: 'user', userId: e.target.value } })}>
-          <option value="">{t('control.control.pick_user')}</option>
-          {people.data?.filter((p) => p.isActive).map((p) => (
-            <option key={p.id} value={p.id}>{`${p.fullName} — ${p.position}`}</option>
-          ))}
-        </Select>
+        <Picker
+          searchable
+          label={t('control.control.pick_user')}
+          placeholder={t('control.control.pick_user')}
+          value={by.userId}
+          onChange={(userId) => set({ by: { type: 'user', userId } })}
+          options={(people.data ?? []).filter((p) => p.isActive).map((p) => ({ value: p.id, label: p.fullName, hint: p.position }))}
+        />
       )}
       {by.type === 'directory' && (
-        <Select aria-label={t('control.control.pick_directory')} value={by.controllerId} onChange={(e) => set({ by: { type: 'directory', controllerId: e.target.value } })}>
-          <option value="">{t('control.control.pick_directory')}</option>
-          {directory.data?.filter((p) => p.isActive).map((p) => (
-            <option key={p.id} value={p.id}>{[p.fullName, p.position, p.organization].filter(Boolean).join(', ')}</option>
-          ))}
-        </Select>
+        <Picker
+          searchable
+          label={t('control.control.pick_directory')}
+          placeholder={t('control.control.pick_directory')}
+          value={by.controllerId}
+          onChange={(controllerId) => set({ by: { type: 'directory', controllerId } })}
+          options={(directory.data ?? [])
+            .filter((p) => p.isActive)
+            .map((p) => ({ value: p.id, label: p.fullName, hint: [p.position, p.organization].filter(Boolean).join(', ') }))}
+        />
       )}
       {by.type === 'text' && (
         <Input aria-label={t('control.control.by_text')} value={by.text} placeholder={t('control.control.text_placeholder')} onChange={(e) => set({ by: { type: 'text', text: e.target.value } })} />
@@ -53,15 +59,7 @@ export function ControlFields({ value, onChange }: { value: ControlInput; onChan
       <Field label={t('control.control.basis')}>
         <Input value={value.basis ?? ''} placeholder={t('control.control.basis_placeholder')} onChange={(e) => set({ basis: e.target.value })} />
       </Field>
-      <Field label={t('control.intervals.label')}>
-        <Select value={value.reminderInterval ?? ''} onChange={(e) => set({ reminderInterval: e.target.value ? Number(e.target.value) : null })}>
-          {INTERVALS.map((i) => (
-            <option key={i.key} value={i.value ?? ''}>
-              {i.value ? `${t('control.intervals.every')} ${t(`control.intervals.${i.key}`)}` : t('control.intervals.default')}
-            </option>
-          ))}
-        </Select>
-      </Field>
+      <IntervalChips label={t('control.intervals.label')} value={value.reminderInterval ?? null} onChange={(reminderInterval) => set({ reminderInterval })} />
     </div>
   );
 }

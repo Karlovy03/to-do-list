@@ -1,7 +1,7 @@
 import type { Me } from '@/shared/api/types';
-import { INTERVALS } from '@/modules/control';
+import { IntervalChips } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
-import { Card, Field, Select, Switch } from '@/shared/ui';
+import { Card, Switch } from '@/shared/ui';
 import { useUpdatePrefs } from '../../hooks/useProfile';
 
 const TOPICS = [
@@ -20,15 +20,12 @@ export function TopicsPanel({ me }: { me: Me }) {
         <Switch key={field} checked={me.prefs[field]} label={t(`settings.topics.${key}`)} onChange={(v) => update({ [field]: v })} />
       ))}
       {me.prefs.notifyControl && (
-        <Field label={t('settings.topics.my_interval')}>
-          <Select value={me.prefs.controlInterval ?? ''} onChange={(e) => update({ controlInterval: e.target.value ? Number(e.target.value) : null })}>
-            {INTERVALS.map((i) => (
-              <option key={i.key} value={i.value ?? ''}>
-                {i.value ? `${t('control.intervals.every')} ${t(`control.intervals.${i.key}`)}` : t('settings.topics.my_interval_default')}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <IntervalChips
+          label={t('settings.topics.my_interval')}
+          defaultLabel={t('settings.topics.my_interval_default')}
+          value={me.prefs.controlInterval}
+          onChange={(controlInterval) => update({ controlInterval })}
+        />
       )}
     </Card>
   );
