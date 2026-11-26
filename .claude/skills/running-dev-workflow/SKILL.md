@@ -30,5 +30,17 @@ npx prisma migrate deploy
 ```bash
 npm run check                         # з кореня: check:texts + check:size
 cd server && npx tsc --noEmit -p . && npx vitest run && npm run build
+cd ../client && npx vitest run && npm run build      # build = tsc --noEmit + vite build
+```
+Ті самі кроки запускає `.github/workflows/ci.yml` на кожен push, плюс: міграції на порожній базі і перевірка, що схема не має змін без міграції:
+```bash
+cd server && npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
+# 0 — збігається; 2 — у schema.prisma є зміна без файлу міграції
 ```
 Якщо якісь ворота не вдалося запустити — сказати, які і чому. Не комітити з червоними воротами.
+
+## Образ і деплой (ADR-0009)
+- Один образ із кореневого `Dockerfile`: сервер віддає зібраний клієнт. Перед ним — Caddy (HTTPS), поруч — PostgreSQL; усе в `docker-compose.yml`, секрети — у `.env` поруч (зразок `.env.example`).
+- Деплой лише через `./scripts/deploy.sh`: `build` → `run --rm app npx prisma migrate deploy` → `up -d`. Сервер не мігрує базу під час старту.
+- Ключі web push у продакшені: `docker compose run --rm --no-deps app node scripts/vapid.cjs` — один раз; зміна ключів ламає всі підписки.
+- Нова тека, потрібна в рантаймі (як `prisma/`, `scripts/`), має бути явно скопійована в останній стадії `Dockerfile`.

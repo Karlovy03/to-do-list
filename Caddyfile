@@ -1,0 +1,5 @@
+# Automatic HTTPS (Let's Encrypt) for the domain from .env. Web push works only over HTTPS.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:3101
+}
