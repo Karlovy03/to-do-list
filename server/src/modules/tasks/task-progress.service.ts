@@ -1,5 +1,4 @@
 import type { Viewer } from './viewer';
-import type { User } from '@prisma/client';
 import { forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
 import { notifyInBackground, snoozeReminders } from '../notifications';

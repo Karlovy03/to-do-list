@@ -1,5 +1,4 @@
 import type { Viewer } from './viewer';
-import type { User } from '@prisma/client';
 import type { z } from 'zod';
 import { badRequest, forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
@@ -7,16 +6,18 @@ import { NO_CONTROL, resolveControl } from '../control';
 import { notifyInBackground } from '../notifications';
 import { usersRepository } from '../users';
 import { journalRepository } from './journal.repository';
-import { pendingExecutors } from './stakeholders';
+import { leads, pendingExecutors } from './stakeholders';
 import { canAssignTo, canControlOnCreate, permissions } from './task.policy';
-import { taskRepository } from './task.repository';
+import { OPEN_STATUSES, taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
 import type { createTaskSchema, updateTaskSchema } from './task.schemas';
 
-async function checkAssignees(actor: Viewer, ids: string[]) {
+/** keep — ті, хто вже виконавець: їх не перевіряємо на активність, інакше вимкнений колега блокував би будь-яку правку */
+async function checkAssignees(actor: Viewer, ids: string[], keep: string[] = []) {
   const unique = [...new Set(ids)];
   if (!canAssignTo(actor, unique)) throw forbidden('only_self_assign');
-  if ((await usersRepository.countActiveByIds(unique)) !== unique.length) throw badRequest('assignee_not_found');
+  const fresh = unique.filter((id) => !keep.includes(id));
+  if (fresh.length && (await usersRepository.countActiveByIds(fresh)) !== fresh.length) throw badRequest('assignee_not_found');
   return unique;
 }
 
@@ -68,13 +69,14 @@ export const taskCrudService = {
     if (!permissions(t, actor).edit) throw forbidden();
 
     const prev = t.assignees.map((a) => a.userId);
-    const next = input.assigneeIds ? await checkAssignees(actor, input.assigneeIds) : prev;
+    const next = input.assigneeIds ? await checkAssignees(actor, input.assigneeIds, prev) : prev;
     const added = next.filter((x) => !prev.includes(x));
     const removed = prev.filter((x) => !next.includes(x));
     const deadlineChanged = !!input.deadline && input.deadline.getTime() !== t.deadline.getTime();
     const now = new Date();
 
-    const task = await transaction(async (db) => {
+    const { task, finished } = await transaction(async (db) => {
+      await taskRepository.lockForUpdate(t.id, db);
       if (removed.length) {
         await taskRepository.removeAssignees(t.id, removed, db);
         await taskRepository.forgetUsers(t.id, removed, db);
@@ -86,7 +88,12 @@ export const taskCrudService = {
         ...(deadlineChanged ? [{ taskId: t.id, authorId: actor.id, kind: 'DEADLINE' as const, meta: { from: t.deadline.toISOString(), to: input.deadline!.toISOString() } }] : []),
       ];
       if (journal.length) await journalRepository.addMany(journal, db);
-      return taskRepository.update(
+      // зняли останнього, хто ще не позначив «Виконано», — решта вже виконали, завдання завершено (дія системи)
+      const finished = removed.length > 0 && (await taskRepository.pendingAssignees(t.id, db)) === 0;
+      if (finished && (await taskRepository.transition(t.id, OPEN_STATUSES, { status: 'DONE', completedAt: now, progress: 100 }, db))) {
+        await journalRepository.add({ taskId: t.id, authorId: null, kind: 'STATUS', meta: { action: 'done', auto: true } }, db);
+      }
+      const task = await taskRepository.update(
         t.id,
         {
           title: input.title,
@@ -96,11 +103,13 @@ export const taskCrudService = {
         },
         db,
       );
+      return { task, finished };
     });
 
     const controlled = task.isControlled ? 'notifications.assignment.assigned_controlled' : undefined;
     notifyInBackground({ event: 'ASSIGNED', task, to: added, actorId: actor.id, titleKey: controlled, withDeadline: 'line' });
     notifyInBackground({ event: 'UNASSIGNED', task, to: removed, actorId: actor.id });
+    if (finished) notifyInBackground({ event: 'DONE', task, to: leads(task), actorId: null });
     if (deadlineChanged) {
       const to = [...pendingExecutors(task).filter((x) => !added.includes(x)), task.controllerUserId];
       notifyInBackground({ event: 'DEADLINE_CHANGED', task, to, actorId: actor.id, withDeadline: 'new_line' });

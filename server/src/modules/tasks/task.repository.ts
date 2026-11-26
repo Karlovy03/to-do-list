@@ -37,6 +37,12 @@ export const taskRepository = {
     return count === 1;
   },
 
+  /**
+   * Блокує рядок завдання до кінця транзакції. Без цього два одночасні «Виконано» від різних
+   * виконавців кожен бачать іншого незавершеним (READ COMMITTED) і жоден не закриває завдання.
+   */
+  lockForUpdate: (id: string, db: Db) => db.$executeRaw`SELECT 1 FROM "Task" WHERE "id" = ${id} FOR UPDATE`,
+
   // ----- виконавці -----
   addAssignees: (taskId: string, userIds: string[], db: Db = prisma) =>
     db.taskAssignee.createMany({ data: userIds.map((userId) => ({ taskId, userId })), skipDuplicates: true }),
@@ -50,7 +56,9 @@ export const taskRepository = {
     return count === 1;
   },
 
-  pendingAssignees: (taskId: string, db: Db = prisma) => db.taskAssignee.count({ where: { taskId, doneAt: null } }),
+  /** Хто ще має позначити «Виконано»; вимкнений користувач не може цього зробити, тож не блокує завдання */
+  pendingAssignees: (taskId: string, db: Db = prisma) =>
+    db.taskAssignee.count({ where: { taskId, doneAt: null, user: { isActive: true } } }),
 
   resetAssigneesDone: (taskId: string, db: Db = prisma) =>
     db.taskAssignee.updateMany({ where: { taskId }, data: { doneAt: null } }),

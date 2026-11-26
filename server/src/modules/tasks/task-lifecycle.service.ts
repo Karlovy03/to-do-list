@@ -1,5 +1,4 @@
 import type { Viewer } from './viewer';
-import type { User } from '@prisma/client';
 import { badRequest, conflict, forbidden } from '../../core/http-error';
 import { transaction } from '../../core/prisma';
 import { notifyInBackground } from '../notifications';
@@ -41,6 +40,7 @@ export const taskLifecycleService = {
     const t = await guard(actor, id, 'markDone');
     const now = new Date();
     const { task, finished } = await transaction(async (db) => {
+      await taskRepository.lockForUpdate(t.id, db);
       if (!(await taskRepository.markAssigneeDone(t.id, actor.id, now, db))) throw conflict();
       const finished = (await taskRepository.pendingAssignees(t.id, db)) === 0;
       if (finished && !(await taskRepository.transition(t.id, OPEN_STATUSES, { status: 'DONE', completedAt: now, progress: 100 }, db))) {
@@ -92,7 +92,7 @@ export const taskLifecycleService = {
     const t = await guard(actor, id, 'closeEarly');
     const now = new Date();
     const task = await transaction(async (db) => {
-      if (!(await taskRepository.transition(t.id, OPEN_STATUSES, { status: 'DONE', completedAt: now }, db))) throw conflict();
+      if (!(await taskRepository.transition(t.id, OPEN_STATUSES, { status: 'DONE', completedAt: now, progress: 100 }, db))) throw conflict();
       await taskRepository.markAllAssigneesDone(t.id, now, db);
       await journalRepository.add({ taskId: t.id, authorId: actor.id, kind: 'STATUS', text: comment, meta: { action: 'close_early' } }, db);
       return (await taskRepository.findById(t.id, db))!;

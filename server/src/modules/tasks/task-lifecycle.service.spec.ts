@@ -3,6 +3,7 @@ import type { User } from '@prisma/client';
 
 const repo = vi.hoisted(() => ({
   findById: vi.fn(),
+  lockForUpdate: vi.fn(),
   transition: vi.fn(),
   markAssigneeDone: vi.fn(),
   pendingAssignees: vi.fn(),
@@ -58,6 +59,14 @@ describe('«Виконано»', () => {
     await life.markDone(exec2, 't1', 'Надіслано листом');
     expect(repo.transition).toHaveBeenCalledWith('t1', ['NEW', 'IN_PROGRESS'], expect.objectContaining({ status: 'DONE', progress: 100 }), {});
     expect(lastNotify()).toMatchObject({ event: 'DONE', comment: { text: 'Надіслано листом' } });
+  });
+
+  it('спершу блокує завдання, потім позначає й рахує решту — одночасні «Виконано» не лишають його відкритим', async () => {
+    repo.pendingAssignees.mockResolvedValue(0);
+    await life.markDone(exec2, 't1', '');
+    const order = (fn: { mock: { invocationCallOrder: number[] } }) => fn.mock.invocationCallOrder[0];
+    expect(order(repo.lockForUpdate)).toBeLessThan(order(repo.markAssigneeDone));
+    expect(order(repo.markAssigneeDone)).toBeLessThan(order(repo.pendingAssignees));
   });
 
   it('подвійний клік — 409, другого запису в журналі немає', async () => {

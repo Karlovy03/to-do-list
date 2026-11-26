@@ -1,5 +1,5 @@
 import type { Viewer } from './viewer';
-import type { Prisma, User } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { notFound } from '../../core/http-error';
 import { canView, visibilityWhere } from './task.policy';
 import { LIST_PAGE, OPEN_STATUSES, taskRepository } from './task.repository';
