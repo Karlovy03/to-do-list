@@ -1,0 +1,36 @@
+/* шар керування (скло), вгорі: внизу вже нижня навігація, панель дій картки і підказка про сповіщення */
+.banner {
+  position: fixed;
+  z-index: var(--z-header);
+  top: calc(var(--s-3) + var(--safe-top));
+  left: var(--s-3);
+  right: var(--s-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 440px;
+  margin: 0 auto;
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-pill);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+}
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-small);
+  color: var(--ink);
+}

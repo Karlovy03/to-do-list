@@ -42,6 +42,7 @@ cd server && npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-data
 ## Образ і деплой (ADR-0009)
 - Один образ із кореневого `Dockerfile`: сервер віддає зібраний клієнт. Перед ним — Caddy (HTTPS), поруч — PostgreSQL; усе в `docker-compose.yml`, секрети — у `.env` поруч (зразок `.env.example`).
 - Деплой лише через `./scripts/deploy.sh`: `build` → `run --rm app npx prisma migrate deploy` → `up -d`. Сервер не мігрує базу під час старту.
+- Оновлення до людей доходять самі: `index.html` і `version.json` віддаються з `no-cache`, файли збірки мають хеш у назві. Відкритий (згорнутий) застосунок звіряє `__BUILD_ID__` з `version.json` (`app/update`) і показує «Доступна нова версія · Оновити» — самостійно не перезавантажується. Тому `version.json` має лишатися поза кешем; кешувати сторінки в service worker не можна.
 - Резервні копії: `scripts/backup.sh` щодня (ставить `server-setup.sh`), відновлення — `scripts/restore.sh`. Перед деструктивною міграцією — копія вручну.
 - Перший адміністратор створюється лише з `ADMIN_PASSWORD` у `.env`; пароль у журнал не пишеться.
 - Ключі web push у продакшені: `docker compose run --rm --no-deps app node scripts/vapid.cjs` — один раз; зміна ключів ламає всі підписки.

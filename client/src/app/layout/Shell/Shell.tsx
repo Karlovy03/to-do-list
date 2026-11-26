@@ -5,6 +5,7 @@ import { PushBanner, usePushSync, useUnread } from '@/modules/notifications';
 import { QuickAddSheet } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
+import { UpdateBanner } from '../../update/UpdateBanner/UpdateBanner';
 import { BottomNav } from '../BottomNav/BottomNav';
 import { Rail } from '../Rail/Rail';
 import { Sidebar } from '../Sidebar/Sidebar';
@@ -34,6 +35,7 @@ export function Shell() {
       <main className={css.main}>
         <Outlet />
       </main>
+      <UpdateBanner />
       {!focused && <PushBanner />}
       {phone && !focused && <BottomNav unread={unread} onCreate={open} />}
       {creating && <QuickAddSheet me={me} onClose={() => setCreating(false)} />}

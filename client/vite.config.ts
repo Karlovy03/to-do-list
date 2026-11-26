@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import { parse } from 'yaml';
 import { appTexts } from './vite/appTexts';
+import { buildVersion } from './vite/buildVersion';
 
 // Тексти інтерфейсу — YAML-файли в папках модулів; на збірці стають JSON-модулями
 const yamlTexts = {
@@ -14,7 +15,7 @@ const yamlTexts = {
 };
 
 export default defineConfig({
-  plugins: [react(), yamlTexts, appTexts()],
+  plugins: [react(), yamlTexts, appTexts(), buildVersion()],
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   server: {
     port: 5173,

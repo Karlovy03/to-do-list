@@ -62,7 +62,16 @@ export function createApp() {
 
   // У продакшені сервер віддає зібраний клієнт (один образ, ADR-0009)
   if (fs.existsSync(config.clientDist)) {
-    app.use(express.static(config.clientDist, { index: false, maxAge: '1h' }));
+    app.use(
+      express.static(config.clientDist, {
+        index: false,
+        maxAge: '1h',
+        // номер збірки має бути свіжим: за ним відкриті застосунки дізнаються про оновлення
+        setHeaders: (res, file) => {
+          if (path.basename(file) === 'version.json') res.setHeader('Cache-Control', 'no-cache');
+        },
+      }),
+    );
     app.get(/^\/(?!api\/).*/, (_req, res) => {
       res.setHeader('Cache-Control', 'no-cache');
       res.sendFile(path.join(config.clientDist, 'index.html'));
