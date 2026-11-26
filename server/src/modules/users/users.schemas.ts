@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-const login = z.string().trim().toLowerCase().regex(/^[a-z0-9._-]{3,40}$/);
+// латиниця, цифри і . _ - @ + — щоб логіном могла бути службова пошта
+export const LOGIN_RE = /^[a-z0-9._@+-]{3,100}$/;
+const login = z.string().trim().toLowerCase().regex(LOGIN_RE);
 const fullName = z.string().trim().min(3).max(150);
 const position = z.string().trim().max(200);
 const role = z.enum(['ADMIN', 'MANAGER', 'MEMBER']);
