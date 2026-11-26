@@ -33,9 +33,8 @@
 }
 .capsules {
   display: flex;
-  gap: var(--s-2);
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 .capsule {
   flex: none;
@@ -43,7 +42,7 @@
   align-items: center;
   gap: 6px;
   min-height: 40px;
-  padding: 0 14px;
+  padding: 0 12px;
   border: 1px solid var(--surface);
   border-radius: var(--r-pill);
   background: rgba(255, 255, 255, 0.7);

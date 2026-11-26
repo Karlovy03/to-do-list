@@ -96,7 +96,7 @@
   --nav-h: 66px;
   --rail-w: 88px;
   --sidebar-w: 236px;
-  --list-w: 360px;
+  --list-w: 420px;
   --content-max: 1440px;
 
   --safe-top: env(safe-area-inset-top, 0px);

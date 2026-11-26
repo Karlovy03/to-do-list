@@ -51,7 +51,13 @@ export function TasksPage({ scope }: { scope: Scope }) {
       </div>
       {wide && (
         <div className={css.detailCol}>
-          {taskId ? <TaskDetail key={taskId} id={taskId} back={base || '/'} /> : <Empty icon="list" title={t('tasks.detail.select_hint')} />}
+          {taskId ? (
+            <TaskDetail key={taskId} id={taskId} back={base || '/'} />
+          ) : (
+            <div className={css.emptyPane}>
+              <Empty icon="list" title={t('tasks.detail.select_hint')} />
+            </div>
+          )}
         </div>
       )}
     </div>
