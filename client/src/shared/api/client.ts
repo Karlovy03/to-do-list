@@ -15,7 +15,18 @@ export const UNAUTHORIZED_EVENT = 'kt:unauthorized';
 
 type Query = Record<string, string | number | boolean | undefined>;
 
-function url(path: string, query?: Query) {
+/** Як застосунок і браузер входять: застосунок — токен у заголовку, браузер — cookie (той самий набір і для потоку живих оновлень) */
+export function authInit(): { headers: Record<string, string>; credentials: RequestCredentials } {
+  const headers: Record<string, string> = {};
+  if (isNative) {
+    headers['X-Client'] = 'native';
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
+  return { headers, credentials: isNative ? 'omit' : 'same-origin' };
+}
+
+export function url(path: string, query?: Query) {
   const qs = query
     ? Object.entries(query)
         .filter(([, v]) => v !== undefined && v !== '')
@@ -26,19 +37,14 @@ function url(path: string, query?: Query) {
 }
 
 export async function api<T>(path: string, init: { method?: string; body?: unknown; query?: Query; keepalive?: boolean } = {}): Promise<T> {
-  const headers: Record<string, string> = {};
+  const { headers, credentials } = authInit();
   if (init.body !== undefined) headers['Content-Type'] = 'application/json';
-  if (isNative) {
-    headers['X-Client'] = 'native';
-    const token = getToken();
-    if (token) headers.Authorization = `Bearer ${token}`;
-  }
   let res: Response;
   try {
     res = await fetch(url(path, init.query), {
       method: init.method ?? 'GET',
       headers,
-      credentials: isNative ? 'omit' : 'same-origin',
+      credentials,
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
       // запит переживає закриття вкладки (відкладене «Виконано»)
       keepalive: init.keepalive,

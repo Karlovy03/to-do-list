@@ -29,6 +29,7 @@
 | working-on-notifications | сповіщення, нагадування, push |
 | working-on-events-and-calendar | заходи, календар, ящірка «Виконано!» |
 | working-on-absences | відсутності, «В строю», «не турбувати», попередження під час доручення |
+| working-on-live-updates | живі оновлення: потік /api/live, хто отримує сигнал, де публікувати, перечитування на клієнті |
 | building-mobile-apps | Capacitor, Android/iOS, нативний push |
 | writing-tests | будь-який тест; зміни прав — з негативними тестами |
 | running-dev-workflow | команди, міграції, ворота перед комітом |

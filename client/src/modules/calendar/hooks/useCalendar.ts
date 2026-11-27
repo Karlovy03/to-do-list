@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import type { Me } from '@/shared/api/types';
+import { useRefetchInterval } from '@/shared/live/LiveContext';
 import { calendarApi, calendarKeys } from '../api/calendar.api';
 import { rangeQuery, readParams, writeParams, type CalendarParams } from '../lib/params';
 
@@ -14,7 +15,7 @@ export function useCalendar(me: Me) {
     queryFn: () => calendarApi.range(query),
     // поки вантажиться інший день, сітка показує попередній, а не порожнечу
     placeholderData: keepPreviousData,
-    refetchInterval: 60_000,
+    refetchInterval: useRefetchInterval(60_000),
   });
   const set = (next: Partial<CalendarParams>) => setSp(writeParams({ ...params, ...next }));
   return { params, set, search: sp.toString(), data };
