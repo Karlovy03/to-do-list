@@ -17,6 +17,7 @@ const repo = vi.hoisted(() => ({
 const journal = vi.hoisted(() => ({ add: vi.fn(), addMany: vi.fn() }));
 const users = vi.hoisted(() => ({ countActiveByIds: vi.fn() }));
 const notifyInBackground = vi.hoisted(() => vi.fn());
+const announceTask = vi.hoisted(() => vi.fn());
 
 vi.mock('../../core/prisma', () => ({ prisma: {}, transaction: (fn: (db: object) => unknown) => fn({}) }));
 vi.mock('./task.repository', () => ({ taskRepository: repo, OPEN_STATUSES: ['NEW', 'IN_PROGRESS'] }));
@@ -24,6 +25,7 @@ vi.mock('./journal.repository', () => ({ journalRepository: journal }));
 vi.mock('../users', () => ({ usersRepository: users }));
 vi.mock('../control', () => ({ NO_CONTROL: {}, resolveControl: vi.fn() }));
 vi.mock('../notifications', () => ({ notifyInBackground }));
+vi.mock('./task-live', () => ({ announceTask }));
 
 const { taskCrudService: crud } = await import('./task-crud.service');
 
@@ -101,5 +103,20 @@ describe('права на зміну і видалення', () => {
   it('виконавець не створює завдання для іншої людини', async () => {
     const input = { title: 'Нове', description: '', priority: 'NORMAL' as const, deadline: new Date(Date.now() + 864e5), assigneeIds: ['chief'] };
     await expect(crud.create(member, input)).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe('живі оновлення (ADR-0021)', () => {
+  it('зміна — сигнал зі станом до і після, щоб знятий виконавець побачив, що завдання зникло', async () => {
+    repo.pendingAssignees.mockResolvedValue(1);
+    await crud.update(chief, 't1', { assigneeIds: ['exec', 'new'] });
+    expect(announceTask).toHaveBeenCalledWith('t1', expect.objectContaining({ id: 't1' }), expect.objectContaining({ id: 't1' }));
+  });
+  it('видалення — сигнал; відмова в правах — жодного сигналу', async () => {
+    await expect(crud.update(member, 't1', { title: 'Інше' })).rejects.toMatchObject({ status: 403 });
+    await expect(crud.remove(foreignChief, 't1')).rejects.toMatchObject({ status: 404 });
+    expect(announceTask).not.toHaveBeenCalled();
+    await crud.remove(chief, 't1');
+    expect(announceTask).toHaveBeenCalledWith('t1', expect.objectContaining({ id: 't1' }));
   });
 });

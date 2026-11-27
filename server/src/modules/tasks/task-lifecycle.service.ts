@@ -7,6 +7,7 @@ import { executors, leads, stakeholders } from './stakeholders';
 import { permissions, type TaskPermissions } from './task.policy';
 import { OPEN_STATUSES, taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
+import { announceTask } from './task-live';
 
 /** Зміни стану завдання (ADR-0002). Кожен перехід — умовний: подвійний клік дає 409, а не два переходи. */
 
@@ -32,6 +33,7 @@ export const taskLifecycleService = {
       return taskRepository.findById(t.id, db);
     });
     notifyInBackground({ event: 'STARTED', task: task!, to: leads(t), actorId: actor.id });
+    announceTask(t.id, t, task!);
     return task!;
   },
 
@@ -57,6 +59,7 @@ export const taskLifecycleService = {
       who: actor.fullName,
       comment: comment ? { name: actor.fullName, text: comment } : undefined,
     });
+    announceTask(t.id, t, task);
     return task;
   },
 
@@ -84,6 +87,7 @@ export const taskLifecycleService = {
       withDeadline: newDeadline ? 'new_line' : undefined,
       comment: { name: actor.fullName, text: comment },
     });
+    announceTask(t.id, t, task);
     return task;
   },
 
@@ -105,6 +109,7 @@ export const taskLifecycleService = {
       titleKey: 'notifications.progress.closed_early',
       comment: { name: actor.fullName, text: comment },
     });
+    announceTask(t.id, t, task);
     return task;
   },
 
@@ -116,6 +121,7 @@ export const taskLifecycleService = {
       return (await taskRepository.findById(t.id, db))!;
     });
     notifyInBackground({ event: 'CANCELLED', task, to: stakeholders(task), actorId: actor.id, comment: comment ? { name: actor.fullName, text: comment } : undefined });
+    announceTask(t.id, t, task);
     return task;
   },
 
@@ -132,6 +138,7 @@ export const taskLifecycleService = {
       return (await taskRepository.findById(t.id, db))!;
     });
     notifyInBackground({ event: 'REOPENED', task, to: executors(task), actorId: actor.id, withDeadline: 'line' });
+    announceTask(t.id, t, task);
     return task;
   },
 };

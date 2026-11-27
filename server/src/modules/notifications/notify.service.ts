@@ -8,6 +8,7 @@ import { EVENTS, type PrefKey } from './events';
 import { feedRepository } from './feed.repository';
 import { pushToUser } from './push/dispatcher';
 import type { PushPayload } from './push/types';
+import { announce } from '../live';
 
 export interface NotifyTask {
   id: string;
@@ -125,6 +126,9 @@ export async function notify(input: NotifyInput, now = new Date()) {
   await feedRepository.createMany(
     users.map((u) => ({ userId: u.id, taskId: subject.taskId, eventId: subject.eventId, kind: input.event, title, body: feedBody, pushDeferred: deferred.has(u.id) })),
   );
+  // відкритий застосунок одержувача оновлює стрічку й лічильник одразу (ADR-0021)
+  const got = new Set(users.map((u) => u.id));
+  announce({ t: 'feed' }, (v) => got.has(v.id));
 
   const payload = pushPayload(input.event, subject, title, pushBody);
   await Promise.all(wanted.filter(free).map((u) => pushToUser(u.id, payload)));

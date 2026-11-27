@@ -9,6 +9,7 @@ import { getSettings } from '../settings';
 import { unitsRepository } from '../units';
 import { usersRepository } from './users.repository';
 import type { createUserSchema, updateUserSchema } from './users.schemas';
+import { liveHub } from '../live';
 
 export const BCRYPT_ROUNDS = 10;
 
@@ -58,7 +59,7 @@ export const usersService = {
     const { password, unitId, ...rest } = input;
     // зміна пароля, ролі чи вимкнення — старі сесії стають недійсними
     const revoke = !!password || (input.role && input.role !== target.role) || input.isActive === false;
-    return usersRepository
+    const updated = await usersRepository
       .update(target.id, {
         ...rest,
         ...(unitId !== undefined ? { unit: unitId ? { connect: { id: unitId } } : { disconnect: true } } : {}),
@@ -66,6 +67,9 @@ export const usersService = {
         ...(revoke ? { tokenVersion: { increment: 1 } } : {}),
       })
       .catch(loginTaken);
+    // інша роль, підрозділ чи вимкнення — інша видимість: потік живих оновлень відкриється заново з новими правами
+    if (revoke || (unitId !== undefined && unitId !== target.unitId)) liveHub.dropUser(target.id);
+    return updated;
   },
 
   /** Перший запуск: якщо користувачів немає — створюємо адміністратора */

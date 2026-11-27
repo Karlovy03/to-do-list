@@ -13,11 +13,13 @@ const repo = vi.hoisted(() => ({
 }));
 const journal = vi.hoisted(() => ({ add: vi.fn() }));
 const notifyInBackground = vi.hoisted(() => vi.fn());
+const announceTask = vi.hoisted(() => vi.fn());
 
 vi.mock('../../core/prisma', () => ({ prisma: {}, transaction: (fn: (db: object) => unknown) => fn({}) }));
 vi.mock('./task.repository', () => ({ taskRepository: repo, OPEN_STATUSES: ['NEW', 'IN_PROGRESS'] }));
 vi.mock('./journal.repository', () => ({ journalRepository: journal }));
 vi.mock('../notifications', () => ({ notifyInBackground }));
+vi.mock('./task-live', () => ({ announceTask }));
 
 const { taskLifecycleService: life } = await import('./task-lifecycle.service');
 
@@ -122,5 +124,17 @@ describe('дострокове закриття і скасування', () => 
   it('виконавець не може закрити достроково чи скасувати', async () => {
     await expect(life.closeEarly(exec, 't1', 'Коментар')).rejects.toMatchObject({ status: 403 });
     await expect(life.cancel(exec, 't1', '')).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe('живі оновлення (ADR-0021)', () => {
+  it('«Виконано» — сигнал; повторний клік (409) — сигналу немає', async () => {
+    await life.markDone(exec, 't1', '');
+    expect(announceTask).toHaveBeenCalledTimes(1);
+    vi.clearAllMocks();
+    repo.findById.mockResolvedValue(task());
+    repo.markAssigneeDone.mockResolvedValue(false);
+    await expect(life.markDone(exec, 't1', '')).rejects.toMatchObject({ status: 409 });
+    expect(announceTask).not.toHaveBeenCalled();
   });
 });

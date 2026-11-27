@@ -6,13 +6,19 @@ import { pushToUser } from './push/dispatcher';
 import { subscriptionsRepository } from './subscriptions.repository';
 import { remindersRepository } from './reminders/reminders.repository';
 import type { deviceSchema, webSubscriptionSchema } from './notifications.schemas';
+import { announce } from '../live';
 
 export const notificationsService = {
   async feed(user: User, offset: number) {
     const [rows, unread] = await Promise.all([feedRepository.list(user.id, offset), feedRepository.unreadCount(user.id)]);
     return { items: rows.slice(0, FEED_PAGE), unread, hasMore: rows.length > FEED_PAGE };
   },
-  markRead: (user: User, ids?: string[]) => feedRepository.markRead(user.id, ids),
+  /** Прочитане на одному пристрої — лічильник оновлюється й на інших (ADR-0021) */
+  async markRead(user: User, ids?: string[]) {
+    const r = await feedRepository.markRead(user.id, ids);
+    announce({ t: 'feed' }, (v) => v.id === user.id);
+    return r;
+  },
 
   subscribeWeb: (user: User, s: z.infer<typeof webSubscriptionSchema>, userAgent: string) =>
     subscriptionsRepository.upsertWeb(user.id, s.endpoint, s.keys.p256dh, s.keys.auth, userAgent.slice(0, 300)),

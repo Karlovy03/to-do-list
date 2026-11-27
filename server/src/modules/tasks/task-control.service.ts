@@ -8,6 +8,7 @@ import { executors, pendingExecutors, stakeholders } from './stakeholders';
 import { permissions } from './task.policy';
 import { taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
+import { announceTask } from './task-live';
 
 export const taskControlService = {
   /** Поставити на контроль або змінити умови; таймер нагадувань починається заново */
@@ -27,6 +28,7 @@ export const taskControlService = {
     if (task.controllerUserId && !executors(task).includes(task.controllerUserId)) {
       notifyInBackground({ event: 'CONTROL_ON', task, to: [task.controllerUserId], actorId: actor.id, titleKey: 'notifications.control.yours' });
     }
+    announceTask(t.id, t, task);
     return task;
   },
 
@@ -43,6 +45,7 @@ export const taskControlService = {
     });
 
     notifyInBackground({ event: 'CONTROL_OFF', task, to, actorId: actor.id });
+    announceTask(t.id, t, task);
     return task;
   },
 };

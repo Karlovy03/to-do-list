@@ -1,5 +1,14 @@
 # Automatic HTTPS (Let's Encrypt) for the domain from .env. Web push works only over HTTPS.
 {$DOMAIN} {
-	encode zstd gzip
-	reverse_proxy app:3101
+	# Live updates (ADR-0021): the event stream must not be compressed — encode holds text/event-stream back (caddy#6293)
+	@live path /api/live
+	handle @live {
+		reverse_proxy app:3101 {
+			flush_interval -1
+		}
+	}
+	handle {
+		encode zstd gzip
+		reverse_proxy app:3101
+	}
 }

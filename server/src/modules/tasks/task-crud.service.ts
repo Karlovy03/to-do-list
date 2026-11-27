@@ -11,6 +11,7 @@ import { canAssignTo, canControlOnCreate, permissions } from './task.policy';
 import { OPEN_STATUSES, taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
 import type { createTaskSchema, updateTaskSchema } from './task.schemas';
+import { announceTask } from './task-live';
 
 /** keep — ті, хто вже виконавець: їх не перевіряємо на активність, інакше вимкнений колега блокував би будь-яку правку */
 async function checkAssignees(actor: Viewer, ids: string[], keep: string[] = []) {
@@ -61,6 +62,7 @@ export const taskCrudService = {
     if (task.controllerUserId && !assigneeIds.includes(task.controllerUserId)) {
       notifyInBackground({ event: 'CONTROL_ON', task, to: [task.controllerUserId], actorId: actor.id, titleKey: 'notifications.control.yours' });
     }
+    announceTask(task.id, task);
     return task;
   },
 
@@ -114,6 +116,7 @@ export const taskCrudService = {
       const to = [...pendingExecutors(task).filter((x) => !added.includes(x)), task.controllerUserId];
       notifyInBackground({ event: 'DEADLINE_CHANGED', task, to, actorId: actor.id, withDeadline: 'new_line' });
     }
+    announceTask(task.id, t, task);
     return task;
   },
 
@@ -121,5 +124,6 @@ export const taskCrudService = {
     const task = await loadVisible(id, actor);
     if (!permissions(task, actor).delete) throw forbidden('delete_not_allowed');
     await taskRepository.remove(task.id);
+    announceTask(task.id, task);
   },
 };

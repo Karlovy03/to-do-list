@@ -5,6 +5,10 @@ import { usersRepository } from '../users';
 import { canChangeAbsence, canCreateAbsenceFor } from './absences.policy';
 import { absencesRepository as repo } from './absences.repository';
 import type { CreateAbsenceInput, ListAbsencesQuery, UpdateAbsenceInput } from './absences.schemas';
+import { announce } from '../live';
+
+/** Відсутності бачать усі (ADR-0019) — сигнал теж усім (ADR-0021) */
+const announceAbsence = (id: string) => announce({ t: 'absence', id }, () => true);
 
 /** До 120 днів поспіль; заднім числом — до 60 днів: лікарняний часто заводять уже після */
 export const MAX_DAYS = 120;
@@ -33,7 +37,9 @@ export const absencesService = {
     if (!canCreateAbsenceFor(viewer, person)) throw forbidden('absence_not_allowed');
     checkDays(input.startDay, input.endDay, kyivDay(now), true);
     if (await repo.overlapping(person.id, input.startDay, input.endDay)) throw conflict('absence_overlap');
-    return repo.create({ userId: person.id, kind: input.kind, startDay: input.startDay, endDay: input.endDay, createdById: viewer.id });
+    const created = await repo.create({ userId: person.id, kind: input.kind, startDay: input.startDay, endDay: input.endDay, createdById: viewer.id });
+    announceAbsence(created.id);
+    return created;
   },
 
   async update(viewer: Viewer, id: string, input: UpdateAbsenceInput, now = new Date()) {
@@ -42,12 +48,15 @@ export const absencesService = {
     const end = input.endDay ?? dayKey(a.endDay);
     checkDays(start, end, kyivDay(now), input.startDay !== undefined && input.startDay !== dayKey(a.startDay));
     if (await repo.overlapping(a.userId, start, end, a.id)) throw conflict('absence_overlap');
-    return repo.update(id, input);
+    const updated = await repo.update(id, input);
+    announceAbsence(id);
+    return updated;
   },
 
   async remove(viewer: Viewer, id: string) {
     await loadChangeable(viewer, id);
     await repo.remove(id);
+    announceAbsence(id);
   },
 
   /**
@@ -60,8 +69,11 @@ export const absencesService = {
     if (dayKey(a.endDay) < today) throw conflict('absence_already_over');
     if (dayKey(a.startDay) >= today) {
       await repo.remove(id);
+      announceAbsence(id);
       return null;
     }
-    return repo.update(id, { endDay: addDays(today, -1) });
+    const ended = await repo.update(id, { endDay: addDays(today, -1) });
+    announceAbsence(id);
+    return ended;
   },
 };

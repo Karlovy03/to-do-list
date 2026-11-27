@@ -5,6 +5,7 @@ import { badRequest } from '../../core/http-error';
 import { signToken } from '../../core/auth';
 import { BCRYPT_ROUNDS, usersRepository } from '../users';
 import type { prefsSchema } from './profile.schemas';
+import { liveHub } from '../live';
 
 export const profileService = {
   updatePrefs: (user: User, prefs: z.infer<typeof prefsSchema>) => usersRepository.update(user.id, prefs),
@@ -16,6 +17,7 @@ export const profileService = {
       passwordHash: await bcrypt.hash(next, BCRYPT_ROUNDS),
       tokenVersion: { increment: 1 },
     });
+    liveHub.dropUser(user.id);
     return signToken(updated.id, updated.tokenVersion);
   },
 };

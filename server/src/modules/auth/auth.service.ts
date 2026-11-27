@@ -4,6 +4,7 @@ import { signToken } from '../../core/auth';
 import { BCRYPT_ROUNDS, usersRepository } from '../users';
 import { pushSubscriptions } from '../notifications';
 import { loginLimiter } from './login-limiter';
+import { liveHub } from '../live';
 
 // Порівняння з фіктивним хешем, щоб час відповіді не видавав, чи існує логін
 const DUMMY_HASH = bcrypt.hashSync('dummy-password-for-timing', BCRYPT_ROUNDS);
@@ -28,5 +29,6 @@ export const authService = {
   async logout(userId: string) {
     await usersRepository.update(userId, { tokenVersion: { increment: 1 } });
     await pushSubscriptions.removeAllForUser(userId);
+    liveHub.dropUser(userId);
   },
 };

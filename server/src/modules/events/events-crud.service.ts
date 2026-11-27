@@ -7,6 +7,7 @@ import { loadVisibleEvent } from './events-query.service';
 import { eventPermissions } from './events.policy';
 import { eventsRepository as repo, type EventFull } from './events.repository';
 import type { CreateEventInput, UpdateEventInput } from './events.schemas';
+import { announceEvent } from './event-live';
 
 const MIN = 60_000;
 const unique = (ids: string[]) => [...new Set(ids)];
@@ -33,6 +34,7 @@ export const eventsCrudService = {
       participants: { createMany: { data: people.map((userId) => ({ userId })) } },
     });
     notifyInBackground({ event: 'EVENT_INVITED', calendarEvent: about(e), to: people, actorId: actor.id });
+    announceEvent(e.id, e);
     return e;
   },
 
@@ -60,6 +62,7 @@ export const eventsCrudService = {
     notifyInBackground({ event: 'EVENT_INVITED', calendarEvent: about(updated), to: added, actorId: actor.id });
     notifyInBackground({ event: 'EVENT_CANCELLED', calendarEvent: about(updated), to: removed, actorId: actor.id, titleKey: 'notifications.event.removed' });
     if (timeChanged) notifyInBackground({ event: 'EVENT_CHANGED', calendarEvent: about(updated), to: next.filter((x) => !added.includes(x)), actorId: actor.id });
+    announceEvent(e.id, e, updated);
     return updated;
   },
 
@@ -69,6 +72,7 @@ export const eventsCrudService = {
     if (!(await repo.cancel(e.id, new Date()))) throw conflict();
     const comment = reason ? { name: actor.fullName, text: reason } : undefined;
     notifyInBackground({ event: 'EVENT_CANCELLED', calendarEvent: about(e), to: participantIds(e), actorId: actor.id, comment });
+    announceEvent(e.id, e);
     return (await repo.findById(e.id))!;
   },
 
@@ -77,6 +81,7 @@ export const eventsCrudService = {
     const e = await loadVisibleEvent(id, actor);
     if (!eventPermissions(e, actor, now).delete) throw forbidden('event_delete_not_allowed');
     await repo.remove(e.id);
+    announceEvent(e.id, e);
     if (e.status === 'PLANNED' && e.endsAt.getTime() > now.getTime()) {
       notifyInBackground({ event: 'EVENT_CANCELLED', calendarEvent: about(e, true), to: participantIds(e), actorId: actor.id, titleKey: 'notifications.event.deleted' });
     }

@@ -17,6 +17,7 @@ import { eventsRouter } from './modules/events';
 import { calendarRouter } from './modules/calendar';
 import { absencesRouter } from './modules/absences';
 import { notificationsRouter, pushRouter } from './modules/notifications';
+import { liveRouter } from './modules/live';
 
 export function createApp() {
   const app = express();
@@ -63,6 +64,7 @@ export function createApp() {
   api.use('/absences', absencesRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
+  api.use('/live', liveRouter);
   api.use((_req, _res, next) => next(notFound()));
   app.use('/api', api);
 

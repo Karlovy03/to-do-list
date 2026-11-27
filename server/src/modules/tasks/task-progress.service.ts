@@ -7,6 +7,7 @@ import { stakeholders } from './stakeholders';
 import { permissions } from './task.policy';
 import { taskRepository } from './task.repository';
 import { loadVisible } from './task-query.service';
+import { announceTask } from './task-live';
 
 export const taskProgressService = {
   /** Необов'язкова нотатка про хід і/або відсоток готовності */
@@ -42,6 +43,7 @@ export const taskProgressService = {
       vars: progressChanged ? { progress: input.progress! } : undefined,
       comment: input.text ? { name: actor.fullName, text: input.text.slice(0, 300) } : undefined,
     });
+    announceTask(t.id, t, task);
     return task;
   },
 
