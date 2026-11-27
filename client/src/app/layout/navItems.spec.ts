@@ -16,7 +16,7 @@ describe('активний пункт навігації', () => {
     expect(active(SIDEBAR_NAV, '/authored')).toEqual(['/']);
   });
   it('жодна адреса не підсвічує двох пунктів одразу', () => {
-    for (const path of ['/', '/control', '/events', '/calendar/e/1', '/notifications', '/settings', '/report', '/admin/users']) {
+    for (const path of ['/', '/control', '/events', '/calendar/e/1', '/strength', '/notifications', '/settings', '/report', '/admin/users']) {
       expect(active(SIDEBAR_NAV, path).length).toBeLessThanOrEqual(1);
     }
   });

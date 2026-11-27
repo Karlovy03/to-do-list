@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Person, Unit } from '@/shared/api/types';
-import type { CalEvent, CalTask } from '../api/calendar.api';
+import type { CalAbsence, CalEvent, CalTask } from '../api/calendar.api';
 import { dayWindow } from './layout';
-import { barTone, dayGroups, rowContent, taskSpan, weekRows } from './rows';
+import { barTone, dayGroups, dayStrength, rowContent, taskSpan, weekRows } from './rows';
 
 // четвер, 2026-11-26 11:20 за Києвом
 const NOW = new Date('2026-11-26T09:20:00Z');
-const { win } = dayWindow('2026-11-26', [8, 19]);
+const DAY = '2026-11-26';
+const { win } = dayWindow(DAY, [8, 19]);
 
 const task = (over: Partial<CalTask> = {}): CalTask => ({
   kind: 'task', id: 't', number: 1, title: 'Довідка', status: 'IN_PROGRESS', priority: 'NORMAL',
@@ -15,6 +16,8 @@ const task = (over: Partial<CalTask> = {}): CalTask => ({
 const event = (startsAt: string, min: number, over: Partial<CalEvent> = {}): CalEvent => ({
   kind: 'event', id: startsAt, title: 'Нарада', status: 'PLANNED', startsAt, endsAt: new Date(Date.parse(startsAt) + min * 60_000).toISOString(), personIds: ['p1'], ...over,
 });
+
+const sick: CalAbsence = { kind: 'absence', id: 'a', absenceKind: 'SICK_LEAVE', startDay: '2026-11-25', endDay: '2026-11-26', personIds: ['p1'] };
 
 describe('смуга завдання', () => {
   it('від постановки до терміну; прострочене відкрите — до «зараз»; виконане — до виконання', () => {
@@ -29,7 +32,7 @@ describe('смуга завдання', () => {
     expect(barTone(task({ controlled: true, status: 'DONE', completedAt: '2026-11-26T08:00:00Z' }), NOW)).toBe('done');
   });
   it('почалося позавчора — обрізане ліворуч, закінчується в межах дня', () => {
-    const [bar] = rowContent([task()], win, NOW).tasks;
+    const [bar] = rowContent([task()], DAY, win, NOW).tasks;
     expect(bar.placed.cutStart).toBe(true);
     expect(bar.placed.cutEnd).toBe(false);
   });
@@ -37,7 +40,7 @@ describe('смуга завдання', () => {
 
 describe('рядок', () => {
   it('заходи, що накладаються, — у дві доріжки; поза вікном — не показуються', () => {
-    const c = rowContent([event('2026-11-26T09:00:00Z', 60), event('2026-11-26T09:30:00Z', 30), event('2026-11-26T19:00:00Z', 30)], win, NOW);
+    const c = rowContent([event('2026-11-26T09:00:00Z', 60), event('2026-11-26T09:30:00Z', 30), event('2026-11-26T19:00:00Z', 30)], DAY, win, NOW);
     expect(c.events.map((e) => [e.lane, e.phase])).toEqual([[0, 'live'], [1, 'upcoming']]); // 11:30 — ще попереду
     expect(c.eventLanes).toBe(2);
   });
@@ -51,11 +54,11 @@ describe('«День»: групи за підрозділами', () => {
   const p = (id: string, unitId: string | null, role: Person['role'], fullName: string) => ({ id, unitId, role, fullName }) as Person;
   it('у порядку дерева; у підрозділі — керівник першим; без підрозділу — наприкінці', () => {
     const people = [p('a', 'u2', 'MEMBER', 'Бондар'), p('x', null, 'MEMBER', 'Ахтирко'), p('b', 'u2', 'MANAGER', 'Мельник'), p('c', 'u1', 'DIRECTOR', 'Коваленко')];
-    const groups = dayGroups(people, [], units, win, NOW);
+    const groups = dayGroups(people, [], units, DAY, win, NOW);
     expect(groups.map((g) => [g.unitId, g.rows.map((r) => r.person.id)])).toEqual([['u1', ['c']], ['u2', ['b', 'a']], [null, ['x']]]);
   });
   it('у рядок людини потрапляє лише її', () => {
-    const groups = dayGroups([p('p1', 'u2', 'MEMBER', 'Бондар'), p('p2', 'u2', 'MEMBER', 'Шевченко')], [task()], units, win, NOW);
+    const groups = dayGroups([p('p1', 'u2', 'MEMBER', 'Бондар'), p('p2', 'u2', 'MEMBER', 'Шевченко')], [task()], units, DAY, win, NOW);
     expect(groups[0].rows.map((r) => r.tasks.length)).toEqual([1, 0]);
   });
 });
@@ -65,5 +68,22 @@ describe('«Тиждень»', () => {
     const days = ['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27'].map((day) => ({ day, win: dayWindow(day, [8, 19]).win }));
     const rows = weekRows([task()], days, NOW);
     expect(rows.map((r) => r.tasks.length)).toEqual([0, 1, 1, 1, 0]);
+  });
+});
+
+describe('відсутність у сітці', () => {
+  it('«День»: смуга — лише в рядку відсутнього; завдання йому лишаються видимими', () => {
+    const p = (id: string) => ({ id, unitId: null, role: 'MEMBER', fullName: id }) as Person;
+    const [g] = dayGroups([p('p1'), p('p2')], [sick, task()], [], DAY, win, NOW);
+    expect(g.rows.map((r) => [r.absence?.id ?? null, r.tasks.length])).toEqual([['a', 1], [null, 0]]);
+  });
+  it('«Тиждень»: у днях відсутності, кінець включно; наступного дня — на службі', () => {
+    const days = ['2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27'].map((day) => ({ day, win: dayWindow(day, [8, 19]).win }));
+    expect(weekRows([sick], days, NOW).map((r) => r.absence !== null)).toEqual([false, true, true, false]);
+  });
+  it('«В строю» над «Днем»: відсутній у цей день не в строю', () => {
+    const p = (id: string) => ({ id }) as Person;
+    expect(dayStrength([p('p1'), p('p2'), p('p3')], [sick], DAY)).toEqual({ present: 2, total: 3, byKind: { VACATION: 0, SICK_LEAVE: 1, FAMILY: 0 } });
+    expect(dayStrength([p('p1')], [sick], '2026-11-27').present).toBe(1);
   });
 });

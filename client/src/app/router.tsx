@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
+import { StrengthPage } from '@/modules/absences';
 import { AdminPage } from '@/modules/admin';
 import { LoginPage } from '@/modules/auth';
 import { CalendarPage } from '@/modules/calendar';
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       { path: '/calendar', element: <CalendarPage /> },
       { path: '/calendar/t/:taskId', element: <CalendarPage /> },
       { path: '/calendar/e/:eventId', element: <CalendarPage /> },
+      { path: '/strength', element: <StrengthPage /> },
       { path: '/notifications', element: <NotificationsPage /> },
       { path: '/settings', element: <SettingsPage /> },
       { path: '/report', element: <ReportPage /> },

@@ -1,0 +1,64 @@
+.counter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.numbers {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  color: var(--ink-2);
+  font-size: var(--fs-sub);
+  font-weight: 700;
+}
+.present {
+  color: var(--navy);
+  font-size: var(--fs-number);
+  line-height: 1;
+}
+.track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background: var(--line-soft);
+}
+.fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--navy);
+}
+.kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.kind {
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+.kind b {
+  margin-left: 2px;
+  font-weight: 800;
+}
+.vacation {
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+}
+.sick {
+  background: var(--late-soft);
+  color: var(--late-ink);
+}
+.family {
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}

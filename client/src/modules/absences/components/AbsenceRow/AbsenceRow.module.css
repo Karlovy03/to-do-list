@@ -1,0 +1,39 @@
+/* аватар ліворуч; прізвище й посада; позначка під ними (телефон, Fold) або праворуч (комп'ютер) */
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--s-3);
+  row-gap: var(--s-1);
+  width: 100%;
+  padding: var(--s-2) 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.position {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.badge {
+  grid-column: 2;
+  display: flex;
+  min-width: 0;
+}
+.inline {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.inline .badge {
+  grid-column: 3;
+  max-width: 280px;
+}

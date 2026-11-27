@@ -1,0 +1,29 @@
+.band {
+  display: flex;
+  align-items: center;
+  height: var(--bar-h);
+  margin: 0 var(--s-1);
+  padding: 0 var(--s-3);
+  border: 1.5px dashed;
+  border-radius: 8px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vacation {
+  border-color: var(--sky);
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+}
+.sick {
+  border-color: var(--late);
+  background: var(--late-soft);
+  color: var(--late-ink);
+}
+.family {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}

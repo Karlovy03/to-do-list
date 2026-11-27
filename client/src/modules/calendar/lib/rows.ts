@@ -1,8 +1,8 @@
 import { phaseOf, type EventPhase } from '@/modules/events';
 import { timeToneOf, type TaskTone } from '@/modules/tasks';
-import type { Person, Role, Unit } from '@/shared/api/types';
+import type { AbsenceKind, Person, Role, Unit } from '@/shared/api/types';
 import { flattenTree } from '@/shared/lib/units';
-import type { CalEvent, CalItem, CalTask } from '../api/calendar.api';
+import type { CalAbsence, CalEvent, CalItem, CalTask } from '../api/calendar.api';
 import { place, withLanes, type Placed, type Span } from './layout';
 
 /** Тон смуги — як у часового чипа картки; контрольне відкрите — малинове */
@@ -20,8 +20,9 @@ export interface PlacedEvent {
   placed: Placed;
   lane: number;
 }
-/** Вміст рядка: угорі смуги завдань, під ними — заходи */
+/** Вміст рядка: угорі відсутність (якщо в цей день), під нею смуги завдань, далі — заходи */
 export interface RowContent {
+  absence: CalAbsence | null;
   tasks: PlacedTask[];
   events: PlacedEvent[];
   taskLanes: number;
@@ -32,6 +33,10 @@ const MIN = 60_000;
 const OPEN = new Set(['NEW', 'IN_PROGRESS']);
 const isTask = (i: CalItem): i is CalTask => i.kind === 'task';
 const isEvent = (i: CalItem): i is CalEvent => i.kind === 'event';
+const isAbsence = (i: CalItem): i is CalAbsence => i.kind === 'absence';
+
+/** Відсутність у цей день; кінець включно */
+export const absenceOn = (items: CalItem[], day: string) => items.filter(isAbsence).find((a) => a.startDay <= day && day <= a.endDay) ?? null;
 
 /** Від постановки до терміну; прострочене відкрите — до «зараз», завершене — до миті завершення */
 export function taskSpan(t: CalTask, now: Date): Span {
@@ -42,7 +47,7 @@ export function taskSpan(t: CalTask, now: Date): Span {
 
 export const barTone = (t: CalTask, now: Date): BarTone => (t.controlled && OPEN.has(t.status) ? 'control' : timeToneOf(t, now));
 
-export function rowContent(items: CalItem[], win: Span, now: Date): RowContent {
+export function rowContent(items: CalItem[], day: string, win: Span, now: Date): RowContent {
   const tasks = withLanes(
     items.filter(isTask).flatMap((task) => {
       const span = taskSpan(task, now);
@@ -59,7 +64,18 @@ export function rowContent(items: CalItem[], win: Span, now: Date): RowContent {
     }),
     40 * MIN,
   );
-  return { tasks: tasks.items, events: events.items, taskLanes: tasks.lanes, eventLanes: events.lanes };
+  return { absence: absenceOn(items, day), tasks: tasks.items, events: events.items, taskLanes: tasks.lanes, eventLanes: events.lanes };
+}
+
+/** Скільки з показаних людей на службі в цей день і хто з якої причини відсутній */
+export function dayStrength(people: Person[], items: CalItem[], day: string) {
+  const byKind: Record<AbsenceKind, number> = { VACATION: 0, SICK_LEAVE: 0, FAMILY: 0 };
+  for (const p of people) {
+    const a = absenceOn(items.filter((i) => i.personIds.includes(p.id)), day);
+    if (a) byKind[a.absenceKind] += 1;
+  }
+  const absent = byKind.VACATION + byKind.SICK_LEAVE + byKind.FAMILY;
+  return { present: people.length - absent, total: people.length, byKind };
 }
 
 export interface PersonRow extends RowContent {
@@ -73,14 +89,14 @@ export interface UnitGroup {
 const RANK: Record<Role, number> = { ADMIN: 0, DIRECTOR: 0, MANAGER: 1, MEMBER: 2 };
 
 /** «День»: люди за підрозділами в порядку дерева, у підрозділі — керівники першими, далі за абеткою */
-export function dayGroups(people: Person[], items: CalItem[], units: Unit[], win: Span, now: Date): UnitGroup[] {
+export function dayGroups(people: Person[], items: CalItem[], units: Unit[], day: string, win: Span, now: Date): UnitGroup[] {
   const order = new Map(flattenTree(units).map((u, i) => [u.id, i]));
   const pos = (p: Person) => (p.unitId && order.has(p.unitId) ? order.get(p.unitId)! : Number.MAX_SAFE_INTEGER);
   const sorted = [...people].sort((a, b) => pos(a) - pos(b) || RANK[a.role] - RANK[b.role] || a.fullName.localeCompare(b.fullName, 'uk'));
   const groups: UnitGroup[] = [];
   for (const person of sorted) {
     const unitId = person.unitId && order.has(person.unitId) ? person.unitId : null;
-    const row = { person, ...rowContent(items.filter((i) => i.personIds.includes(person.id)), win, now) };
+    const row = { person, ...rowContent(items.filter((i) => i.personIds.includes(person.id)), day, win, now) };
     const last = groups[groups.length - 1];
     if (last && last.unitId === unitId) last.rows.push(row);
     else groups.push({ unitId, rows: [row] });
@@ -95,5 +111,5 @@ export interface DayRow extends RowContent {
 
 /** «Тиждень»: рядок на кожен день однієї людини; багатоденне завдання — у кожному дні, обрізане стрілками */
 export function weekRows(items: CalItem[], windows: { day: string; win: Span }[], now: Date): DayRow[] {
-  return windows.map(({ day, win }) => ({ day, win, ...rowContent(items, win, now) }));
+  return windows.map(({ day, win }) => ({ day, win, ...rowContent(items, day, win, now) }));
 }

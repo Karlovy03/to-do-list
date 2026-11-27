@@ -8,6 +8,7 @@ const ITEMS = [
   { key: 'soon', swatch: css.soon },
   { key: 'late', swatch: css.late },
   { key: 'control', swatch: css.control },
+  { key: 'absent', swatch: css.absent },
 ];
 
 /** Що означають кольори сітки; на телефоні — без пояснення «від постановки до терміну» */

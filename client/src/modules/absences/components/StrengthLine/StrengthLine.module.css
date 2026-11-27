@@ -1,0 +1,34 @@
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--ctrl-m);
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.line svg {
+  flex: none;
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.text b {
+  color: var(--navy-ink);
+  font-weight: 700;
+}
+.vacation {
+  color: var(--sky-ink);
+}
+.sick {
+  color: var(--late-ink);
+}
+.family {
+  color: var(--blue-ink);
+}

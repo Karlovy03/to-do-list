@@ -156,6 +156,20 @@ export interface AppEvent {
   can: EventPermissions;
 }
 
+/** Вид відсутності (ADR-0019) */
+export type AbsenceKind = 'VACATION' | 'SICK_LEAVE' | 'FAMILY';
+
+/** Відсутність: цілі дні за Києвом «РРРР-ММ-ДД», кінець включно; вид бачать усі */
+export interface Absence {
+  id: string;
+  kind: AbsenceKind;
+  startDay: string;
+  endDay: string;
+  person: Person;
+  createdBy: Person | null;
+  can: { change: boolean };
+}
+
 export interface DirectoryPerson {
   id: string;
   fullName: string;

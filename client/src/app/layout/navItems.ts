@@ -27,6 +27,7 @@ export const SIDEBAR_NAV: NavItem[] = [
   { to: '/', label: 'app.nav.tasks', icon: 'list', match: /^\/(t\/|authored|all)/ },
   { to: '/events', label: 'app.nav.events', icon: 'event' },
   { to: '/calendar', label: 'app.nav.calendar', icon: 'calendar' },
+  { to: '/strength', label: 'app.nav.strength', icon: 'users', roles: ['ADMIN', 'DIRECTOR', 'MANAGER'] },
   { to: '/control', label: 'app.nav.control', icon: 'shield' },
   { to: '/notifications', label: 'app.nav.notifications', icon: 'bell', unread: true },
   { to: '/report', label: 'app.nav.report', icon: 'printer', roles: ['ADMIN', 'DIRECTOR', 'MANAGER'] },

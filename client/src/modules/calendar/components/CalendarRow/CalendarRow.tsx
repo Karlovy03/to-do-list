@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { RowContent } from '../../lib/rows';
+import { AbsenceBand } from '../AbsenceBand/AbsenceBand';
 import { EventBlock } from '../EventBlock/EventBlock';
 import { TaskBar } from '../TaskBar/TaskBar';
 import css from './CalendarRow.module.css';
@@ -17,12 +18,13 @@ interface Props {
 
 const lanes = (n: number) => ({ '--lanes': n }) as CSSProperties;
 
-/** Рядок сітки: ліворуч хто чи який день, праворуч доріжки — угорі завдання, під ними заходи */
+/** Рядок сітки: ліворуч хто чи який день, праворуч доріжки — угорі відсутність, далі завдання, під ними заходи */
 export function CalendarRow({ label, content, nowPos, tone, linkTo }: Props) {
   return (
     <div className={tone ? `${css.row} ${css[tone]}` : css.row}>
       <div className={css.who}>{label}</div>
       <div className={css.track}>
+        {content.absence && <AbsenceBand absence={content.absence} />}
         {content.taskLanes > 0 && (
           <div className={css.lanes} style={lanes(content.taskLanes)}>
             {content.tasks.map((x) => <TaskBar key={x.task.id} item={x} to={linkTo('t', x.task.id)} />)}

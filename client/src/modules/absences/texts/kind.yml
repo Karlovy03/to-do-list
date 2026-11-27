@@ -1,0 +1,13 @@
+# Вид відсутності (ADR-0019)
+VACATION: "Відпустка"
+SICK_LEAVE: "Лікарняний"
+FAMILY: "Сімейні обставини"
+VACATION_short: "Відпустка"
+SICK_LEAVE_short: "Лікарняний"
+FAMILY_short: "Сімейні"
+VACATION_state: "у відпустці"
+SICK_LEAVE_state: "на лікарняному"
+FAMILY_state: "у вихідному через сімейні обставини"
+VACATION_lower: "відпустка"
+SICK_LEAVE_lower: "лікарняний"
+FAMILY_lower: "сімейні"

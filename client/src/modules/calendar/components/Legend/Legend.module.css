@@ -46,3 +46,7 @@
   border-color: var(--control);
   background: var(--control-soft);
 }
+.absent {
+  border: 1.5px dashed var(--late);
+  background: var(--late-soft);
+}

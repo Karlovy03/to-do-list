@@ -14,11 +14,16 @@ interface Props {
   /** типова година, якщо значення ще немає */
   defaultHour?: number;
   onChange: (d: Date) => void;
+  /** лише день, без годин і хвилин (відсутності) */
+  withTime?: boolean;
+  /** найраніший день, який можна обрати; типово — сьогодні */
+  minDay?: { y: number; m: number; d: number };
 }
 
 /** Місяць + години й хвилини; усе за Києвом. Дні в минулому вимкнено */
-export function CalendarPanel({ value, defaultHour = 18, onChange }: Props) {
+export function CalendarPanel({ value, defaultHour = 18, onChange, withTime = true, minDay }: Props) {
   const today = kyivParts(new Date());
+  const first = minDay ?? today;
   const start: KyivParts = value ? kyivParts(value) : { ...today, h: defaultHour, min: 0 };
   const [draft, setDraft] = useState(start);
   const [view, setView] = useState({ y: start.y, m: start.m });
@@ -29,7 +34,7 @@ export function CalendarPanel({ value, defaultHour = 18, onChange }: Props) {
     onChange(fromKyiv(next.y, next.m, next.d, next.h, next.min));
   };
   const shift = (n: number) => setView((v) => addMonths(v.y, v.m, n));
-  const canGoBack = compareDays({ ...view, d: 1 }, { ...today, d: 1 }) > 0;
+  const canGoBack = compareDays({ ...view, d: 1 }, { ...first, d: 1 }) > 0;
 
   return (
     <div className={css.panel}>
@@ -43,7 +48,7 @@ export function CalendarPanel({ value, defaultHour = 18, onChange }: Props) {
           <span key={w} className={css.weekday} role="columnheader">{w}</span>
         ))}
         {monthGrid(view.y, view.m).map((day) => {
-          const past = compareDays(day, today) < 0;
+          const past = compareDays(day, first) < 0;
           const chosen = compareDays(day, draft) === 0;
           const isToday = compareDays(day, today) === 0;
           return (
@@ -62,6 +67,8 @@ export function CalendarPanel({ value, defaultHour = 18, onChange }: Props) {
           );
         })}
       </div>
+      {withTime && (
+      <>
       <div className={css.timeHead}>
         <span>{t('shared.ui.time')}</span>
         <b className={css.timeValue}>{`${pad(draft.h)}:${pad(draft.min)}`}</b>
@@ -80,6 +87,8 @@ export function CalendarPanel({ value, defaultHour = 18, onChange }: Props) {
           </button>
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { StrengthLine } from '@/modules/absences';
 import { useSession } from '@/modules/auth';
 import { EventDetail } from '@/modules/events';
 import { TaskDetail } from '@/modules/tasks';
@@ -11,13 +12,14 @@ import { useNow } from '@/shared/hooks/useNow';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { t } from '@/shared/lib/texts';
 import { formatLongDate } from '@/shared/lib/time';
-import { ErrorState, Loading, PageHeader, Sheet } from '@/shared/ui';
-import { CalendarToolbar } from '../../components/CalendarToolbar/CalendarToolbar';
+import { ErrorState, Loading, PageHeader, PeriodBar, Segmented, Sheet } from '@/shared/ui';
 import { FilterSheet } from '../../components/FilterSheet/FilterSheet';
 import { Legend } from '../../components/Legend/Legend';
 import { TimeGrid } from '../../components/TimeGrid/TimeGrid';
 import { useCalendar } from '../../hooks/useCalendar';
 import { gridHours, gridModel } from '../../lib/grid';
+import { dayStrength } from '../../lib/rows';
+import type { Mode } from '../../lib/range';
 import { addDays, periodTitle, todayKey } from '../../lib/range';
 import { defaultStart, shiftStart, visibleSpan } from '../../lib/view';
 import css from './CalendarPage.module.css';
@@ -69,17 +71,31 @@ function Calendar({ me }: { me: Me }) {
     : f.kind === 'person' ? people.data?.find((p) => p.id === f.personId)?.fullName
     : t('calendar.filters.me');
 
+  // керівнику над «Днем» підрозділу — скільки в строю; подробиці — на «В строю» з тим самим днем і підрозділом
+  const strength = me.role !== 'MEMBER' && params.mode === 'day' && f.kind === 'unit' && data.data ? dayStrength(data.data.people, data.data.items, params.day) : null;
+  const strengthTo = f.kind === 'unit' ? `/strength?${new URLSearchParams({ unit: f.unitId, date: params.day, ...(f.sub ? {} : { sub: '0' }) })}` : '';
+
   return (
     <div className={css.page}>
       <PageHeader eyebrow={formatLongDate(now)} title={t('calendar.toolbar.title')} />
-      <CalendarToolbar
-        mode={params.mode}
+      <PeriodBar
+        lead={
+          <Segmented<Mode>
+            label={t('calendar.toolbar.mode')}
+            value={params.mode}
+            onChange={(mode) => set({ mode })}
+            options={[
+              { value: 'day', label: t('calendar.toolbar.day') },
+              { value: 'week', label: t('calendar.toolbar.week') },
+            ]}
+          />
+        }
         title={periodTitle(params.mode, params.day, now)}
         who={me.role === 'MEMBER' ? undefined : { label: whoLabel ?? '', icon: f.kind === 'unit' ? 'users' : 'user', onOpen: () => setChoosing(true) }}
-        onMode={(mode) => set({ mode })}
         onShift={(dir) => set({ day: addDays(params.day, dir * (params.mode === 'week' ? 7 : 1)) })}
         onToday={() => set({ day: today })}
       />
+      {strength && <StrengthLine {...strength} to={strengthTo} />}
       <div ref={measure}>
         {model ? (
           <TimeGrid

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { Person } from '../../api/types';
 import { shortName } from '../../lib/names';
 import { recentPeople, rememberPerson } from '../../lib/recentPeople';
@@ -19,10 +19,14 @@ interface Props {
   describe?: (p: Person) => string;
   /** підрозділ того, хто обирає: його люди — серед підказок */
   unitId?: string | null;
+  /** третій рядок під людиною — позначка відсутності */
+  extra?: (p: Person) => ReactNode;
+  /** під обраними, над пошуком — попередження щодо обраних */
+  notice?: ReactNode;
 }
 
 /** Вибір людей: до пошуку — короткі підказки, решта — пошуком або «Показати всіх» */
-export function PeoplePicker({ people, selected, onChange, multiple = true, placeholder, describe = (p) => p.position, unitId }: Props) {
+export function PeoplePicker({ people, selected, onChange, multiple = true, placeholder, describe = (p) => p.position, unitId, extra, notice }: Props) {
   const [query, setQuery] = useState('');
   const [all, setAll] = useState(false);
   const recent = useMemo(() => recentPeople(), []);
@@ -55,6 +59,7 @@ export function PeoplePicker({ people, selected, onChange, multiple = true, plac
           ))}
         </div>
       )}
+      {notice}
       <Input
         type="search"
         value={query}
@@ -74,6 +79,7 @@ export function PeoplePicker({ people, selected, onChange, multiple = true, plac
                 <span className={css.text}>
                   <span className={css.name}>{p.fullName}</span>
                   <span className={css.position}>{describe(p)}</span>
+                  {extra && <span className={css.extra}>{extra(p)}</span>}
                 </span>
                 {on && (
                   <span className={css.check}>

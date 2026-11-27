@@ -1,5 +1,5 @@
 import { api } from '@/shared/api/client';
-import type { EventStatus, Person, Priority, TaskStatus } from '@/shared/api/types';
+import type { AbsenceKind, EventStatus, Person, Priority, TaskStatus } from '@/shared/api/types';
 
 /** Смуга завдання (див. server/src/modules/calendar/calendar.serializer.ts) */
 export interface CalTask {
@@ -27,7 +27,17 @@ export interface CalEvent {
   personIds: string[];
 }
 
-export type CalItem = CalTask | CalEvent;
+/** Відсутність людини: цілі дні за Києвом, кінець включно (ADR-0019) */
+export interface CalAbsence {
+  kind: 'absence';
+  id: string;
+  absenceKind: AbsenceKind;
+  startDay: string;
+  endDay: string;
+  personIds: string[];
+}
+
+export type CalItem = CalTask | CalEvent | CalAbsence;
 
 export interface CalendarData {
   from: string;

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Priority, TaskDetail } from '@/shared/api/types';
+import { AbsenceWarning, useAbsenceMark } from '@/modules/absences';
 import { useSession } from '@/modules/auth';
 import { useDescribePerson, usePeople } from '@/shared/api/people';
 import { t } from '@/shared/lib/texts';
@@ -22,6 +23,7 @@ export function EditSheet({ task, busy, onSave, onClose }: Props) {
   const lead = !!me && me.role !== 'MEMBER';
   const people = usePeople();
   const describe = useDescribePerson();
+  const absenceMark = useAbsenceMark();
   const active = useMemo(() => {
     const current = new Set(task.assignees.map((a) => a.id));
     return (people.data ?? []).filter((p) => p.isActive || current.has(p.id));
@@ -73,7 +75,8 @@ export function EditSheet({ task, busy, onSave, onClose }: Props) {
       </FieldGroup>
       {lead && (
         <FieldGroup label={t('tasks.form.who')} hint={t('tasks.edit.assignees_hint')}>
-          <PeoplePicker people={active} selected={assignees} onChange={setAssignees} describe={describe} unitId={me?.unitId} placeholder={t('tasks.form.who_search')} />
+          <PeoplePicker people={active} selected={assignees} onChange={setAssignees} describe={describe} unitId={me?.unitId} placeholder={t('tasks.form.who_search')}
+            extra={absenceMark} notice={<AbsenceWarning people={active} ids={assignees} deadline={deadline} />} />
         </FieldGroup>
       )}
       <FormError>{error}</FormError>

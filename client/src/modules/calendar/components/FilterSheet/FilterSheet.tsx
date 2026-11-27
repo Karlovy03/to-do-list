@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useDescribePerson, usePeople, useUnits } from '@/shared/api/people';
 import type { Me } from '@/shared/api/types';
-import { pluralForm } from '@/shared/lib/plural';
 import { t } from '@/shared/lib/texts';
-import { Button, PeoplePicker, Segmented, Sheet, Switch } from '@/shared/ui';
+import { Button, PeoplePicker, Segmented, Sheet, UnitPicker } from '@/shared/ui';
 import type { Filter } from '../../lib/params';
 import type { Mode } from '../../lib/range';
-import { headcount, verticalOf } from '../../lib/vertical';
+import { verticalOf } from '@/shared/lib/vertical';
 import css from './FilterSheet.module.css';
 
 type Kind = Filter['kind'];
@@ -33,10 +32,6 @@ export function FilterSheet({ me, mode, value, onApply, onClose }: Props) {
   // у «Тижні» рядки — дні однієї людини, тож підрозділ не пропонуємо
   const kinds: Kind[] = mode === 'week' ? ['me', 'person'] : ['me', 'unit', 'person'];
   const next: Filter | null = kind === 'me' ? { kind } : kind === 'unit' ? (unitId ? { kind, unitId, sub } : null) : personId ? { kind, personId } : null;
-  const count = (id: string) => {
-    const n = headcount(id, units.data ?? [], vertical.people, sub);
-    return t(`calendar.filters.people_${pluralForm(n)}`, { n });
-  };
 
   return (
     <Sheet
@@ -51,21 +46,7 @@ export function FilterSheet({ me, mode, value, onApply, onClose }: Props) {
       <Segmented<Kind> label={t('calendar.filters.title')} value={kind} onChange={setKind} options={kinds.map((k) => ({ value: k, label: t(`calendar.filters.${k}`) }))} />
 
       {kind === 'unit' && (
-        <>
-          <div className={css.units} role="radiogroup" aria-label={t('calendar.filters.unit')}>
-            {vertical.units.map((u) => (
-              <button key={u.id} type="button" role="radio" aria-checked={u.id === unitId} className={u.id === unitId ? `${css.unit} ${css.on}` : css.unit}
-                style={{ paddingLeft: `calc(var(--s-4) + ${u.depth * 16}px)` }} onClick={() => setUnitId(u.id)}>
-                <span className={css.radio} aria-hidden="true" />
-                <span className={css.text}>
-                  <b>{u.name}</b>
-                  <small>{count(u.id)}</small>
-                </span>
-              </button>
-            ))}
-          </div>
-          <Switch checked={sub} label={t('calendar.filters.sub')} onChange={setSub} />
-        </>
+        <UnitPicker vertical={vertical} units={units.data ?? []} unitId={unitId} sub={sub} onUnit={setUnitId} onSub={setSub} />
       )}
 
       {kind === 'person' && (

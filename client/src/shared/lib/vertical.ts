@@ -1,5 +1,5 @@
-import type { Me, Person, Unit } from '@/shared/api/types';
-import { flattenTree, subtree } from '@/shared/lib/units';
+import type { Me, Person, Unit } from '../api/types';
+import { flattenTree, subtree } from './units';
 
 /**
  * Що пропонувати у «Кого показати»: директор і адміністратор — усе; керівник — свій підрозділ і нижчі (ADR-0012).

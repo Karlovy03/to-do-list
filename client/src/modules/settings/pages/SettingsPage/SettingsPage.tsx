@@ -1,3 +1,4 @@
+import { MyAbsences } from '@/modules/absences';
 import { useSession } from '@/modules/auth';
 import { DevicePanel } from '@/modules/notifications';
 import { useUnits } from '@/shared/api/people';
@@ -8,6 +9,7 @@ import { PageHeader } from '@/shared/ui';
 import { AccountPanel } from '../../components/AccountPanel/AccountPanel';
 import { AppearancePanel } from '../../components/AppearancePanel/AppearancePanel';
 import { QuietPanel } from '../../components/QuietPanel/QuietPanel';
+import { SectionsPanel } from '../../components/SectionsPanel/SectionsPanel';
 import { TopicsPanel } from '../../components/TopicsPanel/TopicsPanel';
 import css from './SettingsPage.module.css';
 
@@ -20,11 +22,13 @@ export function SettingsPage() {
     <div className={css.page}>
       <PageHeader eyebrow={[me.fullName, unitPath(me.unitId, units.data ?? [])].filter(Boolean).join(' · ')} title={t('settings.profile.title')} />
       <div className={css.columns}>
+        {wc !== 'lg' && <SectionsPanel me={me} />}
+        <MyAbsences me={me} />
         <DevicePanel />
         <TopicsPanel me={me} />
         <QuietPanel me={me} />
         <AppearancePanel me={me} />
-        <AccountPanel me={me} phone={wc === 'xs' || wc === 'sm'} />
+        <AccountPanel />
       </div>
     </div>
   );

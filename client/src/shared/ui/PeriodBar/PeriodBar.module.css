@@ -1,4 +1,8 @@
-/* телефон: перемикач на всю ширину, під ним період, ще нижче «кого» і «Сьогодні» (Figma 15) */
+/* розкладка — за шириною свого місця, а не вікна: у колонці Fold «В строю» вона як на телефоні (Figma 28) */
+.frame {
+  container-type: inline-size;
+}
+/* вузько: перемикач на всю ширину, під ним період, ще нижче «кого» і «Сьогодні» (Figma 15) */
 .toolbar {
   display: flex;
   flex-direction: column;
@@ -59,8 +63,8 @@
   font-size: var(--fs-small);
   font-weight: 700;
 }
-/* Fold і комп'ютер: усе в один рядок, «кого» — праворуч (Figma 18) */
-@media (min-width: 680px) {
+/* широко (календар на Fold, комп'ютер): усе в один рядок, «кого» — праворуч (Figma 18, 30) */
+@container (min-width: 520px) {
   .toolbar {
     flex-direction: row;
     flex-wrap: wrap;

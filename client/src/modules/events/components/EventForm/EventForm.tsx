@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type FormEvent } from 'react';
+import { useAbsenceMark } from '@/modules/absences';
 import type { AppEvent, Me } from '@/shared/api/types';
 import { useDescribePerson, usePeople } from '@/shared/api/people';
 import { useReminderSettings } from '@/shared/api/settings';
@@ -29,6 +30,7 @@ function nextHour(now = new Date()) {
 export function EventForm({ me, initial, active = true, busy, onSubmit }: Props) {
   const people = usePeople();
   const describe = useDescribePerson();
+  const absenceMark = useAbsenceMark();
   const settings = useReminderSettings();
   const formId = useId();
   const organizerId = initial?.organizer.id ?? me.id;
@@ -73,7 +75,7 @@ export function EventForm({ me, initial, active = true, busy, onSubmit }: Props)
       </FieldGroup>
       <DurationChips value={duration} onChange={setDuration} />
       <FieldGroup label={participants.length ? t('events.form.who_count', { n: participants.length }) : t('events.form.who')}>
-        <PeoplePicker people={choices} selected={participants} onChange={setParticipants} describe={describe} unitId={me.unitId} placeholder={t('events.form.who_search')} />
+        <PeoplePicker people={choices} selected={participants} onChange={setParticipants} describe={describe} unitId={me.unitId} placeholder={t('events.form.who_search')} extra={absenceMark} />
       </FieldGroup>
       <Field label={t('events.form.details')}>
         <TextArea rows={3} value={description} maxLength={5000} placeholder={t('events.form.details_placeholder')} onChange={(e) => setDescription(e.target.value)} />

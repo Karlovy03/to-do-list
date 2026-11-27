@@ -51,7 +51,7 @@ export function gridModel(p: CalendarParams, data: CalendarData, units: Unit[], 
   const names = new Map(units.map((u) => [u.id, u.name]));
   return {
     ...base,
-    rows: dayGroups(data.people, data.items, units, win, now).flatMap((g) => {
+    rows: dayGroups(data.people, data.items, units, p.day, win, now).flatMap((g) => {
       const key = `g-${g.unitId ?? 'none'}`;
       const head: GridRow = { kind: 'group', key, title: g.unitId ? names.get(g.unitId) ?? '' : t('calendar.grid.no_unit'), count: g.rows.length };
       return [head, ...g.rows.map((r): GridRow => ({ kind: 'person', key: r.person.id, group: key, person: r.person, content: r, nowPos }))];

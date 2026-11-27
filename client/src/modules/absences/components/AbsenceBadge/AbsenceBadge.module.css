@@ -1,0 +1,32 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.vacation {
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+}
+.sick {
+  background: var(--late-soft);
+  color: var(--late-ink);
+}
+.family {
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}

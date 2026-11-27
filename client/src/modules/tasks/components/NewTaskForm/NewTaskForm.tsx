@@ -1,6 +1,7 @@
 import { useId, useMemo, useState, type FormEvent } from 'react';
 import type { ControlInput, Me, Priority, Task } from '@/shared/api/types';
 import { useDescribePerson, usePeople } from '@/shared/api/people';
+import { AbsenceWarning, useAbsenceMark } from '@/modules/absences';
 import { ControlFields, isComplete, normalize } from '@/modules/control';
 import { t } from '@/shared/lib/texts';
 import { Button, Chip, Chips, DateTimePicker, Field, FieldGroup, FormError, PeoplePicker, SheetFooter, Switch, TextArea } from '@/shared/ui';
@@ -20,6 +21,7 @@ export function NewTaskForm({ me, active = true, onCreated }: Props) {
   const lead = me.role !== 'MEMBER';
   const people = usePeople();
   const describe = useDescribePerson();
+  const absenceMark = useAbsenceMark();
   const create = useCreateTask();
   const quick = useMemo(() => quickDeadlines(), []);
   const formId = useId();
@@ -61,7 +63,8 @@ export function NewTaskForm({ me, active = true, onCreated }: Props) {
 
       {lead && (
         <FieldGroup label={t('tasks.form.who')}>
-          <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} describe={describe} unitId={me.unitId} placeholder={t('tasks.form.who_search')} />
+          <PeoplePicker people={(people.data ?? []).filter((p) => p.isActive)} selected={assignees} onChange={setAssignees} describe={describe} unitId={me.unitId}
+            placeholder={t('tasks.form.who_search')} extra={absenceMark} notice={<AbsenceWarning people={people.data ?? []} ids={assignees} deadline={deadline} />} />
         </FieldGroup>
       )}
 

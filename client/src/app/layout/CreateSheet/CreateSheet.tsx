@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { NewAbsenceForm } from '@/modules/absences';
 import { NewEventForm } from '@/modules/events';
 import { NewTaskForm } from '@/modules/tasks';
 import type { Me } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { Segmented, Sheet } from '@/shared/ui';
 
-export type CreateKind = 'task' | 'event';
+export type CreateKind = 'task' | 'event' | 'absence';
 
 /**
- * «Створити» (Figma 14): одна кнопка «+» — завдання або захід. Обидві форми живуть, поки аркуш відкритий:
+ * «Створити» (Figma 14, 24): одна кнопка «+» — завдання, захід або відсутність. Форми живуть, поки аркуш відкритий:
  * перемикання не губить уже введене, а кнопку внизу показує лише видима.
  */
 export function CreateSheet({ me, initial, onClose }: { me: Me; initial: CreateKind; onClose: () => void }) {
@@ -27,6 +28,7 @@ export function CreateSheet({ me, initial, onClose }: { me: Me; initial: CreateK
         options={[
           { value: 'task', label: t('app.create.task') },
           { value: 'event', label: t('app.create.event') },
+          { value: 'absence', label: t('app.create.absence') },
         ]}
         onChange={setKind}
       />
@@ -35,6 +37,9 @@ export function CreateSheet({ me, initial, onClose }: { me: Me; initial: CreateK
       </div>
       <div hidden={kind !== 'event'}>
         <NewEventForm me={me} active={kind === 'event'} onCreated={(e) => done(`/events/e/${e.id}`)} />
+      </div>
+      <div hidden={kind !== 'absence'}>
+        <NewAbsenceForm me={me} active={kind === 'absence'} onCreated={onClose} />
       </div>
     </Sheet>
   );

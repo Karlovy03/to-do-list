@@ -1,0 +1,16 @@
+.warning {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-control);
+  background: var(--late-soft);
+  color: var(--late-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.warning svg {
+  flex: none;
+}
+.line {
+  display: block;
+}
