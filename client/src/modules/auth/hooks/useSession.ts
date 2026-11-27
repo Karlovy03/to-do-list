@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError, UNAUTHORIZED_EVENT } from '@/shared/api/client';
+import { forgetPeople } from '@/shared/lib/deviceMemory';
 import { setToken } from '@/shared/lib/token';
 import { authApi, authKeys } from '../api/auth.api';
 
@@ -48,6 +49,8 @@ export function useLogout() {
     // сервер завершує всі сесії людини і прибирає її підписки на push
     mutationFn: () => authApi.logout(),
     onSettled: async () => {
+      // спільний комп'ютер: наступний не побачить чужих фільтрів, недавніх людей, згорнутого (ADR-0022)
+      forgetPeople();
       await setToken(null);
       qc.clear();
       qc.setQueryData(authKeys.me, null);

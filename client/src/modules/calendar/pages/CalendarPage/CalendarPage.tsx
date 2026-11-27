@@ -107,6 +107,7 @@ function Calendar({ me }: { me: Me }) {
             can={{ earlier: start > range[0], later: start + span < range[1] }}
             onShift={(dir) => setMoved({ key: viewKey, start: shiftStart(start, dir, span, range) })}
             linkTo={(kind, id) => `/calendar/${kind}/${id}${query}`}
+            userId={me.id}
           />
         ) : data.error ? (
           <ErrorState message={errorText(data.error)} onRetry={() => void data.refetch()} />

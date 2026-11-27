@@ -7,6 +7,7 @@ import type { Absence, Me } from '@/shared/api/types';
 import { useNow } from '@/shared/hooks/useNow';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { addDays, dayTitle, todayKey } from '@/shared/lib/days';
+import { placeOrRemembered, rememberPlace } from '@/shared/lib/deviceMemory';
 import { t } from '@/shared/lib/texts';
 import { formatLongDate } from '@/shared/lib/time';
 import { verticalOf } from '@/shared/lib/vertical';
@@ -45,13 +46,18 @@ function Strength({ me }: { me: Me }) {
   const units = useUnits();
   const people = usePeople();
   const vertical = verticalOf(me, units.data ?? [], people.data ?? []);
-  const params = readStrength(sp, me, now);
+  // з меню (порожня адреса) — останній підрозділ без дня (ADR-0022)
+  const params = readStrength(placeOrRemembered(sp, me.id, 'strength'), me, now);
   const unitId = params.unitId ?? vertical.units[0]?.id ?? null;
   const absences = useAbsences(params.day, addDays(params.day, UPCOMING_DAYS));
   const [choosing, setChoosing] = useState(false);
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<Absence | null>(null);
-  const set = (next: Partial<StrengthParams>) => setSp(writeStrength({ ...params, unitId, ...next }, me, now));
+  const set = (next: Partial<StrengthParams>) => {
+    const written = writeStrength({ ...params, unitId, ...next }, me, now);
+    rememberPlace(me.id, 'strength', written);
+    setSp(written);
+  };
 
   const unitName = units.data?.find((u) => u.id === unitId)?.name ?? '';
   const bar = (

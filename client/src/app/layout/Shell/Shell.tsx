@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, ScrollRestoration, useLocation, type Location } from 'react-router-dom';
 import { useLogout, useSession } from '@/modules/auth';
 import { PushBanner, usePushSync, useUnread } from '@/modules/notifications';
 import { LizardCheer } from '@/modules/tasks';
@@ -11,6 +11,12 @@ import { CreateSheet } from '../CreateSheet/CreateSheet';
 import { Rail } from '../Rail/Rail';
 import { Sidebar } from '../Sidebar/Sidebar';
 import css from './Shell.module.css';
+
+/**
+ * Місце в списку — за адресою, а не за кроком історії (ADR-0022): «Назад» у картці веде на адресу списку
+ * новим кроком, і саме за адресою людина повертається туди, де була. Зберігається в пам'яті вкладки.
+ */
+const placeKey = (l: Location) => l.pathname + l.search;
 
 /** Оболонка: навігація залежить від класу вікна, вміст — від маршруту */
 export function Shell() {
@@ -35,6 +41,7 @@ export function Shell() {
       {wc === 'md' && <Rail unread={unread} onCreate={open} />}
       <main className={css.main}>
         <Outlet />
+        <ScrollRestoration getKey={placeKey} />
       </main>
       <UpdateBanner />
       <LizardCheer />

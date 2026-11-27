@@ -1,7 +1,8 @@
-import { useRef, useState, type CSSProperties, type TouchEvent } from 'react';
+import { useRef, type CSSProperties, type TouchEvent } from 'react';
 import { t } from '@/shared/lib/texts';
 import { formatTime } from '@/shared/lib/time';
 import { Avatar, Icon } from '@/shared/ui';
+import { useCollapsed } from '../../hooks/useCollapsed';
 import type { GridModel } from '../../lib/grid';
 import { dayLabel } from '../../lib/range';
 import { CalendarRow, type ItemLink } from '../CalendarRow/CalendarRow';
@@ -18,6 +19,8 @@ interface Props {
   can: { earlier: boolean; later: boolean };
   onShift: (dir: 1 | -1) => void;
   linkTo: ItemLink;
+  /** чиї згорнуті підрозділи пам'ятати */
+  userId: string;
 }
 
 const hourLabel = (h: number) => `${String(h).padStart(2, '0')}:00`;
@@ -25,14 +28,9 @@ const hourLabel = (h: number) => `${String(h).padStart(2, '0')}:00`;
 const LABEL_PX = 36;
 
 /** Сітка часу: колонка «хто / день», шкала годин, рядки з доріжками (Figma 15, 16, 18, 19). Вбік не гортається */
-export function TimeGrid({ model, now, phone, nameW, trackW, can, onShift, linkTo }: Props) {
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
+export function TimeGrid({ model, now, phone, nameW, trackW, can, onShift, linkTo, userId }: Props) {
+  const { collapsed, toggle } = useCollapsed(userId);
   const touch = useRef<{ x: number; y: number } | null>(null);
-  const toggle = (key: string) => setCollapsed((s) => {
-    const next = new Set(s);
-    if (!next.delete(key)) next.add(key);
-    return next;
-  });
   // свайп уліво-вправо зсуває вікно годин; вертикальний — гортає сторінку як звичайно
   const onTouchStart = (e: TouchEvent) => (touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY });
   const onTouchEnd = (e: TouchEvent) => {
