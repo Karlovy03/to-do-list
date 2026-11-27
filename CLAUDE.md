@@ -28,6 +28,7 @@
 | working-on-tasks-and-control | стани завдання, контроль, права, журнал |
 | working-on-notifications | сповіщення, нагадування, push |
 | working-on-events-and-calendar | заходи, календар, ящірка «Виконано!» |
+| working-on-absences | відсутності, «В строю», «не турбувати», попередження під час доручення |
 | building-mobile-apps | Capacitor, Android/iOS, нативний push |
 | writing-tests | будь-який тест; зміни прав — з негативними тестами |
 | running-dev-workflow | команди, міграції, ворота перед комітом |
