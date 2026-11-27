@@ -15,6 +15,12 @@ docker compose exec -T db pg_dump -U kontrol --clean --if-exists kontrol | gzip 
 gzip -t "$file.part"
 gzip -dc "$file.part" | head -c 100000 | grep -q 'PostgreSQL database dump'
 mv "$file.part" "$file"
+# the admin's «Моніторинг → Сервер» shows when the last good backup was (ADR-0024); a failure here does not fail the backup
+docker compose exec -T db psql -q -v ON_ERROR_STOP=1 -U kontrol kontrol <<'SQL' || echo "warning: could not record the backup time"
+INSERT INTO "Setting" (key, value)
+VALUES ('backup.lastOk', to_jsonb(to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+SQL
 find backups -name 'kontrol-*.sql.gz' -mtime +"$KEEP_DAYS" -delete
 
 # Template files never change once stored (a replaced file gets a new key), so only new ones are copied.
