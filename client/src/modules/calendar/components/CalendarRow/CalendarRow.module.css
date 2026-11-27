@@ -1,0 +1,49 @@
+.row {
+  display: grid;
+  grid-template-columns: var(--name-w) minmax(0, 1fr);
+  min-height: 56px;
+  border-top: 1px solid var(--line-soft);
+}
+.who {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  /* ім'я — угорі рядка: у високому рядку (багато доріжок) воно інакше пішло б за край екрана */
+  padding: 10px var(--s-3) var(--s-2);
+  background: var(--surface);
+}
+.track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--lane-gap);
+  padding: var(--s-2) 0;
+  overflow: hidden;
+  /* вертикальні лінії цілих годин; вікно може починатися з половини години — звідси зсув */
+  background-image: linear-gradient(to right, var(--line-soft) 1px, transparent 1px);
+  background-size: var(--hour-px) 100%;
+  background-position: var(--hour-offset) 0;
+}
+.lanes {
+  position: relative;
+  height: calc(var(--lanes) * (var(--bar-h) + var(--lane-gap)) - var(--lane-gap));
+}
+.now {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--blue);
+  pointer-events: none;
+}
+.today .who,
+.today .track {
+  background-color: var(--blue-soft);
+}
+.weekend .who,
+.weekend .track {
+  background-color: var(--surface-sunken);
+}

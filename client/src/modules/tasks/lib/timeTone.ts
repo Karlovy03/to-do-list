@@ -5,14 +5,24 @@ import type { TimeTone } from '@/shared/ui';
 
 const DAY = 864e5;
 
-/** Тон і підписи часового чипа: колір = терміновість */
+/** Тон завдання: «триває» буває лише в заходів */
+export type TaskTone = Exclude<TimeTone, 'live'>;
+
+/** Колір = терміновість: та сама функція для чипа картки і смуги в календарі */
+export function timeToneOf(task: Pick<Task, 'status' | 'deadline'>, now = new Date()): TaskTone {
+  if (task.status === 'DONE') return 'done';
+  if (task.status === 'CANCELLED') return 'calm';
+  const left = new Date(task.deadline).getTime() - now.getTime();
+  return left < 0 ? 'late' : left < DAY ? 'soon' : 'calm';
+}
+
+/** Тон і підписи часового чипа */
 export function timeChipFor(task: Task, now = new Date()): { tone: TimeTone; time: string; rest?: string } {
+  const tone = timeToneOf(task, now);
   if (task.status === 'DONE' || task.status === 'CANCELLED') {
-    const at = task.completedAt ?? task.deadline;
-    return { tone: task.status === 'DONE' ? 'done' : 'calm', time: t(`tasks.status.${task.status}`), rest: formatDeadline(at) };
+    return { tone, time: t(`tasks.status.${task.status}`), rest: formatDeadline(task.completedAt ?? task.deadline) };
   }
   const left = new Date(task.deadline).getTime() - now.getTime();
   const time = formatDeadline(task.deadline);
-  if (left < 0) return { tone: 'late', time, rest: `${shortDuration(left)} ${t('shared.time.ago')}` };
-  return { tone: left < DAY ? 'soon' : 'calm', time, rest: shortDuration(left) };
+  return { tone, time, rest: left < 0 ? `${shortDuration(left)} ${t('shared.time.ago')}` : shortDuration(left) };
 }

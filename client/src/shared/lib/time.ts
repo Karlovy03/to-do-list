@@ -8,6 +8,8 @@ export const dayKey = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: 
 
 export const formatFull = (iso: string | Date) => fullFmt.format(new Date(iso));
 export const formatTime = (iso: string | Date) => timeFmt.format(new Date(iso));
+/** «26 листопада» */
+export const formatDate = (iso: string | Date) => dateFmt.format(new Date(iso));
 
 /** «сьогодні», «завтра», «вчора», «3 грудня» — за київським днем */
 export function formatDay(iso: string | Date, now = new Date()) {

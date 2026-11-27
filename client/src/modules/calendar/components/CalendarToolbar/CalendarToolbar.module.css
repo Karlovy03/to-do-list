@@ -1,0 +1,89 @@
+/* телефон: перемикач на всю ширину, під ним період, ще нижче «кого» і «Сьогодні» (Figma 15) */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.period {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  text-align: center;
+}
+.extra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--ctrl-m);
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--blue);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--navy-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.who svg {
+  flex: none;
+}
+.whoLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.caret {
+  flex: none;
+  font-size: 0.625rem;
+}
+.today {
+  flex: none;
+  min-height: var(--ctrl-m);
+  padding: 0 var(--s-1);
+  border: 0;
+  background: transparent;
+  color: var(--blue-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+/* Fold і комп'ютер: усе в один рядок, «кого» — праворуч (Figma 18) */
+@media (min-width: 680px) {
+  .toolbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .mode {
+    flex: none;
+  }
+  .period {
+    flex: none;
+  }
+  .title {
+    flex: none;
+    min-width: 12ch;
+  }
+  /* не влазить у рядок (Fold, довга назва підрозділу) — переходить нижче, а не за край */
+  .extra {
+    flex: 1 1 280px;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+  .who {
+    margin-left: auto;
+  }
+}

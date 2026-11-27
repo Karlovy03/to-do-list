@@ -8,4 +8,5 @@ export const platform = Capacitor.getPlatform() as 'web' | 'android' | 'ios';
 export const API_BASE = isNative ? (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '') : '';
 
 export const isIosBrowser = !isNative && /iPad|iPhone|iPod/.test(navigator.userAgent);
-export const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
+/** Відкрито з головного екрана (PWA). Функція, а не стала: модуль не чіпає window під час імпорту */
+export const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;

@@ -1,0 +1,64 @@
+.bar {
+  position: absolute;
+  top: calc(var(--lane) * (var(--bar-h) + var(--lane-gap)));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 20px;
+  height: var(--bar-h);
+  padding: 0 8px;
+  border-left: 3px solid var(--edge);
+  border-radius: 8px;
+  background: var(--fill);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.bar:hover,
+.bar:focus-visible {
+  z-index: 1;
+  box-shadow: var(--shadow-card);
+}
+.bar svg {
+  flex: none;
+}
+.title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cut {
+  flex: none;
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.end {
+  margin-left: auto;
+}
+.calm {
+  --fill: var(--surface-sunken);
+  --edge: var(--ink-3);
+  --text: var(--ink);
+}
+.soon {
+  --fill: var(--sky-soft);
+  --edge: var(--sky);
+  --text: var(--sky-ink);
+}
+.late {
+  --fill: var(--late-soft);
+  --edge: var(--late);
+  --text: var(--late-ink);
+}
+.done {
+  --fill: var(--done-soft);
+  --edge: var(--done);
+  --text: var(--done-ink);
+}
+.control {
+  --fill: var(--control-soft);
+  --edge: var(--control);
+  --text: var(--control-deep);
+}

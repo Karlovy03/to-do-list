@@ -14,7 +14,7 @@ async function currentSubscription() {
 
 export async function webPushState(): Promise<PushState> {
   // Safari на iPhone дає push лише застосунку, доданому на екран «Домів»
-  if (isIosBrowser && !isStandalone) return 'ios_install';
+  if (isIosBrowser && !isStandalone()) return 'ios_install';
   if (!supported()) return 'unsupported';
   if (Notification.permission === 'denied') return 'denied';
   return (await currentSubscription()) ? 'on' : 'off';

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { AdminPage } from '@/modules/admin';
 import { LoginPage } from '@/modules/auth';
+import { CalendarPage } from '@/modules/calendar';
 import { EventsPage } from '@/modules/events';
 import { NotificationsPage } from '@/modules/notifications';
 import { ReportPage } from '@/modules/report';
@@ -26,6 +27,9 @@ export const router = createBrowserRouter([
       ...scopeRoutes('/all', 'all'),
       { path: '/events', element: <EventsPage /> },
       { path: '/events/e/:eventId', element: <EventsPage /> },
+      { path: '/calendar', element: <CalendarPage /> },
+      { path: '/calendar/t/:taskId', element: <CalendarPage /> },
+      { path: '/calendar/e/:eventId', element: <CalendarPage /> },
       { path: '/notifications', element: <NotificationsPage /> },
       { path: '/settings', element: <SettingsPage /> },
       { path: '/report', element: <ReportPage /> },

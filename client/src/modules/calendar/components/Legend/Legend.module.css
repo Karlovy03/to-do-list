@@ -1,0 +1,48 @@
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  padding: 0 var(--s-1);
+  list-style: none;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.swatch {
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+}
+.event {
+  background: var(--navy);
+}
+.past {
+  background: var(--blue-soft);
+}
+.task,
+.soon,
+.late,
+.control {
+  border-left: 3px solid;
+}
+.task {
+  border-color: var(--ink-3);
+  background: var(--surface-sunken);
+}
+.soon {
+  border-color: var(--sky);
+  background: var(--sky-soft);
+}
+.late {
+  border-color: var(--late);
+  background: var(--late-soft);
+}
+.control {
+  border-color: var(--control);
+  background: var(--control-soft);
+}

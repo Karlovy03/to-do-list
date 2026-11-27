@@ -1,0 +1,150 @@
+.frame {
+  --bar-h: 28px;
+  --lane-gap: 6px;
+  position: relative;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  /* горизонтальний свайп зсуває вікно годин, вертикальний — гортає сторінку */
+  touch-action: pan-y;
+}
+.scale {
+  display: grid;
+  grid-template-columns: var(--name-w) minmax(0, 1fr);
+  height: 44px;
+}
+.corner {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 var(--s-3) var(--s-2);
+  background: var(--surface);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.ticks {
+  position: relative;
+}
+.tick {
+  position: absolute;
+  bottom: var(--s-2);
+  margin-left: 4px;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.nowPill {
+  position: absolute;
+  bottom: 6px;
+  z-index: 2;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  color: var(--on-dark);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transform: translateX(-50%);
+}
+/* «‹ раніше / пізніше ›» — над підписами годин (Figma 15) */
+.shift {
+  position: absolute;
+  top: 2px;
+  z-index: 3;
+  padding: 0 2px;
+  border: 0;
+  background: var(--surface);
+  color: var(--blue-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+.earlier {
+  left: 2px;
+}
+.later {
+  right: 6px;
+}
+.group {
+  border-top: 1px solid var(--line-soft);
+  background: var(--surface-sunken);
+}
+.groupBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 100%;
+  min-height: 36px;
+  padding: 0 var(--s-3);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  text-align: left;
+}
+.groupBtn b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chevron,
+.chevronOpen {
+  display: inline-flex;
+  color: var(--ink-3);
+  transition: transform var(--t-fast);
+}
+.chevronOpen {
+  transform: rotate(90deg);
+}
+.count {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.name b,
+.name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.name b {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.name small {
+  font-size: var(--fs-label);
+  color: var(--ink-3);
+}
+.dayLabel {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.todayLabel {
+  font-weight: 800;
+  color: var(--navy-ink);
+}
+.empty {
+  padding: var(--s-6) var(--s-4);
+  border-top: 1px solid var(--line-soft);
+  color: var(--ink-3);
+  text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron,
+  .chevronOpen {
+    transition: none;
+  }
+}
