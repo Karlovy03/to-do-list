@@ -25,13 +25,23 @@
   box-shadow: var(--shadow-card);
   color: inherit;
   touch-action: pan-y;
-  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  transition: transform var(--t-fast), box-shadow var(--t-fast), border-color 0.6s ease, background-color 0.6s ease;
 }
 .card:hover {
   box-shadow: var(--shadow-raised);
 }
 .selected {
   border-color: var(--blue);
+}
+/* щойно доручене (Figma 39, 40): блакитна рамка й тло на кілька секунд, гасне плавно */
+.fresh {
+  border-color: var(--sky);
+  background: var(--sky-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
 }
 .closed .title {
   color: var(--ink-2);

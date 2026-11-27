@@ -22,6 +22,10 @@
   flex: none;
   color: #8fe3b8;
 }
+/* новина (нове завдання) — не «виконано»: колір дії, а не зелений */
+.news > svg {
+  color: #8fd6f3;
+}
 .text {
   flex: 1;
   font-size: var(--fs-small);

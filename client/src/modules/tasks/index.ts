@@ -7,3 +7,5 @@ export type { Scope } from './api/tasks.api';
 export { useReport } from './hooks/useTasks';
 export { TaskDetail } from './components/TaskDetail/TaskDetail';
 export { timeToneOf, type TaskTone } from './lib/timeTone';
+export { markFresh } from './lib/fresh';
+export { tasksApi } from './api/tasks.api';

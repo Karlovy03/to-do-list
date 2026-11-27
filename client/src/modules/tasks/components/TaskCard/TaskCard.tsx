@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { Task } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { Avatars, ControlSeal, Icon, Tag, TimeChip } from '@/shared/ui';
+import { useFresh } from '../../lib/fresh';
 import { timeChipFor } from '../../lib/timeTone';
 import { shortName } from '@/shared/lib/names';
 import { useSwipe } from './useSwipe';
@@ -23,6 +24,7 @@ export function TaskCard({ task, to, selected, compact, onSwipeDone }: Props) {
   const controller = task.control?.controller ? shortName(task.control.controller.name) : null;
   const tag = task.priority === 'URGENT' ? { tone: 'urgent' as const, text: t('tasks.priority.URGENT') } : task.overdue && !task.control ? { tone: 'late' as const, text: t('tasks.status.overdue') } : null;
   const closed = task.status === 'DONE' || task.status === 'CANCELLED';
+  const fresh = useFresh(task.id);
 
   return (
     <div className={css.slot}>
@@ -34,7 +36,7 @@ export function TaskCard({ task, to, selected, compact, onSwipeDone }: Props) {
       )}
       <Link
         to={to}
-        className={[css.card, selected && css.selected, closed && css.closed, compact && css.compact].filter(Boolean).join(' ')}
+        className={[css.card, selected && css.selected, closed && css.closed, compact && css.compact, fresh && css.fresh].filter(Boolean).join(' ')}
         style={swipe.dx ? { transform: `translateX(${swipe.dx}px)` } : undefined}
         aria-current={selected ? 'true' : undefined}
         {...swipe.handlers}

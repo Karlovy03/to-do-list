@@ -6,6 +6,7 @@ export * from './Card';
 export * from './DateTimePicker';
 export * from './Chips';
 export * from './ControlSeal';
+export * from './DraftNote';
 export * from './Field';
 export * from './GroupHeader';
 export * from './Icon';

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Icon } from '../Icon';
+import { Icon, type IconName } from '../Icon';
 import css from './Toast.module.css';
 
 interface ToastOptions {
@@ -9,6 +9,8 @@ interface ToastOptions {
   onAction?: () => void;
   /** скільки показувати, мс */
   duration?: number;
+  /** типово «галочка» — підтвердження; «дзвіник» — новина (Figma 39) */
+  icon?: IconName;
 }
 
 type Show = (message: string, options?: ToastOptions) => void;
@@ -36,8 +38,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast &&
         createPortal(
-          <div className={css.toast} role="status">
-            <Icon name="check" size={20} />
+          <div className={toast.options.icon && toast.options.icon !== 'check' ? `${css.toast} ${css.news}` : css.toast} role="status">
+            <Icon name={toast.options.icon ?? 'check'} size={20} />
             <span className={css.text}>{toast.message}</span>
             {toast.options.actionLabel && (
               <button

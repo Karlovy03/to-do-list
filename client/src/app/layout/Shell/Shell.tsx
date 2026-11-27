@@ -5,6 +5,7 @@ import { PushBanner, usePushSync, useUnread } from '@/modules/notifications';
 import { LizardCheer } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
+import { NewTaskNotice } from '../../live/NewTaskNotice';
 import { UpdateBanner } from '../../update/UpdateBanner/UpdateBanner';
 import { BottomNav } from '../BottomNav/BottomNav';
 import { CreateSheet } from '../CreateSheet/CreateSheet';
@@ -45,6 +46,7 @@ export function Shell() {
       </main>
       <UpdateBanner />
       <LizardCheer />
+      <NewTaskNotice />
       {!focused && <PushBanner />}
       {phone && !focused && <BottomNav unread={unread} onCreate={open} />}
       {creating && <CreateSheet me={me} initial={pathname.startsWith('/events') ? 'event' : 'task'} onClose={() => setCreating(false)} />}

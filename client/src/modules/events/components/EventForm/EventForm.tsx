@@ -1,12 +1,14 @@
-import { useId, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useId, useMemo, useState, type FormEvent } from 'react';
 import { useAbsenceMark } from '@/modules/absences';
 import type { AppEvent, Me } from '@/shared/api/types';
 import { useDescribePerson, usePeople } from '@/shared/api/people';
 import { useReminderSettings } from '@/shared/api/settings';
+import { useDraft } from '@/shared/hooks/useDraft';
 import { t } from '@/shared/lib/texts';
 import { fromKyiv, kyivParts } from '@/shared/lib/time';
-import { Button, DateTimePicker, Field, FieldGroup, FormError, Icon, Input, PeoplePicker, SheetFooter, TextArea } from '@/shared/ui';
+import { Button, DateTimePicker, DraftNote, Field, FieldGroup, FormError, Icon, Input, PeoplePicker, SheetFooter, TextArea } from '@/shared/ui';
 import type { EventInput } from '../../api/events.api';
+import { parseEventDraft } from '../../lib/eventDraft';
 import { DurationChips } from '../DurationChips/DurationChips';
 import css from './EventForm.module.css';
 
@@ -17,7 +19,10 @@ interface Props {
   /** у спільному аркуші «Створити» кнопку внизу показує лише видима форма */
   active?: boolean;
   busy: boolean;
-  onSubmit: (input: EventInput) => void;
+  /** проміс — щоб чернетку стерти лише після успіху */
+  onSubmit: (input: EventInput) => void | Promise<unknown>;
+  /** новий захід у «Створити»: набране зберігається як чернетка (Figma 41) */
+  draft?: boolean;
 }
 
 /** Найближча ціла година за Києвом — типовий початок нового заходу */
@@ -27,7 +32,7 @@ function nextHour(now = new Date()) {
 }
 
 /** Поля заходу (Figma 14): що, коли, орієнтовно скільки, з ким, опис. Права й надсилання — у того, хто викликає */
-export function EventForm({ me, initial, active = true, busy, onSubmit }: Props) {
+export function EventForm({ me, initial, active = true, busy, onSubmit, draft: withDraft = false }: Props) {
   const people = usePeople();
   const describe = useDescribePerson();
   const absenceMark = useAbsenceMark();
@@ -35,12 +40,29 @@ export function EventForm({ me, initial, active = true, busy, onSubmit }: Props)
   const formId = useId();
   const organizerId = initial?.organizer.id ?? me.id;
 
-  const [title, setTitle] = useState(initial?.title ?? '');
-  const [startsAt, setStartsAt] = useState<Date | null>(() => (initial ? new Date(initial.startsAt) : nextHour()));
-  const [duration, setDuration] = useState(initial?.durationMin ?? 30);
-  const [participants, setParticipants] = useState<string[]>(() => initial?.participants.map((p) => p.id) ?? []);
-  const [description, setDescription] = useState(initial?.description ?? '');
+  const draft = useDraft(me.id, 'draft_event', parseEventDraft, withDraft && !initial);
+  const d = draft.restored;
+  const [title, setTitle] = useState(initial?.title ?? d?.title ?? '');
+  const [startsAt, setStartsAt] = useState<Date | null>(() => (initial ? new Date(initial.startsAt) : d?.startsAt ? new Date(d.startsAt) : nextHour()));
+  const [duration, setDuration] = useState(initial?.durationMin ?? d?.duration ?? 30);
+  const [participants, setParticipants] = useState<string[]>(() => initial?.participants.map((p) => p.id) ?? d?.participants ?? []);
+  const [description, setDescription] = useState(initial?.description ?? d?.description ?? '');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const empty = !title.trim() && !description.trim() && participants.length === 0;
+    draft.save(empty ? null : { title, description, participants, duration, startsAt: startsAt?.toISOString() ?? null });
+  }, [title, description, participants, duration, startsAt]); // draft — новий об'єкт щорендеру, save стабільний за змістом
+
+  const clearDraft = () => {
+    draft.clear();
+    setTitle('');
+    setStartsAt(nextHour());
+    setDuration(30);
+    setParticipants([]);
+    setDescription('');
+    setError(null);
+  };
 
   // організатор у заході завжди — його немає серед кого запрошувати; вимкнених — лише тих, хто вже є
   const choices = useMemo(() => {
@@ -55,7 +77,9 @@ export function EventForm({ me, initial, active = true, busy, onSubmit }: Props)
     const moved = !initial || startsAt?.getTime() !== Date.parse(initial.startsAt);
     if (!startsAt || (moved && startsAt.getTime() <= Date.now())) return setError(t('events.form.need_start'));
     setError(null);
-    onSubmit({ title: title.trim(), description: description.trim(), startsAt: startsAt.toISOString(), durationMin: duration, participantIds: participants });
+    const sent = onSubmit({ title: title.trim(), description: description.trim(), startsAt: startsAt.toISOString(), durationMin: duration, participantIds: participants });
+    // помилку показує той, хто надсилає; чернетка лишається
+    void Promise.resolve(sent).then(() => draft.finish(), () => undefined);
   };
 
   const reminder = settings.data?.eventReminderMin;
@@ -67,6 +91,7 @@ export function EventForm({ me, initial, active = true, busy, onSubmit }: Props)
 
   return (
     <form id={formId} className={css.form} onSubmit={submit} noValidate>
+      {draft.noteAt && <DraftNote savedAt={draft.noteAt} onClear={clearDraft} />}
       <Field label={t('events.form.what')}>
         <Input value={title} maxLength={300} placeholder={t('events.form.what_placeholder')} onChange={(e) => setTitle(e.target.value)} />
       </Field>

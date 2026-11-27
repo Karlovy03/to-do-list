@@ -1,12 +1,14 @@
-import { useId, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useId, useMemo, useState, type FormEvent } from 'react';
 import type { ControlInput, Me, Priority, Task } from '@/shared/api/types';
 import { useDescribePerson, usePeople } from '@/shared/api/people';
 import { AbsenceWarning, useAbsenceMark } from '@/modules/absences';
 import { ControlFields, isComplete, normalize } from '@/modules/control';
+import { useDraft } from '@/shared/hooks/useDraft';
 import { t } from '@/shared/lib/texts';
-import { Button, Chip, Chips, DateTimePicker, Field, FieldGroup, FormError, PeoplePicker, SheetFooter, Switch, TextArea } from '@/shared/ui';
+import { Button, Chip, Chips, DateTimePicker, DraftNote, Field, FieldGroup, FormError, PeoplePicker, SheetFooter, Switch, TextArea } from '@/shared/ui';
 import { useCreateTask } from '../../hooks/useTaskActions';
 import { quickDeadlines } from '../../lib/deadlines';
+import { parseTaskDraft } from '../../lib/taskDraft';
 import css from './NewTaskForm.module.css';
 
 interface Props {
@@ -26,14 +28,34 @@ export function NewTaskForm({ me, active = true, onCreated }: Props) {
   const quick = useMemo(() => quickDeadlines(), []);
   const formId = useId();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState<string | null>(null);
-  const [assignees, setAssignees] = useState<string[]>(lead ? [] : [me.id]);
-  const [deadline, setDeadline] = useState<Date | null>(quick[0]?.at ?? null);
-  const [custom, setCustom] = useState(false);
-  const [priority, setPriority] = useState<Priority>('NORMAL');
-  const [control, setControl] = useState<ControlInput | null>(null);
+  // чернетка (Figma 41): аркуш закрили випадково — набране повертається з поміткою «Відновлено чернетку»
+  const draft = useDraft(me.id, 'draft_task', parseTaskDraft);
+  const d = draft.restored;
+  const [title, setTitle] = useState(d?.title ?? '');
+  const [description, setDescription] = useState<string | null>(d?.description ?? null);
+  const [assignees, setAssignees] = useState<string[]>(d?.assignees.length ? d.assignees : lead ? [] : [me.id]);
+  const [deadline, setDeadline] = useState<Date | null>(d?.deadline ? new Date(d.deadline) : (quick[0]?.at ?? null));
+  const [custom, setCustom] = useState(!!d?.deadline);
+  const [priority, setPriority] = useState<Priority>(d?.priority ?? 'NORMAL');
+  const [control, setControl] = useState<ControlInput | null>(lead ? (d?.control ?? null) : null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const empty = !title.trim() && !(description ?? '').trim() && (!lead || assignees.length === 0);
+    draft.save(empty ? null : { title, description, assignees, priority, control, deadline: custom && deadline ? deadline.toISOString() : null });
+  }, [title, description, assignees, priority, control, custom, deadline]); // draft — новий об'єкт щорендеру, але save стабільний за змістом
+
+  const clearDraft = () => {
+    draft.clear();
+    setTitle('');
+    setDescription(null);
+    setAssignees(lead ? [] : [me.id]);
+    setDeadline(quick[0]?.at ?? null);
+    setCustom(false);
+    setPriority('NORMAL');
+    setControl(null);
+    setError(null);
+  };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -44,12 +66,18 @@ export function NewTaskForm({ me, active = true, onCreated }: Props) {
     if (control && !isComplete(control)) return setError(t('control.control.need_who'));
     create.mutate(
       { title: title.trim(), description: description?.trim() || undefined, priority, deadline: deadline.toISOString(), assigneeIds: assignees, control: control && normalize(control) },
-      { onSuccess: onCreated },
+      {
+        onSuccess: (task) => {
+          draft.finish();
+          onCreated(task);
+        },
+      },
     );
   };
 
   return (
     <form id={formId} className={css.form} onSubmit={submit} noValidate>
+      {draft.noteAt && <DraftNote savedAt={draft.noteAt} onClear={clearDraft} />}
       <Field label={t('tasks.form.what')}>
         <TextArea autoFocus rows={2} value={title} placeholder={t('tasks.form.what_placeholder')} onChange={(e) => setTitle(e.target.value)} />
       </Field>

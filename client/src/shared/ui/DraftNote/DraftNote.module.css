@@ -1,0 +1,25 @@
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--sky-soft);
+}
+.text {
+  min-width: 0;
+  color: var(--sky-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.clear {
+  flex: none;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--navy-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
