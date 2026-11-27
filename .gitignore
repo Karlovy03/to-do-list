@@ -8,3 +8,4 @@ client/android/.gradle/
 client/ios/App/Pods/
 client/ios/App/build/
 backups/
+server/storage/

@@ -36,6 +36,10 @@ services:
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      FILES_MAX_TOTAL_MB: ${FILES_MAX_TOTAL_MB:-5000}
+    # files of «Шаблони» (ADR-0023): on disk, outside the database; scripts/backup.sh copies them too
+    volumes:
+      - files_data:/app/files
 
   caddy:
     image: caddy:2
@@ -54,5 +58,6 @@ services:
 
 volumes:
   db_data:
+  files_data:
   caddy_data:
   caddy_config:

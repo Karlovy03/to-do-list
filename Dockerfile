@@ -17,7 +17,7 @@ RUN npx prisma generate && npm run build && npm prune --omit=dev
 
 FROM node:22-bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends openssl tzdata && rm -rf /var/lib/apt/lists/*
-ENV NODE_ENV=production TZ=Europe/Kyiv PORT=3101 CLIENT_DIST=/app/client
+ENV NODE_ENV=production TZ=Europe/Kyiv PORT=3101 CLIENT_DIST=/app/client FILES_DIR=/app/files
 WORKDIR /app/server
 COPY --from=server --chown=node:node /src/server/package.json ./
 COPY --from=server --chown=node:node /src/server/node_modules ./node_modules
@@ -25,6 +25,8 @@ COPY --from=server --chown=node:node /src/server/dist ./dist
 COPY --from=server --chown=node:node /src/server/prisma ./prisma
 COPY --from=server --chown=node:node /src/server/scripts ./scripts
 COPY --from=client --chown=node:node /src/client/dist /app/client
+# files of «Шаблони» live in the files_data volume (ADR-0023); a new volume takes this owner from the image
+RUN mkdir -p /app/files && chown node:node /app/files
 USER node
 EXPOSE 3101
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD node -e "fetch('http://localhost:3101/api/auth/me').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
