@@ -49,6 +49,8 @@ export interface PlanInput {
   logs: Map<string, Date>;
   /** `${taskId}:${userId}` → до коли відкладено */
   snoozes: Map<string, Date>;
+  /** хто сьогодні відсутній (ADR-0019): нагадувань не отримує, журнал не пишеться — після повернення нагадає раз */
+  absent: ReadonlySet<string>;
 }
 
 const OPEN: TaskStatus[] = ['NEW', 'IN_PROGRESS'];
@@ -66,7 +68,7 @@ const latest = (...dates: (Date | null | undefined)[]) =>
  * Нагадування в «тихі години» не губиться: умова лишається істинною і спрацює,
  * щойно людину знову можна турбувати.
  */
-export function planReminders({ now, settings, tasks, users, logs, snoozes }: PlanInput): Reminder[] {
+export function planReminders({ now, settings, tasks, users, logs, snoozes, absent }: PlanInput): Reminder[] {
   const out: Reminder[] = [];
   const t = now.getTime();
 
@@ -82,7 +84,7 @@ export function planReminders({ now, settings, tasks, users, logs, snoozes }: Pl
 
     for (const userId of recipients) {
       const user = users.get(userId);
-      if (!user) continue;
+      if (!user || absent.has(userId)) continue;
       const snoozedUntil = snoozes.get(`${task.id}:${userId}`);
       if (snoozedUntil && snoozedUntil.getTime() > t) continue;
       if (!canDisturb(user, now, task.priority, settings.urgentBypassQuiet)) continue;

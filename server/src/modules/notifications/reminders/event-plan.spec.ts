@@ -32,4 +32,7 @@ describe('нагадування про захід', () => {
     const e = event({ startsAt: new Date('2026-11-26T20:00:00Z'), participants: [{ userId: 'a', remindedAt: null, user: user('a') }, { userId: 'b', remindedAt: null, user: user('b', { notifyEvents: false }) }] });
     expect(planEventReminders(night, S, [e])[0].userIds).toEqual(['a']);
   });
+  it('відсутньому учаснику (ADR-0019) не нагадує', () => {
+    expect(planEventReminders(NOW, S, [event()], new Set(['a']))[0].userIds).toEqual(['b']);
+  });
 });

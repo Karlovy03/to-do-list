@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { humanDuration, inQuietHours, kyivParts, pluralForm } from './time';
+import { addDays, daysBetween, humanDuration, inQuietHours, kyivDay, kyivParts, pluralForm } from './time';
 
 const H = 3600_000;
 
@@ -33,5 +33,16 @@ describe('київський час', () => {
     expect(inQuietHours(8, 20, 8)).toBe(false);
     expect(inQuietHours(12, 13, 14)).toBe(false);
     expect(inQuietHours(10, 10, 10)).toBe(false);
+  });
+});
+
+describe('київський день (відсутності)', () => {
+  it('день — за Києвом: 23:30 UTC 26-го — це вже 27-ме', () => {
+    expect(kyivDay(new Date('2026-11-26T21:59:00Z'))).toBe('2026-11-26');
+    expect(kyivDay(new Date('2026-11-26T22:30:00Z'))).toBe('2026-11-27');
+  });
+  it('арифметика днів через межу місяця і перехід на літній час', () => {
+    expect(addDays('2026-11-30', 1)).toBe('2026-12-01');
+    expect(daysBetween('2027-03-27', '2027-03-30')).toBe(3);
   });
 });

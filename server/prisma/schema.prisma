@@ -63,6 +63,13 @@ enum NotificationKind {
   EVENT_SOON
 }
 
+// Вид відсутності (ADR-0019): лише три — відрядження й навчання свідомо не заводимо
+enum AbsenceKind {
+  VACATION
+  SICK_LEAVE
+  FAMILY
+}
+
 // Стан заходу зберігається лише такий; «триває» і «минув» рахуються з часу (ADR-0016)
 enum EventStatus {
   PLANNED
@@ -114,6 +121,8 @@ model User {
   snoozes             Snooze[]
   organizedEvents     Event[]            @relation("EventOrganizer")
   eventParticipations EventParticipant[]
+  absences            Absence[]          @relation("AbsenceUser")
+  absencesCreated     Absence[]          @relation("AbsenceAuthor")
 
   @@index([unitId])
 }
@@ -331,4 +340,23 @@ model Snooze {
 model Setting {
   key   String @id
   value Json
+}
+
+// Відсутність людини (ADR-0019): цілі дні за Києвом, кінець включно («1–9» → 10-го на службі).
+// «Відсутній зараз» не зберігається — виводиться з дат; погодження немає, ставити завдання не заборонено
+model Absence {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation("AbsenceUser", fields: [userId], references: [id], onDelete: Cascade)
+  kind        AbsenceKind
+  startDay    DateTime    @db.Date
+  endDay      DateTime    @db.Date
+  // хто завів: сама людина або її керівник; людина не знімає заведене керівником
+  createdById String?
+  createdBy   User?       @relation("AbsenceAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, startDay])
+  @@index([startDay, endDay])
 }

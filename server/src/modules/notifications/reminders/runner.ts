@@ -1,5 +1,6 @@
 import { LOCKS, withAdvisoryLock } from '../../../core/lock';
-import { humanDuration } from '../../../core/time';
+import { humanDuration, kyivDay } from '../../../core/time';
+import { absencesRepository } from '../../absences';
 import { getSettings } from '../../settings';
 import { deferredPushRepository } from '../feed.repository';
 import { eventSubject, notify, pushPayload, taskSubject } from '../notify.service';
@@ -19,12 +20,19 @@ async function decide(now: Date) {
   return withAdvisoryLock(LOCKS.reminders, async () => {
     const settings = await getSettings();
     const [tasks, deferredRows, upcoming] = await Promise.all([repo.openTasks(), deferredPushRepository.pending(), repo.upcomingEvents(now, settings.eventReminderMin)]);
+    // хто сьогодні відсутній (ADR-0019) — один запит на всіх, кого стосується прохід
+    const involved = [
+      ...tasks.flatMap((t) => [t.authorId, t.controllerUserId, t.controlSetById, ...t.assignees.map((a) => a.userId)]),
+      ...deferredRows.map((r) => r.userId),
+      ...upcoming.flatMap((e) => e.participants.map((p) => p.userId)),
+    ].filter((id): id is string => !!id);
+    const absent = await absencesRepository.absentOn([...new Set(involved)], kyivDay(now));
 
-    const deferred = planDeferred(deferredRows, now, settings);
+    const deferred = planDeferred(deferredRows, now, settings, absent);
     const released = [...deferred.send, ...deferred.drop];
     if (released.length) await deferredPushRepository.release(released.map((r) => r.id));
 
-    const eventPlan = planEventReminders(now, settings, upcoming as PlanEvent[]);
+    const eventPlan = planEventReminders(now, settings, upcoming as PlanEvent[], absent);
     if (eventPlan.length) await repo.markEventReminded(eventPlan.flatMap((r) => r.userIds.map((userId) => ({ eventId: r.event.id, userId }))), now);
     if (!tasks.length) return { plan: [] as Reminder[], tasks, deferred: deferred.send, eventPlan };
 
@@ -40,6 +48,7 @@ async function decide(now: Date) {
       users: new Map(users.map((u) => [u.id, u as PlanUser])),
       logs: new Map(logs.map((l) => [`${l.taskId}:${l.userId}:${l.key}`, l.sentAt])),
       snoozes: new Map(snoozes.map((s) => [`${s.taskId}:${s.userId}`, s.until])),
+      absent,
     });
     // спершу журнал — збій push не повинен давати повторів щохвилини
     if (plan.length) await repo.markSent(plan.flatMap((r) => r.logKeys.map((key) => ({ taskId: r.taskId, userId: r.userId, key }))), now);

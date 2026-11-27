@@ -1,6 +1,7 @@
 import type { NotificationKind, Priority } from '@prisma/client';
 import { tx } from '../../core/texts';
-import { kyivParts, inQuietHours, formatKyiv, formatKyivRange } from '../../core/time';
+import { kyivDay, kyivParts, inQuietHours, formatKyiv, formatKyivRange } from '../../core/time';
+import { absencesRepository } from '../absences';
 import { getSettings } from '../settings';
 import { usersRepository } from '../users';
 import { EVENTS, type PrefKey } from './events';
@@ -114,7 +115,9 @@ export async function notify(input: NotifyInput, now = new Date()) {
   if (input.comment) feedLines.push(tx('notifications.common.comment_line', input.comment));
   const feedBody = feedLines.join('\n');
 
-  const wanted = users.filter((u) => prefAllows(input.event, u));
+  // відсутнім (ADR-0019) — лише стрічка: ні push, ні відкладення до кінця тихих годин
+  const absent = await absencesRepository.absentOn(users.map((u) => u.id), kyivDay(now));
+  const wanted = users.filter((u) => prefAllows(input.event, u) && !absent.has(u.id));
   // нагадування про захід ігнорує тихі години: людина однаково йде на нараду
   const free = (u: QuietUser) => !!meta.ignoresQuiet || canDisturb(u, now, subject.priority, settings.urgentBypassQuiet);
   const deferred = new Set(DEFER_IN_QUIET.has(input.event) ? wanted.filter((u) => !free(u)).map((u) => u.id) : []);

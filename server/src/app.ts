@@ -15,6 +15,7 @@ import { settingsRouter } from './modules/settings';
 import { tasksRouter } from './modules/tasks';
 import { eventsRouter } from './modules/events';
 import { calendarRouter } from './modules/calendar';
+import { absencesRouter } from './modules/absences';
 import { notificationsRouter, pushRouter } from './modules/notifications';
 
 export function createApp() {
@@ -59,6 +60,7 @@ export function createApp() {
   api.use('/tasks', tasksRouter);
   api.use('/events', eventsRouter);
   api.use('/calendar', calendarRouter);
+  api.use('/absences', absencesRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
   api.use((_req, _res, next) => next(notFound()));

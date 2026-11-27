@@ -1,4 +1,6 @@
+import type { AbsenceFull } from '../absences';
 import type { EventFull } from '../events';
+import { dayKey } from '../../core/time';
 import type { TaskFull } from '../tasks';
 
 /** Смуга завдання: межі й стан, а тон рахує клієнт тією ж функцією, що й часовий чип картки */
@@ -27,5 +29,17 @@ export function eventBlock(e: EventFull, people: Set<string> | null) {
     startsAt: e.startsAt,
     endsAt: e.endsAt,
     personIds: e.participants.map((p) => p.userId).filter((id) => !people || people.has(id)),
+  };
+}
+
+/** Відсутність (ADR-0019): цілі дні за Києвом, кінець включно — клієнт малює смугу на весь день */
+export function absenceBand(a: AbsenceFull) {
+  return {
+    kind: 'absence' as const,
+    id: a.id,
+    absenceKind: a.kind,
+    startDay: dayKey(a.startDay),
+    endDay: dayKey(a.endDay),
+    personIds: [a.userId],
   };
 }

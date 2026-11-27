@@ -26,7 +26,7 @@ const task = (over: Partial<PlanTask> = {}): PlanTask => ({
 
 const everyone = [user(), user({ id: 'u2' }), user({ id: 'boss' }), user({ id: 'ctrl' }), user({ id: 'reg' })];
 
-const run = (o: { now?: Date; tasks?: PlanTask[]; users?: PlanUser[]; logs?: [string, Date][]; snoozes?: [string, Date][] } = {}) =>
+const run = (o: { now?: Date; tasks?: PlanTask[]; users?: PlanUser[]; logs?: [string, Date][]; snoozes?: [string, Date][]; absent?: string[] } = {}) =>
   planReminders({
     now: o.now ?? WED_10,
     settings: DEFAULT_SETTINGS,
@@ -34,6 +34,7 @@ const run = (o: { now?: Date; tasks?: PlanTask[]; users?: PlanUser[]; logs?: [st
     users: new Map((o.users ?? everyone).map((u) => [u.id, u])),
     logs: new Map(o.logs ?? []),
     snoozes: new Map(o.snoozes ?? []),
+    absent: new Set(o.absent ?? []),
   });
 
 describe('нагадування по контрольних завданнях', () => {
@@ -120,7 +121,7 @@ describe('прострочення', () => {
   it('не нагадує автору, якщо це вимкнено в загальних налаштуваннях', () => {
     const r = planReminders({
       now: WED_10, settings: { ...DEFAULT_SETTINGS, overdueNotifyLeads: false }, tasks: [late()],
-      users: new Map(everyone.map((u) => [u.id, u])), logs: new Map(), snoozes: new Map(),
+      users: new Map(everyone.map((u) => [u.id, u])), logs: new Map(), snoozes: new Map(), absent: new Set(),
     });
     expect(r.map((x) => x.userId)).toEqual(['u1']);
   });
@@ -134,5 +135,16 @@ describe('прострочення', () => {
     const t = task({ deadline: ago(5 * H) });
     const logs: [string, Date][] = [['t1:u1:overdue', ago(3 * H)], ['t1:u1:control', ago(3 * H)], ['t1:boss:overdue', ago(3 * H)]];
     expect(run({ tasks: [t], logs })).toEqual([{ taskId: 't1', userId: 'u1', kind: 'CONTROL_REMINDER', logKeys: ['control'] }]);
+  });
+});
+
+describe('відсутні (ADR-0019)', () => {
+  it('відсутньому нагадування не йдуть, а керівнику про прострочення — як завжди', () => {
+    const late = task({ deadline: ago(3 * H) });
+    const out = run({ tasks: [late], absent: ['u1'] });
+    expect(out.map((r) => r.userId)).toEqual(['boss']);
+  });
+  it('без відсутності — нагадує і виконавцю', () => {
+    expect(run({ tasks: [task({ deadline: ago(3 * H) })] }).map((r) => r.userId).sort()).toEqual(['boss', 'u1']);
   });
 });

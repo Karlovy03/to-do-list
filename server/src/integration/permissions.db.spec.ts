@@ -128,4 +128,19 @@ describe.skipIf(!run)('права на реальній базі (ADR-0012)', ()
     expect(await call('director', 'PATCH', `/users/${ids.execA}`, { role: 'ADMIN' })).toBe(403);
     expect(await call('headA', 'PUT', '/settings', {})).toBe(403);
   });
+
+  it('відсутність (ADR-0019): сусідній керівник не заводить чужому; свій — заводить; виконавець не знімає заведене керівником; бачать усі', async () => {
+    const day = new Date(Date.now() + 10 * 864e5).toISOString().slice(0, 10);
+    const body = { userId: ids.execA, kind: 'VACATION', startDay: day, endDay: day };
+    expect(await call('headB', 'POST', '/absences', body)).toBe(403);
+    expect(await call('execB', 'POST', '/absences', body)).toBe(403);
+    const res = await fetch(`${base}/api/absences`, { method: 'POST', headers: as('headA'), body: JSON.stringify(body) });
+    expect(res.status).toBe(201);
+    const { id } = (await res.json()) as { id: string };
+    expect(await call('headA', 'POST', '/absences', body)).toBe(409);
+    expect(await call('execA', 'DELETE', `/absences/${id}`)).toBe(403);
+    expect(await call('headB', 'DELETE', `/absences/${id}`)).toBe(403);
+    expect(await call('execB', 'GET', `/absences?from=${day}&to=${day}`)).toBe(200);
+    expect(await call('headA', 'DELETE', `/absences/${id}`)).toBe(204);
+  });
 });

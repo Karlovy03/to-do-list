@@ -1,10 +1,12 @@
 import type { User } from '@prisma/client';
+import { kyivDay } from '../../core/time';
+import { absencesRepository } from '../absences';
 import type { Viewer } from '../access';
 import { eventsQueryService } from '../events';
 import { taskQueryService } from '../tasks';
 import { subtreeIds, unitTree } from '../units';
 import { publicUser, usersRepository } from '../users';
-import { eventBlock, taskBar } from './calendar.serializer';
+import { absenceBand, eventBlock, taskBar } from './calendar.serializer';
 import type { CalendarQuery } from './calendar.schemas';
 
 /** Чиї рядки показати: людину, підрозділ (за потреби з підпорядкованими) або себе */
@@ -26,15 +28,17 @@ export const calendarService = {
     const people = await whom(viewer, q);
     const ids = people.map((p) => p.id);
     const set = new Set(ids);
-    const [tasks, events] = await Promise.all([
+    // відсутності бачать усі (ADR-0019) — лише людей у рядках; межі періоду — київські дні
+    const [tasks, events, absences] = await Promise.all([
       taskQueryService.inRange(viewer, q.from, q.to, ids, now),
       eventsQueryService.inRange(viewer, q.from, q.to, ids),
+      absencesRepository.inRange(kyivDay(q.from), kyivDay(new Date(q.to.getTime() - 1)), ids),
     ]);
     return {
       from: q.from,
       to: q.to,
       people: people.map(publicUser),
-      items: [...tasks.map((t) => taskBar(t, set)), ...events.map((e) => eventBlock(e, set))].filter((i) => i.personIds.length > 0),
+      items: [...tasks.map((t) => taskBar(t, set)), ...events.map((e) => eventBlock(e, set)), ...absences.map(absenceBand)].filter((i) => i.personIds.length > 0),
     };
   },
 };

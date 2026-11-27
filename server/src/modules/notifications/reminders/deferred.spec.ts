@@ -44,4 +44,8 @@ describe('відкладені push', () => {
     expect(deferredBody(r)).not.toContain('таємна причина');
     expect(deferredBody(row())).toBe('№1 · Звіт');
   });
+
+  it('відсутньому (ADR-0019) відкладене знімається без push — після відпустки не прилітає лавина', () => {
+    expect(planDeferred([row()], MORNING, DEFAULT_SETTINGS, new Set(['u1']))).toEqual({ send: [], drop: [row()] });
+  });
 });

@@ -21,12 +21,12 @@ export interface EventReminder {
  * Кому нагадати про захід зараз. Чиста функція (ADR-0004). Раз на учасника; тихі години не діють —
  * людина однаково йде на нараду; той, хто вимкнув сповіщення про заходи, нагадування не отримує.
  */
-export function planEventReminders(now: Date, settings: Pick<ReminderSettings, 'eventReminderMin'>, events: PlanEvent[]): EventReminder[] {
+export function planEventReminders(now: Date, settings: Pick<ReminderSettings, 'eventReminderMin'>, events: PlanEvent[], absent: ReadonlySet<string> = new Set()): EventReminder[] {
   const out: EventReminder[] = [];
   for (const e of events) {
     const leftMs = e.startsAt.getTime() - now.getTime();
     if (leftMs <= 0 || leftMs > settings.eventReminderMin * 60_000) continue;
-    const userIds = e.participants.filter((p) => !p.remindedAt && p.user.isActive && prefAllows('EVENT_SOON', p.user)).map((p) => p.userId);
+    const userIds = e.participants.filter((p) => !p.remindedAt && p.user.isActive && !absent.has(p.userId) && prefAllows('EVENT_SOON', p.user)).map((p) => p.userId);
     if (userIds.length) out.push({ event: e, userIds, leftMs });
   }
   return out;

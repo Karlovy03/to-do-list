@@ -14,6 +14,19 @@ export function kyivParts(d: Date): { hour: number; weekend: boolean } {
   return { hour, weekend: weekday === 'Sat' || weekday === 'Sun' };
 }
 
+const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+
+/**
+ * Календарний день за Києвом, «РРРР-ММ-ДД». Відсутності зберігаються саме днями (@db.Date):
+ * у базі такий день — це опівніч UTC тієї дати, тож арифметика днів не залежить від переходу на літній час.
+ */
+export const kyivDay = (d: Date): string => dayFmt.format(d);
+export const dayDate = (key: string): Date => new Date(`${key}T00:00:00.000Z`);
+export const dayKey = (d: Date): string => d.toISOString().slice(0, 10);
+export const addDays = (key: string, n: number): string => dayKey(new Date(dayDate(key).getTime() + n * 864e5));
+/** Скільки днів від a до b (b − a) */
+export const daysBetween = (a: string, b: string): number => Math.round((dayDate(b).getTime() - dayDate(a).getTime()) / 864e5);
+
 /** true, якщо година потрапляє в «тихий» проміжок [from, to) з переходом через північ */
 export function inQuietHours(hour: number, from: number, to: number): boolean {
   if (from === to) return false;
