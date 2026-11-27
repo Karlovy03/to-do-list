@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -33,6 +34,9 @@ const schema = z.object({
   APNS_KEY_ID: z.string().optional(),
   APNS_TEAM_ID: z.string().optional(),
   APNS_BUNDLE_ID: z.string().optional(),
+  // файли шаблонів (ADR-0023): у контейнері — том /app/files
+  FILES_DIR: z.string().optional(),
+  FILES_MAX_TOTAL_MB: z.coerce.number().int().min(1).default(5000),
 });
 
 const parsed = schema.safeParse({ ...process.env, DATABASE_URL: process.env.DATABASE_URL ?? (isTest ? 'postgresql://test' : undefined) });
@@ -46,4 +50,5 @@ export const config = {
   ...env,
   isProd: env.NODE_ENV === 'production',
   clientDist: env.CLIENT_DIST ?? path.resolve(__dirname, '../../../client/dist'),
+  filesDir: env.FILES_DIR ?? (isTest ? path.join(os.tmpdir(), 'kontrol-files-test') : path.resolve(__dirname, '../../storage')),
 };

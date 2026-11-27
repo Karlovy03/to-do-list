@@ -2,7 +2,7 @@ import type { User } from '@prisma/client';
 import { toViewer, type Viewer } from '../access';
 
 /** Що змінилось (ADR-0021): лише вид і id, без змісту — дані клієнт перепитує звичайним запитом із перевіркою прав */
-export type LiveTopic = 'task' | 'event' | 'absence' | 'feed';
+export type LiveTopic = 'task' | 'event' | 'absence' | 'template' | 'feed';
 export interface LiveSignal {
   t: LiveTopic;
   id?: string;

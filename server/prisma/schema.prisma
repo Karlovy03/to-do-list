@@ -123,19 +123,21 @@ model User {
   eventParticipations EventParticipant[]
   absences            Absence[]          @relation("AbsenceUser")
   absencesCreated     Absence[]          @relation("AbsenceAuthor")
+  templatesUploaded   Template[]         @relation("TemplateUploader")
 
   @@index([unitId])
 }
 
 // Структура: підрозділ і підрозділи, що входять у нього (будь-яка глибина)
 model Unit {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
   parentId  String?
-  parent    Unit?    @relation("UnitTree", fields: [parentId], references: [id], onDelete: Restrict)
-  children  Unit[]   @relation("UnitTree")
+  parent    Unit?      @relation("UnitTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  Unit[]     @relation("UnitTree")
   users     User[]
-  createdAt DateTime @default(now())
+  templates Template[]
+  createdAt DateTime   @default(now())
 
   @@index([parentId])
 }
@@ -359,4 +361,36 @@ model Absence {
 
   @@index([userId, startDay])
   @@index([startDay, endDay])
+}
+
+enum TemplateTextStatus {
+  OK
+  EMPTY
+  FAILED
+}
+
+/// Шаблон документа (ADR-0023): сам файл — на диску під випадковим storageKey, тут — опис і текст для пошуку
+model Template {
+  id           String             @id @default(cuid())
+  name         String             @db.VarChar(200)
+  description  String?            @db.VarChar(500)
+  ext          String             @db.VarChar(8)
+  size         Int
+  sha256       String             @unique @db.Char(64)
+  storageKey   String             @unique
+  // текст документа як є — для уривків у результатах пошуку
+  content      String?
+  // назва, опис і текст у нижньому регістрі, посимвольно (позиції збігаються з content) — пошук не залежить від локалі БД
+  searchText   String
+  textStatus   TemplateTextStatus
+  // підрозділ того, хто додав, — лише позначка «чий»; бачать усі
+  unitId       String?
+  unit         Unit?              @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  uploadedById String?
+  uploadedBy   User?              @relation("TemplateUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([createdAt])
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin)
 }

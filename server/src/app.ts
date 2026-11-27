@@ -18,6 +18,7 @@ import { calendarRouter } from './modules/calendar';
 import { absencesRouter } from './modules/absences';
 import { notificationsRouter, pushRouter } from './modules/notifications';
 import { liveRouter } from './modules/live';
+import { templatesRouter } from './modules/templates';
 
 export function createApp() {
   const app = express();
@@ -62,6 +63,7 @@ export function createApp() {
   api.use('/events', eventsRouter);
   api.use('/calendar', calendarRouter);
   api.use('/absences', absencesRouter);
+  api.use('/templates', templatesRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
   api.use('/live', liveRouter);

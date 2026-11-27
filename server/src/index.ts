@@ -4,12 +4,14 @@ import { createApp } from './app';
 import { usersService } from './modules/users';
 import { initWebPush, startReminderLoop, stopReminderLoop } from './modules/notifications';
 import { liveHub } from './modules/live';
+import { startTemplateSweep } from './modules/templates';
 
 async function main() {
   await usersService.ensureAdmin();
   await initWebPush();
   const server = createApp().listen(config.PORT, () => console.log(`[server] http://localhost:${config.PORT}`));
   startReminderLoop(config.REMINDER_TICK_MS);
+  startTemplateSweep();
   const shutdown = () => {
     stopReminderLoop();
     // відкриті потоки живих оновлень тримали б server.close(); клієнти перепідключаться до нової версії

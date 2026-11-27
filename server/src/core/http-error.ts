@@ -1,9 +1,13 @@
 import type { ErrorRequestHandler, Request } from 'express';
 import { ZodError } from 'zod';
 
-/** Помилка з машинним кодом; людський текст до коду — у YAML клієнта */
+/** Помилка з машинним кодом; людський текст до коду — у YAML клієнта. details — що підставити в текст (напр. назва дубліката) */
 export class HttpError extends Error {
-  constructor(public status: number, public code: string) {
+  constructor(
+    public status: number,
+    public code: string,
+    public details?: Record<string, string>,
+  ) {
     super(code);
   }
 }
@@ -19,7 +23,7 @@ export const param = (req: Request, name: string) => String(req.params[name]);
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof HttpError) {
-    res.status(err.status).json({ error: err.code });
+    res.status(err.status).json({ ...err.details, error: err.code });
     return;
   }
   if (err instanceof ZodError) {
