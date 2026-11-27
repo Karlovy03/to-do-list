@@ -16,4 +16,4 @@ export async function withAdvisoryLock<T>(key: number, fn: () => Promise<T>): Pr
   );
 }
 
-export const LOCKS = { reminders: 7001, cleanup: 7002, unitTree: 7003 } as const;
+export const LOCKS = { reminders: 7001, cleanup: 7002, unitTree: 7003, monitoring: 7004 } as const;

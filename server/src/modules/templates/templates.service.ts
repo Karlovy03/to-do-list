@@ -53,6 +53,12 @@ export const nameFromFile = (fileName: string) => fileName.replace(/\.[^.]*$/, '
 /** Ім'я для скачування: назва шаблону + розширення, без символів, які забороняють файлові системи */
 export const downloadName = (t: { name: string; ext: string }) => `${t.name.replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_')}.${t.ext}`;
 
+/** Скільки місця займають файли шаблонів — для моніторингу (ADR-0024) */
+export const filesUsage = async () => {
+  const [usedB, count] = await Promise.all([repo.totalSize(), repo.count()]);
+  return { usedB, count };
+};
+
 export const templatesService = {
   async list(q: ListTemplatesQuery) {
     const total = await repo.count();

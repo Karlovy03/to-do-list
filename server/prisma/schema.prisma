@@ -124,6 +124,7 @@ model User {
   absences            Absence[]          @relation("AbsenceUser")
   absencesCreated     Absence[]          @relation("AbsenceAuthor")
   templatesUploaded   Template[]         @relation("TemplateUploader")
+  visits              Visit[]
 
   @@index([unitId])
 }
@@ -393,4 +394,30 @@ model Template {
 
   @@index([createdAt])
   @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+/// Візит (ADR-0024): неперервна активність людини, без перерв довших за 30 хв. Лише час — без пристрою й IP (рішення власника)
+model Visit {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt DateTime
+  lastAt    DateTime
+
+  @@index([userId, startedAt])
+  @@index([startedAt])
+  @@index([lastAt])
+}
+
+/// Знімок стану сервера раз на 5 хв (ADR-0024): історія переживає перезапуск, зберігається 7 днів
+model ServerSample {
+  at          DateTime @id
+  memUsedPct  Float
+  swapUsedPct Float
+  cpuPct      Float?
+  load1       Float
+  diskUsedPct Float
+  appRssMb    Int
+  // лічильник «процес вбито через нестачу пам'яті» з /proc/vmstat — накопичувальний від завантаження VPS
+  oomKills    Int?
 }

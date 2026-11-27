@@ -19,6 +19,7 @@ import { absencesRouter } from './modules/absences';
 import { notificationsRouter, pushRouter } from './modules/notifications';
 import { liveRouter } from './modules/live';
 import { templatesRouter } from './modules/templates';
+import { monitoringRouter, trackActivity } from './modules/monitoring';
 
 export function createApp() {
   const app = express();
@@ -54,6 +55,8 @@ export function createApp() {
   });
   api.use('/auth', authRouter);
   api.use(requireAuth);
+  // кожен запит людини — її активність (візити, ADR-0024); пише у фоні
+  api.use(trackActivity);
   api.use('/profile', profileRouter);
   api.use('/users', usersRouter);
   api.use('/directory', directoryRouter);
@@ -64,6 +67,7 @@ export function createApp() {
   api.use('/calendar', calendarRouter);
   api.use('/absences', absencesRouter);
   api.use('/templates', templatesRouter);
+  api.use('/monitoring', monitoringRouter);
   api.use('/notifications', notificationsRouter);
   api.use('/push', pushRouter);
   api.use('/live', liveRouter);
