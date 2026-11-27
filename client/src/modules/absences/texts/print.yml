@@ -1,0 +1,13 @@
+# Папір «Особовий склад» з «В строю» (Figma 36). {date} — дата, {unit} — підрозділ, {n}, {total}, {present}, {absent} — числа
+print: "Друк або PDF"
+title: "Особовий склад на {date}"
+unit_sub: "{unit}, разом із підпорядкованими"
+formed: "сформовано {date}"
+summary: "За списком {total} · в строю {present} · відсутні {absent}"
+col_unit: "Підрозділ"
+col_name: "Прізвище, ім’я"
+col_position: "Посада"
+col_back: "На службі з"
+none_absent: "Відсутніх немає."
+present_title: "В строю — {n}"
+footer: "Сформовано в «Контролі»"

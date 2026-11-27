@@ -23,3 +23,7 @@
     padding: 0;
   }
 }
+.foot {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}

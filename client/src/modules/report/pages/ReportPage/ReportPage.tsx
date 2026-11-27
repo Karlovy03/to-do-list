@@ -66,6 +66,7 @@ export function ReportPage() {
           <div data-print={table ? undefined : 'only'}>
             <ReportTable tasks={tasks} />
           </div>
+          <p className={css.foot} data-print="only">{t('report.report.footer')}</p>
         </>
       )}
     </div>

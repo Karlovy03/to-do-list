@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Absence, Me, Person, Unit } from '@/shared/api/types';
 import { readStrength, writeStrength } from './params';
-import { byUnit, peopleOf } from './strength';
+import { byUnit, peopleOf, presentByUnit } from './strength';
 
 const NOW = new Date('2026-11-26T10:00:00Z');
 const me = { id: 'head', role: 'MANAGER', unitId: 'dept' } as Me;
@@ -35,5 +35,8 @@ describe('склад підрозділу', () => {
   it('відсутні за підрозділами — у порядку дерева, порожні не показуються', () => {
     const absent = [person('shevchenko', 'b'), person('bondar', 'a')].map((p) => ({ person: p, absence: {} as Absence }));
     expect(byUnit(absent, units).map((g) => [g.unit.id, g.items.map((x) => x.person.id)])).toEqual([['a', ['bondar']], ['b', ['shevchenko']]]);
+  });
+  it('в строю за підрозділами — у порядку дерева, як на папері «Особовий склад»', () => {
+    expect(presentByUnit([person('shevchenko', 'b'), person('head', 'dept'), person('bondar', 'a')], units).map((g) => [g.unit.id, g.people.map((p) => p.id)])).toEqual([['dept', ['head']], ['a', ['bondar']], ['b', ['shevchenko']]]);
   });
 });

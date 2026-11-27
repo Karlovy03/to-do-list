@@ -1,0 +1,52 @@
+/* Аркуш A4 «Особовий склад» (Figma 36); на екрані не показується — [data-print='only'] */
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  color: var(--ink);
+}
+.head h1 {
+  font-size: var(--fs-title);
+  font-weight: 800;
+}
+.head p {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.summary {
+  color: var(--navy-ink);
+  font-weight: 700;
+}
+.sheet h2 {
+  margin-top: var(--s-2);
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+.table {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: var(--s-2) 10px;
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+  vertical-align: top;
+}
+.table th {
+  background: var(--surface-sunken);
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.table thead {
+  display: table-header-group;
+}
+.table tr {
+  break-inside: avoid;
+}
+.foot {
+  margin-top: var(--s-3);
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}

@@ -44,3 +44,10 @@ export function byUnit(absent: Strength['absent'], units: Unit[]) {
     .map((unit) => ({ unit, items: absent.filter((x) => x.person.unitId === unit.id) }))
     .filter((g) => g.items.length > 0);
 }
+
+/** Хто в строю — за підрозділами в порядку дерева (папір «Особовий склад») */
+export function presentByUnit(present: Person[], units: Unit[]) {
+  return flattenTree(units)
+    .map((unit) => ({ unit, people: present.filter((p) => p.unitId === unit.id) }))
+    .filter((g) => g.people.length > 0);
+}

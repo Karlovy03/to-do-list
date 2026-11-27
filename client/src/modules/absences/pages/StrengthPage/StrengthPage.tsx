@@ -17,6 +17,7 @@ import { AbsentCard } from '../../components/AbsentCard/AbsentCard';
 import { NewAbsenceForm } from '../../components/AbsenceForm/NewAbsenceForm';
 import { PresentCard } from '../../components/PresentCard/PresentCard';
 import { StrengthCounter } from '../../components/StrengthCounter/StrengthCounter';
+import { StrengthPrint } from '../../components/StrengthPrint/StrengthPrint';
 import { UnitSheet } from '../../components/UnitSheet/UnitSheet';
 import { useAbsences } from '../../hooks/useAbsences';
 import { readStrength, writeStrength, type StrengthParams } from '../../lib/params';
@@ -52,10 +53,11 @@ function Strength({ me }: { me: Me }) {
   const [open, setOpen] = useState<Absence | null>(null);
   const set = (next: Partial<StrengthParams>) => setSp(writeStrength({ ...params, unitId, ...next }, me, now));
 
+  const unitName = units.data?.find((u) => u.id === unitId)?.name ?? '';
   const bar = (
     <PeriodBar
       title={dayTitle(params.day, now)}
-      who={unitId ? { label: units.data?.find((u) => u.id === unitId)?.name ?? '', icon: 'users', onOpen: () => setChoosing(true) } : undefined}
+      who={unitId ? { label: unitName, icon: 'users', onOpen: () => setChoosing(true) } : undefined}
       onShift={(dir) => set({ day: addDays(params.day, dir) })}
       onToday={() => set({ day: today })}
     />
@@ -63,12 +65,14 @@ function Strength({ me }: { me: Me }) {
   const error = units.error ?? people.error ?? absences.error;
   const ready = units.data && people.data && absences.data;
   let body: ReactNode;
+  let paper: ReactNode = null;
   if (error) body = <ErrorState message={errorText(error)} onRetry={() => void Promise.all([units.refetch(), people.refetch(), absences.refetch()])} />;
   else if (!ready || !unitId) body = <Loading />;
   else {
     const scope = peopleOf(unitId, params.sub, units.data ?? [], people.data ?? []);
     const strength = strengthOn(scope, absences.data ?? [], params.day);
     const upcoming = upcomingFor(scope, absences.data ?? [], params.day, UPCOMING_DAYS);
+    paper = <StrengthPrint strength={strength} units={units.data ?? []} unitName={unitName} sub={params.sub} day={params.day} now={now} />;
     const wide = wc === 'md' || wc === 'lg';
     // вузькі колонки Fold і Flip — коротка дата «до 28.11» (правка власника)
     const short = wc === 'md' || wc === 'xs';
@@ -121,9 +125,22 @@ function Strength({ me }: { me: Me }) {
 
   return (
     <div className={css.page}>
-      <PageHeader eyebrow={wc === 'xs' ? undefined : formatLongDate(now)} title={t('absences.strength.title')} />
-      {(wc === 'sm' || wc === 'lg' || !ready) && bar}
-      {body}
+      <div className={css.screen} data-print="hide">
+        <PageHeader
+          eyebrow={wc === 'xs' ? undefined : formatLongDate(now)}
+          title={t('absences.strength.title')}
+          actions={
+            wc === 'xs' || !paper ? undefined : (
+              <Button variant="primary" icon="printer" onClick={() => window.print()}>
+                {t('absences.print.print')}
+              </Button>
+            )
+          }
+        />
+        {(wc === 'sm' || wc === 'lg' || !ready) && bar}
+        {body}
+      </div>
+      {paper}
 
       {choosing && unitId && (
         <UnitSheet vertical={vertical} units={units.data ?? []} unitId={unitId} sub={params.sub} onClose={() => setChoosing(false)}

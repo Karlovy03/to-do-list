@@ -57,3 +57,12 @@
 .mark {
   align-self: flex-start;
 }
+/* на екрані обгортка не впливає на розкладку; на папері ховається — друкується «Особовий склад» */
+.screen {
+  display: contents;
+}
+@media print {
+  .page {
+    padding: 0;
+  }
+}
