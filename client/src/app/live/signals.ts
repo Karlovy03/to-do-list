@@ -5,8 +5,9 @@ import { eventKeys } from '@/modules/events';
 import { notificationKeys } from '@/modules/notifications';
 import { taskKeys } from '@/modules/tasks';
 import { templateKeys } from '@/modules/templates';
+import { monitoringKeys } from '@/modules/monitoring';
 
-export type LiveTopic = 'task' | 'event' | 'absence' | 'template' | 'feed';
+export type LiveTopic = 'task' | 'event' | 'absence' | 'template' | 'presence' | 'feed';
 export interface LiveSignal {
   t: LiveTopic;
   id?: string;
@@ -23,12 +24,15 @@ export function keysFor(s: LiveSignal): QueryKey[] {
       return [absenceKeys.all, calendarKeys.all];
     case 'template':
       return [templateKeys.all];
+    case 'presence':
+      // хто онлайн — лише адміністраторам (ADR-0024); стан сервера оновлюється сам раз на 30 с
+      return [monitoringKeys.people, ['monitoring', 'visits']];
     case 'feed':
       return [notificationKeys.feed];
   }
 }
 
-const TOPICS: readonly string[] = ['task', 'event', 'absence', 'template', 'feed'];
+const TOPICS: readonly string[] = ['task', 'event', 'absence', 'template', 'presence', 'feed'];
 
 /** Дані потоку — з мережі: невідоме чи зіпсоване ігнорується */
 export function readSignal(data: string): LiveSignal | null {

@@ -1,0 +1,70 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+.row + .row {
+  border-top: 1px solid var(--line-soft);
+}
+.avatar {
+  position: relative;
+  flex: none;
+}
+.dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+}
+.online {
+  background: var(--done);
+}
+.recent {
+  background: var(--ink-3);
+}
+.away {
+  background: var(--late);
+}
+.who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.sub {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}
+.when {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.status {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.onlineText {
+  color: var(--done-ink);
+}
+.recentText {
+  color: var(--ink-2);
+}
+.awayText {
+  color: var(--late-ink);
+}

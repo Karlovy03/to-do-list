@@ -1,0 +1,29 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  border-radius: 18px;
+}
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--fs-small);
+  min-width: 0;
+}
+.text b {
+  font-size: var(--fs-body);
+}
+.ok {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+.warn {
+  background: var(--late-soft);
+  color: var(--late-ink);
+}
+.bad {
+  background: var(--control-soft);
+  color: var(--control-deep);
+}

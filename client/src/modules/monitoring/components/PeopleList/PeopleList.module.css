@@ -1,0 +1,23 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--s-4);
+  padding-bottom: var(--s-2);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0 var(--s-4) var(--s-2);
+}
+.search {
+  flex: 1 1 220px;
+}
+.search::-webkit-search-cancel-button {
+  appearance: none;
+}

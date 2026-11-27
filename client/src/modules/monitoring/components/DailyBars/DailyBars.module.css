@@ -1,0 +1,53 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5) var(--s-5);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+.hint {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(2px, 0.7vw, 8px);
+  height: 110px;
+}
+.bar {
+  flex: 1;
+  min-width: 0;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--navy);
+}
+.today {
+  background: var(--sky);
+}
+.axis {
+  position: relative;
+  height: 14px;
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}
+.axis span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+.axis .last {
+  transform: translateX(-100%);
+}

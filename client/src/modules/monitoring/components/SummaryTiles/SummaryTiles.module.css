@@ -1,0 +1,30 @@
+/* телефон — 2×2, ширше — у рядок (Figma 49, 51) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--s-3);
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--s-4);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+.label {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.number {
+  font-size: var(--fs-number);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+}
+.note {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}

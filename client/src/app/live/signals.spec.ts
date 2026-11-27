@@ -6,6 +6,7 @@ describe('живі оновлення: сигнал → що перечитат�
     expect(keysFor({ t: 'task', id: '1' })).toEqual([['tasks'], ['calendar']]);
     expect(keysFor({ t: 'absence' })).toEqual([['absences'], ['calendar']]);
     expect(keysFor({ t: 'template', id: 't1' })).toEqual([['templates']]);
+    expect(keysFor({ t: 'presence', id: 'u1' })).toEqual([['monitoring', 'people'], ['monitoring', 'visits']]);
     expect(keysFor({ t: 'feed' })).toEqual([['notifications']]);
   });
   it('невідомий вид чи зіпсовані дані з мережі — ігноруються', () => {
