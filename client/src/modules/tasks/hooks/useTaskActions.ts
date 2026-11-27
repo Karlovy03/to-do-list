@@ -1,17 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ControlInput } from '@/shared/api/types';
+import { useSession } from '@/modules/auth';
+import type { ControlInput, Task } from '@/shared/api/types';
 import { errorText } from '@/shared/api/errors';
 import { t } from '@/shared/lib/texts';
 import { useToast } from '@/shared/ui';
 import { taskKeys, tasksApi, type NewTask, type TaskChanges } from '../api/tasks.api';
+import { shouldCheer, showCheer } from '../lib/cheer';
 
 /** Будь-яка дія із завданням оновлює списки, картку і стрічку сповіщень */
-function useTaskMutation<V, R = unknown>(fn: (v: V) => Promise<R>, doneKey?: string) {
+function useTaskMutation<V, R = unknown>(fn: (v: V) => Promise<R>, doneKey?: string, after?: (r: R) => void) {
   const qc = useQueryClient();
   const toast = useToast();
   return useMutation({
     mutationFn: fn,
-    onSuccess: () => {
+    onSuccess: (r) => {
+      after?.(r);
       void qc.invalidateQueries({ queryKey: taskKeys.all });
       void qc.invalidateQueries({ queryKey: ['notifications'] });
       if (doneKey) toast(t(doneKey));
@@ -21,9 +24,12 @@ function useTaskMutation<V, R = unknown>(fn: (v: V) => Promise<R>, doneKey?: str
 }
 
 export function useTaskActions(id: string) {
+  const { me } = useSession();
+  // ящірка — щойно сервер підтвердив «Виконано» на контрольному (картка, сповіщення)
+  const cheer = (task: Task) => shouldCheer(task, me) && showCheer();
   return {
     start: useTaskMutation(() => tasksApi.start(id), 'tasks.toast.started'),
-    done: useTaskMutation((comment: string) => tasksApi.done(id, comment), 'tasks.toast.done'),
+    done: useTaskMutation((comment: string) => tasksApi.done(id, comment), 'tasks.toast.done', cheer),
     returnBack: useTaskMutation((v: { comment: string; deadline?: string }) => tasksApi.returnBack(id, v.comment, v.deadline), 'tasks.toast.returned'),
     close: useTaskMutation((comment: string) => tasksApi.close(id, comment), 'tasks.toast.closed'),
     cancel: useTaskMutation((comment: string) => tasksApi.cancel(id, comment), 'tasks.toast.cancelled'),

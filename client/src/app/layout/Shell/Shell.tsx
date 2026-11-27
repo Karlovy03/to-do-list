@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useLogout, useSession } from '@/modules/auth';
 import { PushBanner, usePushSync, useUnread } from '@/modules/notifications';
+import { LizardCheer } from '@/modules/tasks';
 import { useWindowClass } from '@/shared/hooks/useWindowClass';
 import { Loading } from '@/shared/ui';
 import { UpdateBanner } from '../../update/UpdateBanner/UpdateBanner';
@@ -36,6 +37,7 @@ export function Shell() {
         <Outlet />
       </main>
       <UpdateBanner />
+      <LizardCheer />
       {!focused && <PushBanner />}
       {phone && !focused && <BottomNav unread={unread} onCreate={open} />}
       {creating && <CreateSheet me={me} initial={pathname.startsWith('/events') ? 'event' : 'task'} onClose={() => setCreating(false)} />}

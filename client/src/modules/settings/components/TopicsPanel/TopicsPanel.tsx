@@ -9,6 +9,7 @@ const TOPICS = [
   ['notifyControl', 'control'],
   ['notifyDeadline', 'deadline'],
   ['notifyUpdates', 'updates'],
+  ['notifyEvents', 'events'],
 ] as const;
 
 /** Про що сповіщати і як часто нагадувати мені по контрольних */

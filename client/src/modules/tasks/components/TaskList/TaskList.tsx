@@ -14,7 +14,7 @@ interface Props {
   compact?: boolean;
   /** приховані, поки чекають на «Скасувати» */
   hidden?: Set<string>;
-  onSwipeDone?: (id: string) => void;
+  onSwipeDone?: (task: Task) => void;
 }
 
 export const groupAnchor = (g: GroupId) => `group-${g}`;
@@ -34,7 +34,7 @@ export function TaskList({ tasks, base, selectedId, compact, hidden, onSwipeDone
               to={`${base}/t/${task.id}`}
               selected={task.id === selectedId}
               compact={compact}
-              onSwipeDone={onSwipeDone && (() => onSwipeDone(task.id))}
+              onSwipeDone={onSwipeDone && (() => onSwipeDone(task))}
             />
           ))}
         </section>

@@ -5,7 +5,7 @@
   z-index: var(--z-nav);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   transform: translateX(-50%);
 }
 .capsule {
@@ -25,7 +25,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  width: 70px;
+  width: 58px;
   height: 52px;
   border-radius: var(--r-pill);
   color: var(--ink-2);
@@ -54,8 +54,9 @@
   text-align: center;
 }
 .label {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 600;
+  white-space: nowrap;
 }
 .on .label {
   font-weight: 700;
@@ -78,7 +79,7 @@
 /* вузьке вікно (клас xs, < 340 px — обкладинка Flip): лише іконки; обкладинка Fold 344 — з підписами */
 @media (max-width: 339px) {
   .item {
-    width: 56px;
+    width: 46px;
   }
   .label {
     display: none;

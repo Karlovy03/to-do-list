@@ -1,17 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from '@/modules/auth';
 import { errorText } from '@/shared/api/errors';
+import type { Task } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { useToast } from '@/shared/ui';
 import { taskKeys, tasksApi } from '../api/tasks.api';
+import { hideCheer, shouldCheer, showCheer } from '../lib/cheer';
 
 export const UNDO_MS = 5000;
 
 /**
  * «Виконано» свайпом: запит іде через 5 с, поки показано тост «Скасувати».
  * Скасування не потребує сервера — запит просто не надсилається.
+ * Ящірка на контрольному з'являється одразу, разом із тостом, і «Скасувати» прибирає й її.
  */
 export function useDeferredDone() {
+  const { me } = useSession();
   const qc = useQueryClient();
   const toast = useToast();
   const [pending, setPending] = useState<Set<string>>(new Set());
@@ -27,8 +32,10 @@ export function useDeferredDone() {
   }, []);
 
   const markDone = useCallback(
-    (id: string) => {
+    (task: Task) => {
+      const id = task.id;
       setPending((s) => new Set(s).add(id));
+      if (shouldCheer(task, me)) showCheer();
       const timer = window.setTimeout(async () => {
         try {
           await tasksApi.done(id);
@@ -45,10 +52,11 @@ export function useDeferredDone() {
         onAction: () => {
           window.clearTimeout(timers.current.get(id));
           forget(id);
+          hideCheer();
         },
       });
     },
-    [qc, toast, forget],
+    [qc, toast, forget, me],
   );
 
   // запити, що чекають, при виході зі сторінки чи закритті вкладки надсилаються одразу — дія людини не губиться

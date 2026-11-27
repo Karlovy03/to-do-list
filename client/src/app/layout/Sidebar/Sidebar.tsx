@@ -1,12 +1,13 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import type { Me } from '@/shared/api/types';
 import { t } from '@/shared/lib/texts';
 import { Avatar, BrandMark, Button, Icon, IconButton } from '@/shared/ui';
-import { SIDEBAR_NAV, visible } from '../navItems';
+import { isCurrent, SIDEBAR_NAV, visible } from '../navItems';
 import css from './Sidebar.module.css';
 
 /** Комп'ютер і DeX: плаваюча скляна бічна панель зі знаком МВС */
 export function Sidebar({ me, unread, onCreate, onLogout }: { me: Me; unread: number; onCreate: () => void; onLogout: () => void }) {
+  const { pathname } = useLocation();
   return (
     <aside className={css.sidebar} data-print="hide">
       <div className={css.brand}>
@@ -14,11 +15,11 @@ export function Sidebar({ me, unread, onCreate, onLogout }: { me: Me; unread: nu
         <span className={css.name}>{t('app.common.name')}</span>
       </div>
       <Button variant="primary" size="m" icon="plus" block onClick={onCreate}>
-        {t('app.nav.new_task')}
+        {t('app.nav.create')}
       </Button>
       <nav className={css.nav} aria-label={t('app.nav.main')}>
         {visible(SIDEBAR_NAV, me.role).map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => (isActive ? `${css.item} ${css.on}` : css.item)}>
+          <NavLink key={item.to} to={item.to} className={isCurrent(item, pathname) ? `${css.item} ${css.on}` : css.item} aria-current={isCurrent(item, pathname) ? 'page' : undefined}>
             <Icon name={item.icon} size={20} />
             <span className={css.label}>{t(item.label)}</span>
             {item.unread && unread > 0 && <span className={css.count}>{unread}</span>}

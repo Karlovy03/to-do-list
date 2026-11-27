@@ -23,7 +23,7 @@ export function SettingsPage() {
         <DevicePanel />
         <TopicsPanel me={me} />
         <QuietPanel me={me} />
-        <AppearancePanel />
+        <AppearancePanel me={me} />
         <AccountPanel me={me} phone={wc === 'xs' || wc === 'sm'} />
       </div>
     </div>

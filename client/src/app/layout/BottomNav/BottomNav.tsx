@@ -1,16 +1,17 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { t } from '@/shared/lib/texts';
 import { Icon } from '@/shared/ui';
-import { PRIMARY_NAV } from '../navItems';
+import { isCurrent, PRIMARY_NAV } from '../navItems';
 import css from './BottomNav.module.css';
 
 /** Телефон: плаваюча скляна капсула і окрема кнопка «+» (One UI) */
 export function BottomNav({ unread, onCreate }: { unread: number; onCreate: () => void }) {
+  const { pathname } = useLocation();
   return (
     <div className={css.wrap} data-print="hide">
       <nav className={css.capsule} aria-label={t('app.nav.main')}>
         {PRIMARY_NAV.map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => (isActive ? `${css.item} ${css.on}` : css.item)}>
+          <NavLink key={item.to} to={item.to} className={isCurrent(item, pathname) ? `${css.item} ${css.on}` : css.item} aria-current={isCurrent(item, pathname) ? 'page' : undefined}>
             <span className={css.icon}>
               <Icon name={item.icon} size={22} />
               {item.unread && unread > 0 && <span className={css.dot}>{unread > 9 ? '9+' : unread}</span>}
@@ -19,7 +20,7 @@ export function BottomNav({ unread, onCreate }: { unread: number; onCreate: () =
           </NavLink>
         ))}
       </nav>
-      <button type="button" className={css.fab} onClick={onCreate} aria-label={t('app.nav.new_task')}>
+      <button type="button" className={css.fab} onClick={onCreate} aria-label={t('app.nav.create')}>
         <Icon name="plus" size={26} />
       </button>
     </div>

@@ -1,5 +1,6 @@
 export { TasksPage } from './pages/TasksPage/TasksPage';
 export { NewTaskForm } from './components/NewTaskForm/NewTaskForm';
+export { LizardCheer } from './components/LizardCheer/LizardCheer';
 export { taskKeys } from './api/tasks.api';
 export { useTaskActions } from './hooks/useTaskActions';
 export type { Scope } from './api/tasks.api';
