@@ -54,12 +54,16 @@ export interface NotifySubject {
   priority: Priority;
 }
 
+/** Рядок тіла про захід: назва й час (ADR-0005) — і для відкладеного push, і для звичайного */
+export const eventLine = (e: { title: string; startsAt: Date; endsAt: Date }) =>
+  tx('notifications.event.line', { title: e.title, when: formatKyivRange(e.startsAt, e.endsAt) });
+
 /** Одна функція на обидва предмети: посилання, ключ і рядки тіла (ADR-0005: без описів і коментарів) */
 function subjectOf(input: NotifyInput): { subject: NotifySubject; lines: string[] } {
   if (input.calendarEvent) {
     const e = input.calendarEvent;
     const subject = e.gone ? { ...eventSubject(e.id), eventId: undefined, url: '/events' } : eventSubject(e.id);
-    return { subject, lines: [tx('notifications.event.line', { title: e.title, when: formatKyivRange(e.startsAt, e.endsAt) })] };
+    return { subject, lines: [eventLine(e)] };
   }
   const { task } = input;
   const lines = [tx('notifications.common.task_line', { number: task.number, title: task.title })];

@@ -4,7 +4,7 @@ import { getSettings } from '../../settings';
 import { deferredPushRepository } from '../feed.repository';
 import { eventSubject, notify, pushPayload, taskSubject } from '../notify.service';
 import { pushToUser } from '../push/dispatcher';
-import { planDeferred } from './deferred';
+import { deferredBody, planDeferred } from './deferred';
 import { planEventReminders, type EventReminder, type PlanEvent } from './event-plan';
 import { planReminders, type PlanUser, type Reminder } from './plan';
 import { remindersRepository as repo } from './reminders.repository';
@@ -75,7 +75,7 @@ export async function runRemindersOnce(now = new Date()): Promise<number> {
   await sendEventReminders(result.eventPlan, now);
   await Promise.all(
     result.deferred.map((r) =>
-      pushToUser(r.userId, pushPayload(r.kind, r.task ? taskSubject(r.task) : eventSubject(r.event!.id), r.title, r.body)).catch((err) => console.error('[reminders] deferred push', err)),
+      pushToUser(r.userId, pushPayload(r.kind, r.task ? taskSubject(r.task) : eventSubject(r.event!.id), r.title, deferredBody(r))).catch((err) => console.error('[reminders] deferred push', err)),
     ),
   );
   return result.plan.length + result.deferred.length + result.eventPlan.length;

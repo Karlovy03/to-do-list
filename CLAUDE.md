@@ -27,6 +27,7 @@
 | styling-components | будь-яка зміна вигляду |
 | working-on-tasks-and-control | стани завдання, контроль, права, журнал |
 | working-on-notifications | сповіщення, нагадування, push |
+| working-on-events-and-calendar | заходи, календар, ящірка «Виконано!» |
 | building-mobile-apps | Capacitor, Android/iOS, нативний push |
 | writing-tests | будь-який тест; зміни прав — з негативними тестами |
 | running-dev-workflow | команди, міграції, ворота перед комітом |
