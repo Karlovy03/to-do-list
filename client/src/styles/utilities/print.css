@@ -1,4 +1,9 @@
-/* Друк (довідка для наради): ховаємо оболонку застосунку */
+/* Друк (довідка для наради): ховаємо оболонку застосунку; [data-print='only'] — лише на папері */
+@media screen {
+  [data-print='only'] {
+    display: none !important;
+  }
+}
 @media print {
   [data-print='hide'] {
     display: none !important;

@@ -1,0 +1,53 @@
+/* вузько: три однакові плитки в рядок, однієї висоти (правка власника в Figma 31) */
+.totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--s-3);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.total b {
+  color: var(--ink);
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.total span {
+  color: var(--ink-2);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+.total .late {
+  color: var(--late-ink);
+}
+.total .done {
+  color: var(--done-ink);
+}
+/* комп'ютер (Figma 10): плитки за вмістом, ліворуч */
+@media (min-width: 1200px) {
+  .totals {
+    display: flex;
+    gap: var(--s-3);
+  }
+  .total {
+    padding: 14px var(--s-5);
+  }
+  .total b {
+    font-size: var(--fs-number);
+  }
+  .total span {
+    font-size: var(--fs-small);
+  }
+}
+.line {
+  color: var(--ink-2);
+  font-weight: 600;
+}

@@ -1,0 +1,67 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px var(--s-4) var(--s-4);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.late {
+  background: var(--late-soft);
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  font-size: var(--fs-label);
+}
+.no {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.state {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.late .state {
+  color: var(--late-ink);
+  font-weight: 700;
+}
+.title {
+  color: var(--ink);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+.late .rows {
+  border-top-color: var(--surface);
+}
+.row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: var(--s-3);
+  font-size: var(--fs-small);
+}
+.row dt {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  line-height: 1.6;
+}
+.row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.late .deadline dd {
+  color: var(--late-ink);
+}

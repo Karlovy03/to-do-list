@@ -1,0 +1,64 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.total {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.total b {
+  color: var(--ink);
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: 1;
+}
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.lateText {
+  color: var(--late-ink);
+}
+.doneText {
+  color: var(--done-ink);
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: inherit;
+}
+.meta {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+  font-weight: 700;
+}
+.title {
+  overflow: hidden;
+  color: var(--ink);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.more {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--navy-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}

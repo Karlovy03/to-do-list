@@ -7,18 +7,44 @@
 .table {
   width: 100%;
   min-width: 760px;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: var(--fs-small);
 }
+/* ширини стовпців — як на екрані 10 */
+.no {
+  width: 5%;
+}
+.task {
+  width: 26%;
+}
+.controller {
+  width: 23%;
+}
+.assignees {
+  width: 17%;
+}
+.deadline {
+  width: 13%;
+}
+.state {
+  width: 16%;
+}
 .table th,
 .table td {
-  padding: var(--s-3) var(--s-3);
+  padding: 14px 10px;
   border-bottom: 1px solid var(--line-soft);
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.table th:first-child,
+.table td:first-child {
+  padding-left: var(--s-5);
 }
 .table th {
-  color: var(--ink-3);
+  background: var(--surface-sunken);
+  color: var(--ink-2);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -29,21 +55,26 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.task {
+a.title {
   color: var(--ink);
   font-weight: 600;
 }
-.late .state {
+.late td {
+  background: var(--late-soft);
+}
+.late .stateCell {
   color: var(--late-ink);
-  font-weight: 700;
 }
 @media print {
   .wrap {
     overflow: visible;
+    border: 1px solid var(--line);
+    border-radius: 8px;
     box-shadow: none;
   }
   .table {
     min-width: 0;
+    font-size: var(--fs-label);
   }
   .table thead {
     display: table-header-group;
@@ -53,6 +84,6 @@
   }
   .table th,
   .table td {
-    border-bottom-color: var(--ink-3);
+    padding: var(--s-2);
   }
 }

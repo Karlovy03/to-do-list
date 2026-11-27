@@ -11,6 +11,19 @@ export const formatTime = (iso: string | Date) => timeFmt.format(new Date(iso));
 /** «26 листопада» */
 export const formatDate = (iso: string | Date) => dateFmt.format(new Date(iso));
 
+const stampFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: TZ, day: '2-digit', month: '2-digit' });
+
+/** Коротко для таблиць і карток довідки: «25.11, 18:00»; не цього року — «25.11.2027, 18:00» (Figma 10, 31) */
+export function formatStamp(iso: string | Date, now = new Date()) {
+  const d = new Date(iso);
+  return kyivParts(d).y === kyivParts(now).y ? `${stampFmt.format(d)}, ${timeFmt.format(d)}` : fullFmt.format(d);
+}
+
+/** «27 листопада, 08:00»; для паперу з роком — «27 листопада 2026, 08:00» (Figma 31, 34) */
+export function formatAsOf(d: Date, withYear = false) {
+  return `${dateFmt.format(d)}${withYear ? ` ${kyivParts(d).y}` : ''}, ${timeFmt.format(d)}`;
+}
+
 /** «сьогодні», «завтра», «вчора», «3 грудня» — за київським днем */
 export function formatDay(iso: string | Date, now = new Date()) {
   const k = dayKey(new Date(iso));
