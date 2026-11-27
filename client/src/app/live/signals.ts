@@ -4,8 +4,9 @@ import { calendarKeys } from '@/modules/calendar';
 import { eventKeys } from '@/modules/events';
 import { notificationKeys } from '@/modules/notifications';
 import { taskKeys } from '@/modules/tasks';
+import { templateKeys } from '@/modules/templates';
 
-export type LiveTopic = 'task' | 'event' | 'absence' | 'feed';
+export type LiveTopic = 'task' | 'event' | 'absence' | 'template' | 'feed';
 export interface LiveSignal {
   t: LiveTopic;
   id?: string;
@@ -20,12 +21,14 @@ export function keysFor(s: LiveSignal): QueryKey[] {
       return [eventKeys.all, calendarKeys.all];
     case 'absence':
       return [absenceKeys.all, calendarKeys.all];
+    case 'template':
+      return [templateKeys.all];
     case 'feed':
       return [notificationKeys.feed];
   }
 }
 
-const TOPICS: readonly string[] = ['task', 'event', 'absence', 'feed'];
+const TOPICS: readonly string[] = ['task', 'event', 'absence', 'template', 'feed'];
 
 /** Дані потоку — з мережі: невідоме чи зіпсоване ігнорується */
 export function readSignal(data: string): LiveSignal | null {

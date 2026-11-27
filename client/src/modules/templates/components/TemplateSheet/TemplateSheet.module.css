@@ -1,0 +1,76 @@
+.info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.description {
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.meta {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+  overflow-wrap: anywhere;
+}
+.state {
+  margin: var(--s-4) 0 0;
+  padding: var(--s-3);
+  border-radius: var(--r-control);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.ok {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+.no {
+  background: var(--late-soft);
+  color: var(--late-ink);
+}
+.actions {
+  display: flex;
+  flex-direction: column;
+  margin: var(--s-4) 0 var(--s-2);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.action {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--ctrl-l);
+  padding: var(--s-3) var(--s-4);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-align: left;
+}
+.action + .action {
+  border-top: 1px solid var(--line-soft);
+}
+.action:disabled {
+  opacity: 0.55;
+}
+.danger {
+  color: var(--control-deep);
+}
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  width: 100%;
+}
+.confirm {
+  color: var(--ink-2);
+}

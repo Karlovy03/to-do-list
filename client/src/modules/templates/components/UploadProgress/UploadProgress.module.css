@@ -1,0 +1,29 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.line b {
+  color: var(--navy-ink);
+}
+.track {
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--line-soft);
+  overflow: hidden;
+}
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--navy);
+  transition: width var(--t-fast);
+}

@@ -1,0 +1,30 @@
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: var(--fs-small);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.small {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: var(--fs-label);
+}
+.docx {
+  background: var(--blue-soft);
+  color: var(--navy-ink);
+}
+.xlsx {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+.pdf {
+  background: var(--control-soft);
+  color: var(--control-deep);
+  font-size: var(--fs-label);
+}

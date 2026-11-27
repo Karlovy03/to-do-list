@@ -1,0 +1,7 @@
+# Типи файлів: назва і коротка позначка
+docx: "Word"
+xlsx: "Excel"
+pdf: "PDF"
+docx_mark: "W"
+xlsx_mark: "X"
+pdf_mark: "PDF"

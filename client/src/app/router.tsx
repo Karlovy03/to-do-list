@@ -8,6 +8,7 @@ import { NotificationsPage } from '@/modules/notifications';
 import { ReportPage } from '@/modules/report';
 import { SettingsPage } from '@/modules/settings';
 import { TasksPage } from '@/modules/tasks';
+import { TemplatesPage } from '@/modules/templates';
 import type { Scope } from '@/modules/tasks';
 import { Shell } from './layout/Shell/Shell';
 
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       { path: '/notifications', element: <NotificationsPage /> },
       { path: '/settings', element: <SettingsPage /> },
       { path: '/report', element: <ReportPage /> },
+      { path: '/templates', element: <TemplatesPage /> },
       { path: '/admin/:tab?', element: <AdminPage /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],

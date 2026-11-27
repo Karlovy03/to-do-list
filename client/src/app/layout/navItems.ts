@@ -19,7 +19,8 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: '/events', label: 'app.nav.events', icon: 'event' },
   { to: '/calendar', label: 'app.nav.calendar', icon: 'calendar' },
   { to: '/notifications', label: 'app.nav.notifications', icon: 'bell', unread: true },
-  { to: '/settings', label: 'app.nav.more', icon: 'settings' },
+  // розділи з «Ще → Розділи» теж підсвічують «Ще» (Figma 42)
+  { to: '/settings', label: 'app.nav.more', icon: 'settings', match: /^\/(templates|strength|report)(\/|$)/ },
 ];
 
 /** Бічна панель комп'ютера (Figma 18): усі розділи */
@@ -31,6 +32,7 @@ export const SIDEBAR_NAV: NavItem[] = [
   { to: '/control', label: 'app.nav.control', icon: 'shield' },
   { to: '/notifications', label: 'app.nav.notifications', icon: 'bell', unread: true },
   { to: '/report', label: 'app.nav.report', icon: 'printer', roles: ['ADMIN', 'DIRECTOR', 'MANAGER'] },
+  { to: '/templates', label: 'app.nav.templates', icon: 'doc' },
   { to: '/settings', label: 'app.nav.settings', icon: 'settings' },
   { to: '/admin', label: 'app.nav.admin', icon: 'admin', roles: ['ADMIN'] },
 ];

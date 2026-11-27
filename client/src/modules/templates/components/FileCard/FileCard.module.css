@@ -1,0 +1,45 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-4) var(--s-3) var(--s-3);
+  border: 1.5px dashed var(--sky);
+  border-radius: 16px;
+  background: var(--sky-soft);
+  color: var(--ink);
+  text-align: left;
+}
+.pick {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--s-5) var(--s-4);
+  text-align: center;
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.pick .name {
+  color: var(--sky-ink);
+  font-weight: 700;
+}
+.meta {
+  color: var(--ink-3);
+  font-size: var(--fs-label);
+}
+.change {
+  flex: none;
+  padding: var(--s-2);
+  border: 0;
+  background: none;
+  color: var(--navy-ink);
+  font-weight: 700;
+}

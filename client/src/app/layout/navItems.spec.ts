@@ -16,8 +16,15 @@ describe('активний пункт навігації', () => {
     expect(active(SIDEBAR_NAV, '/authored')).toEqual(['/']);
   });
   it('жодна адреса не підсвічує двох пунктів одразу', () => {
-    for (const path of ['/', '/control', '/events', '/calendar/e/1', '/strength', '/notifications', '/settings', '/report', '/admin/users']) {
+    for (const path of ['/', '/control', '/events', '/calendar/e/1', '/strength', '/notifications', '/settings', '/report', '/templates', '/admin/users']) {
       expect(active(SIDEBAR_NAV, path).length).toBeLessThanOrEqual(1);
+      expect(active(PRIMARY_NAV, path).length).toBeLessThanOrEqual(1);
     }
+  });
+  it('на телефоні розділи з «Ще → Розділи» підсвічують «Ще» (Figma 42); у бічній панелі «Шаблони» — свій пункт для всіх', () => {
+    for (const path of ['/templates', '/strength', '/report']) expect(active(PRIMARY_NAV, path)).toEqual(['/settings']);
+    expect(active(PRIMARY_NAV, '/templatesx')).toEqual([]);
+    expect(active(SIDEBAR_NAV, '/templates')).toEqual(['/templates']);
+    expect(SIDEBAR_NAV.find((i) => i.to === '/templates')?.roles).toBeUndefined();
   });
 });

@@ -1,0 +1,17 @@
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-top: var(--s-4);
+}
+.hint {
+  margin-top: var(--s-3);
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.warn {
+  margin: var(--s-1) 0 var(--s-3);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}

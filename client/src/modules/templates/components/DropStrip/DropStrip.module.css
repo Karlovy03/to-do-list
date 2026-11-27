@@ -1,0 +1,20 @@
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  width: 100%;
+  padding: var(--s-4);
+  border: 1.5px dashed var(--sky);
+  border-radius: 16px;
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.active {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--navy-ink);
+}
